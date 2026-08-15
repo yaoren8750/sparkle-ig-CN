@@ -141,7 +141,7 @@ static const NSInteger kSPKViewersFriendshipBatch = 50;
     model.pk = [pk isKindOfClass:[NSString class]] ? pk : ([pk respondsToSelector:@selector(stringValue)] ? [pk stringValue] : nil);
     if (model.pk.length == 0)
         return nil;
-    model.username = [dict[@"username"] isKindOfClass:[NSString class]] ? dict[@"username"] : nil;
+    model.username = [dict[@"用户名"] isKindOfClass:[NSString class]] ? dict[@"用户名"] : nil;
     model.fullName = [dict[@"full_name"] isKindOfClass:[NSString class]] ? dict[@"full_name"] : nil;
     model.profilePicURL = [dict[@"profile_pic_url"] isKindOfClass:[NSString class]] ? dict[@"profile_pic_url"] : nil;
     model.isVerified = [dict[@"is_verified"] boolValue];

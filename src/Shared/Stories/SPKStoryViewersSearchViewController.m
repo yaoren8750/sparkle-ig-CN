@@ -140,7 +140,7 @@ typedef NS_ENUM(NSInteger, SPKViewerFilter) {
 - (instancetype)initWithMediaID:(NSString *)mediaID title:(NSString *)title {
     if ((self = [super init])) {
         _mediaID = [mediaID copy];
-        self.title = title.length ? title : @"Story Viewers";
+        self.title = title.length ? title : @"快拍观看者";
         _filter = SPKViewerFilterAll;
     }
     return self;
@@ -179,7 +179,7 @@ typedef NS_ENUM(NSInteger, SPKViewerFilter) {
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     self.searchController.searchResultsUpdater = self;
     self.searchController.obscuresBackgroundDuringPresentation = NO;
-    self.searchController.searchBar.placeholder = @"Search Viewers";
+    self.searchController.searchBar.placeholder = @"搜索观看者";
     [self.searchController.searchBar setImage:[SPKAssetUtils instagramIconNamed:@"search" pointSize:18.0]
                              forSearchBarIcon:UISearchBarIconSearch
                                         state:UIControlStateNormal];

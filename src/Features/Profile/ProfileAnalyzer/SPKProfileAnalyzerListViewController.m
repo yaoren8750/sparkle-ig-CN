@@ -263,13 +263,13 @@ typedef NS_ENUM(NSInteger, SPKPASortMode) {
     NSMutableArray<SPKPAListSection *> *out = [NSMutableArray array];
     if (latest.count) {
         SPKPAListSection *s = [SPKPAListSection new];
-        s.title = @"Latest";
+        s.title = @"最新";
         s.items = latest;
         [out addObject:s];
     }
     if (previous.count) {
         SPKPAListSection *s = [SPKPAListSection new];
-        s.title = @"Previous";
+        s.title = @"之前";
         s.items = previous;
         [out addObject:s];
     }
@@ -337,7 +337,7 @@ typedef NS_ENUM(NSInteger, SPKPASortMode) {
         self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
         self.searchController.searchResultsUpdater = self;
         self.searchController.obscuresBackgroundDuringPresentation = NO;
-        self.searchController.searchBar.placeholder = @"Search";
+        self.searchController.searchBar.placeholder = @"搜索";
         [self.searchController.searchBar setImage:[SPKAssetUtils instagramIconNamed:@"search" pointSize:18.0]
                                  forSearchBarIcon:UISearchBarIconSearch
                                             state:UIControlStateNormal];
@@ -408,7 +408,7 @@ typedef NS_ENUM(NSInteger, SPKPASortMode) {
 
 - (void)installSortItem {
     UIBarButtonItem *sortItem = SPKMediaChromeTopBarMenuButtonItem(@"sort", [self sortMenu], @"Sort");
-    UIBarButtonItem *moreItem = SPKMediaChromeTopBarMenuButtonItem(@"more", [self moreMenu], @"More");
+    UIBarButtonItem *moreItem = SPKMediaChromeTopBarMenuButtonItem(@"more", [self moreMenu], @"更多");
     SPKMediaChromeSetTrailingTopBarItems(self.navigationItem, @[ sortItem, moreItem ]);
 }
 
@@ -442,10 +442,10 @@ typedef NS_ENUM(NSInteger, SPKPASortMode) {
 - (void)confirmClearHistory {
     __weak typeof(self) weakSelf = self;
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Clear Visited History"
+                                                  title:@"清除访问记录"
                                                 message:@"This removes every profile from your visited history. This cannot be undone."
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
                                                     [SPKIGAlertAction actionWithTitle:@"Clear History"
@@ -618,7 +618,7 @@ typedef NS_ENUM(NSInteger, SPKPASortMode) {
     if (self.searchText.length) {
         self.emptyStateIcon.image = [SPKAssetUtils instagramIconNamed:@"promote_empty" pointSize:96.0 renderingMode:UIImageRenderingModeAlwaysTemplate];
         self.emptyStateTitle.text = @"No matches";
-        self.emptyStateSubtitle.text = @"No accounts match your search.";
+        self.emptyStateSubtitle.text = @"没有符合搜索条件的账户。";
     } else {
         self.emptyStateIcon.image = [SPKAssetUtils instagramIconNamed:@"promote_empty" pointSize:96.0 renderingMode:UIImageRenderingModeAlwaysTemplate];
         self.emptyStateTitle.text = @"Nothing here";
@@ -884,7 +884,7 @@ static NSString *SPKPARelativeDate(NSDate *date) {
                                                                     }];
     del.image = [SPKAssetUtils menuIconNamed:@"trash"];
     del.backgroundColor = [SPKUtils SPKColor_InstagramDestructive];
-    del.accessibilityLabel = @"Remove";
+    del.accessibilityLabel = @"移除";
     return [UISwipeActionsConfiguration configurationWithActions:@[ del ]];
 }
 

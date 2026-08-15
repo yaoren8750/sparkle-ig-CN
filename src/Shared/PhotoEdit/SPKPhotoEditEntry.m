@@ -127,16 +127,16 @@
     }
     SPKPhotoEditorConfiguration *config = [SPKPhotoEditorConfiguration freeformConfiguration];
     config.doneOptions = @[
-        [SPKPhotoEditorDoneOption optionWithTitle:@"Save to Photos"
+        [SPKPhotoEditorDoneOption optionWithTitle:@"保存到照片"
                                        identifier:@"photos"
                                          iconName:@"download"],
-        [SPKPhotoEditorDoneOption optionWithTitle:@"Share"
+        [SPKPhotoEditorDoneOption optionWithTitle:@"分享"
                                        identifier:@"share"
                                          iconName:@"share"],
-        [SPKPhotoEditorDoneOption optionWithTitle:@"Copy"
+        [SPKPhotoEditorDoneOption optionWithTitle:@"复制"
                                        identifier:@"clipboard"
                                          iconName:@"copy"],
-        [SPKPhotoEditorDoneOption optionWithTitle:@"Save to Gallery"
+        [SPKPhotoEditorDoneOption optionWithTitle:@"保存到图库"
                                        identifier:@"gallery"
                                          iconName:@"sparkle_gallery"],
     ];

@@ -50,7 +50,7 @@
 }
 
 - (NSString *)finishButtonTitle {
-    return @"Done";
+    return @"完成";
 }
 
 - (BOOL)allowsInteractiveDismiss {

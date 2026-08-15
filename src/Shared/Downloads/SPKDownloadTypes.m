@@ -117,35 +117,35 @@ NSString *SPKDownloadDestinationDisplayName(SPKDownloadDestination destination) 
     case SPKDownloadDestinationPhotos:
         return @"Photos";
     case SPKDownloadDestinationGallery:
-        return @"Gallery";
+        return @"图库";
     case SPKDownloadDestinationShare:
-        return @"Share";
+        return @"分享";
     case SPKDownloadDestinationClipboard:
         return @"Clipboard";
     case SPKDownloadDestinationCacheOnly:
-        return @"Download";
+        return @"下载";
     }
-    return @"Download";
+    return @"下载";
 }
 
 NSString *SPKDownloadSourceSurfaceDisplayName(SPKDownloadSourceSurface surface) {
     switch (surface) {
     case SPKDownloadSourceSurfaceFeed:
-        return @"Feed";
+        return @"动态";
     case SPKDownloadSourceSurfaceReels:
         return @"Reels";
     case SPKDownloadSourceSurfaceStories:
-        return @"Stories";
+        return @"快拍";
     case SPKDownloadSourceSurfaceDirect:
         return @"Direct";
     case SPKDownloadSourceSurfaceAudioPage:
-        return @"Audio";
+        return @"音频";
     case SPKDownloadSourceSurfaceMediaPreview:
         return @"Preview";
     case SPKDownloadSourceSurfaceGallery:
-        return @"Gallery";
+        return @"图库";
     case SPKDownloadSourceSurfaceProfile:
-        return @"Profile";
+        return @"个人资料";
     case SPKDownloadSourceSurfaceInstants:
         return @"Instants";
     case SPKDownloadSourceSurfaceComments:

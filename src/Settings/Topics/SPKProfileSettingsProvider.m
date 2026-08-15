@@ -14,7 +14,7 @@ static NSString *const kSPKProfileActionSavePictureToGallery = @"save_picture_ga
 static NSString *const kSPKProfileActionOpenSettings = @"profile_settings";
 static NSString *const kSPKProfileDefaultCopyInfoKey = @"profile_action_btn_default_copy_info_action";
 static NSString *const kSPKProfileCopyInfoID = @"id";
-static NSString *const kSPKProfileCopyInfoUsername = @"username";
+static NSString *const kSPKProfileCopyInfoUsername = @"用户名";
 static NSString *const kSPKProfileCopyInfoName = @"name";
 static NSString *const kSPKProfileCopyInfoBio = @"bio";
 static NSString *const kSPKProfileCopyInfoLink = @"link";
@@ -38,12 +38,12 @@ static UICommand *SPKProfileActionDefaultCommand(NSString *title, NSString *reso
 
 static UIMenu *SPKProfileActionDefaultMenu(void) {
     return [UIMenu menuWithChildren:@[
-        SPKProfileActionDefaultCommand(@"Open Menu", @"action", kSPKProfileActionNone),
-        SPKProfileActionDefaultCommand(@"Copy Info", @"copy", kSPKProfileActionCopyInfo),
-        SPKProfileActionDefaultCommand(@"View Picture", @"photo", kSPKProfileActionViewPicture),
-        SPKProfileActionDefaultCommand(@"Share Picture", @"share", kSPKProfileActionSharePicture),
-        SPKProfileActionDefaultCommand(@"Save to Gallery", @"sparkle_gallery", kSPKProfileActionSavePictureToGallery),
-        SPKProfileActionDefaultCommand(@"Profile Settings", @"settings", kSPKProfileActionOpenSettings)
+        SPKProfileActionDefaultCommand(@"打开菜单", @"action", kSPKProfileActionNone),
+        SPKProfileActionDefaultCommand(@"复制资料", @"copy", kSPKProfileActionCopyInfo),
+        SPKProfileActionDefaultCommand(@"查看头像", @"photo", kSPKProfileActionViewPicture),
+        SPKProfileActionDefaultCommand(@"分享头像", @"share", kSPKProfileActionSharePicture),
+        SPKProfileActionDefaultCommand(@"保存到图库", @"sparkle_gallery", kSPKProfileActionSavePictureToGallery),
+        SPKProfileActionDefaultCommand(@"个人资料设置", @"settings", kSPKProfileActionOpenSettings)
     ]];
 }
 
@@ -61,11 +61,11 @@ static UICommand *SPKProfileDefaultCopyInfoCommand(NSString *title, NSString *re
 
 static UIMenu *SPKProfileDefaultCopyInfoMenu(void) {
     return [UIMenu menuWithChildren:@[
-        SPKProfileDefaultCopyInfoCommand(@"ID", @"key", kSPKProfileCopyInfoID),
-        SPKProfileDefaultCopyInfoCommand(@"Username", @"username", kSPKProfileCopyInfoUsername),
-        SPKProfileDefaultCopyInfoCommand(@"Name", @"text", kSPKProfileCopyInfoName),
-        SPKProfileDefaultCopyInfoCommand(@"Bio", @"caption", kSPKProfileCopyInfoBio),
-        SPKProfileDefaultCopyInfoCommand(@"Profile Link", @"link", kSPKProfileCopyInfoLink)
+        SPKProfileDefaultCopyInfoCommand(@"用户 ID", @"key", kSPKProfileCopyInfoID),
+        SPKProfileDefaultCopyInfoCommand(@"用户名", @"用户名", kSPKProfileCopyInfoUsername),
+        SPKProfileDefaultCopyInfoCommand(@"姓名", @"text", kSPKProfileCopyInfoName),
+        SPKProfileDefaultCopyInfoCommand(@"个人简介", @"caption", kSPKProfileCopyInfoBio),
+        SPKProfileDefaultCopyInfoCommand(@"个人主页链接", @"link", kSPKProfileCopyInfoLink)
     ]];
 }
 
@@ -110,86 +110,114 @@ static UICommand *SPKFollowIndicatorModeCommand(NSString *title, NSString *value
 
 static UIMenu *SPKFollowIndicatorModeMenu(void) {
     return [UIMenu menuWithChildren:@[
-        SPKFollowIndicatorModeCommand(@"Off", kSPKFollowIndicatorModeOff),
-        SPKFollowIndicatorModeCommand(@"Icon", kSPKFollowIndicatorModeIcon),
-        SPKFollowIndicatorModeCommand(@"Text", kSPKFollowIndicatorModeText),
-        SPKFollowIndicatorModeCommand(@"Icon & Text", kSPKFollowIndicatorModeIconText)
+        SPKFollowIndicatorModeCommand(@"关闭", kSPKFollowIndicatorModeOff),
+        SPKFollowIndicatorModeCommand(@"仅图标", kSPKFollowIndicatorModeIcon),
+        SPKFollowIndicatorModeCommand(@"仅文字", kSPKFollowIndicatorModeText),
+        SPKFollowIndicatorModeCommand(@"图标与文字", kSPKFollowIndicatorModeIconText)
     ]];
 }
 
 @implementation SPKProfileSettingsProvider
 
 + (SPKSetting *)rootSetting {
-    return SPKTopicNavigationSetting(@"Profile", @"user_circle", 24.0, @[
-        SPKTopicSection(@"Action Button", @[
-            [SPKSetting switchCellWithTitle:@"Profile Action Button"
+    return SPKTopicNavigationSetting(@"个人资料", @"user_circle", 24.0, @[
+        SPKTopicSection(@"操作按钮", @[
+            [SPKSetting switchCellWithTitle:@"个人资料操作按钮"
                                        icon:SPKSettingsIcon(@"action")
                                 defaultsKey:@"profile_action_btn"],
             SPKActionButtonDefaultActionNavigationSetting(SPKActionButtonSourceProfile),
-            SPKActionButtonConfigurationNavigationSetting(SPKActionButtonSourceProfile, @"Profile", SPKActionButtonSupportedActionsForSource(SPKActionButtonSourceProfile), SPKActionButtonDefaultSectionsForSource(SPKActionButtonSourceProfile)),
-            SPKSettingApplySelectedMenuIcon([SPKSetting menuCellWithTitle:@"Copy Info Default" icon:SPKSettingsIcon(@"copy") menu:SPKProfileDefaultCopyInfoMenu()], SPKSettingsIcon(@"copy"))
+            SPKActionButtonConfigurationNavigationSetting(
+                SPKActionButtonSourceProfile,
+                @"个人资料",
+                SPKActionButtonSupportedActionsForSource(SPKActionButtonSourceProfile),
+                SPKActionButtonDefaultSectionsForSource(SPKActionButtonSourceProfile)
+            ),
+            SPKSettingApplySelectedMenuIcon(
+                [SPKSetting menuCellWithTitle:@"默认复制资料"
+                                         icon:SPKSettingsIcon(@"copy")
+                                         menu:SPKProfileDefaultCopyInfoMenu()],
+                SPKSettingsIcon(@"copy")
+            )
         ],
-                        @"Choose what tapping the action button does. Copy Info Default controls what gets copied when Default Tap Action is Copy Info."),
-        SPKTopicSection(@"Profile Picture", @[
-            [SPKSetting switchCellWithTitle:@"Long Press to Expand"
+        @"设置点击操作按钮时执行的操作。若默认操作为“复制资料”，可在这里选择要复制的资料内容。"),
+
+        SPKTopicSection(@"头像", @[
+            [SPKSetting switchCellWithTitle:@"长按放大头像"
                                        icon:SPKSettingsIcon(@"expand")
                                 defaultsKey:@"profile_photo_zoom"]
         ],
-                        @"Long press a profile picture to open it expanded."),
-        SPKTopicSection(@"Indicators", @[
+        @"长按个人资料头像可放大查看。"),
+
+        SPKTopicSection(@"关注状态", @[
             ({
-                SPKSetting *mode = [SPKSetting menuCellWithTitle:@"Following Indicator"
+                SPKSetting *mode = [SPKSetting menuCellWithTitle:@"关注状态提示"
                                                             icon:SPKSettingsIcon(@"user_check")
                                                             menu:SPKFollowIndicatorModeMenu()];
                 mode.accessoryTextProvider = ^NSString * {
                     NSString *value = SPKFollowIndicatorEffectiveMode();
+
                     if ([value isEqualToString:kSPKFollowIndicatorModeText])
-                        return @"Text";
+                        return @"仅文字";
+
                     if ([value isEqualToString:kSPKFollowIndicatorModeIcon])
-                        return @"Icon";
+                        return @"仅图标";
+
                     if ([value isEqualToString:kSPKFollowIndicatorModeIconText])
-                        return @"Icon + Text";
-                    return @"Off";
+                        return @"图标与文字";
+
+                    return @"关闭";
                 };
                 mode;
             }),
+
             ({
-                // Off (default) = Instagram's native gray for both states, so it
-                // doesn't stand out as modded. On = the colored green/red. Uses a
-                // custom value provider so the legacy fallback (pre-menu users who
-                // had the indicator on keep colored) is reflected accurately.
-                SPKSetting *colorful = [SPKSetting switchCellWithTitle:@"Colorful Indicator"
-                                                                  icon:SPKSettingsIcon(@"palette")
-                                                           defaultsKey:kSPKFollowIndicatorColorfulKey];
+                // 关闭时使用 Instagram 原生灰色样式；
+                // 开启后使用绿色/红色区分关注状态。
+                SPKSetting *colorful =
+                    [SPKSetting switchCellWithTitle:@"彩色关注状态"
+                                               icon:SPKSettingsIcon(@"palette")
+                                        defaultsKey:kSPKFollowIndicatorColorfulKey];
+
                 colorful.switchValueProvider = ^BOOL {
                     return SPKFollowIndicatorColorfulEnabled();
                 };
+
                 colorful.switchChangeHandler = ^(BOOL isOn) {
                     SPKPreferenceSetObject(@(isOn), kSPKFollowIndicatorColorfulKey);
-                    [[NSNotificationCenter defaultCenter] postNotificationName:SPKFollowIndicatorDidChangeNotification object:nil];
+
+                    [[NSNotificationCenter defaultCenter]
+                        postNotificationName:SPKFollowIndicatorDidChangeNotification
+                                      object:nil];
                 };
+
                 colorful.hiddenProvider = ^BOOL {
-                    return [SPKFollowIndicatorEffectiveMode() isEqualToString:kSPKFollowIndicatorModeOff];
+                    return [SPKFollowIndicatorEffectiveMode()
+                        isEqualToString:kSPKFollowIndicatorModeOff];
                 };
+
                 colorful;
             }),
-            [SPKSetting switchCellWithTitle:@"Hide Notes Bubble"
+
+            [SPKSetting switchCellWithTitle:@"隐藏 Notes 气泡"
                                        icon:SPKSettingsIcon(@"notes")
                                 defaultsKey:@"profile_hide_notes_bubble"],
-            [SPKSetting switchCellWithTitle:@"Hide Threads Button"
+
+            [SPKSetting switchCellWithTitle:@"隐藏 Threads 按钮"
                                        icon:SPKSettingsIcon(@"threads")
                                 defaultsKey:@"profile_hide_threads_btn"]
         ],
-                        @"Following Indicator shows whether a profile follows you back, under their stats. Text or Icon; it's Instagram's native gray unless you turn on Colorful Indicator for green/red."),
-        SPKTopicSection(@"Confirmation", @[
-            [SPKSetting switchCellWithTitle:@"Confirm Follow"
+        @"关注状态提示会显示在对方个人资料的统计信息下方，用于表示对方是否关注你。可选择仅显示图标、文字或两者，并可开启彩色样式以使用绿色/红色区分状态。"),
+
+        SPKTopicSection(@"操作确认", @[
+            [SPKSetting switchCellWithTitle:@"关注前确认"
                                        icon:SPKSettingsIcon(@"user_follow")
                                 defaultsKey:@"profile_confirm_follow"],
-            [SPKSetting switchCellWithTitle:@"Confirm Unfollow"
+
+            [SPKSetting switchCellWithTitle:@"取消关注前确认"
                                        icon:SPKSettingsIcon(@"user_unfollow")
                                 defaultsKey:@"profile_confirm_unfollow"]
         ],
-                        @"Shows confirmation alerts before the enabled profile actions are performed.")
+        @"开启后，在关注或取消关注前会显示确认提示。")
     ]);
 }
 

@@ -532,5 +532,5 @@ void SPKStoryApplyDynamicRangeToButton(UIButton *button) {
     UIImageView *imageView = button.imageView;
     spkApplyEDRTintToImageView(imageView, tint);
 
-    SPKLog(@"Stories", @"[EDR] Applied EDR tint to button (tag=%ld)", (long)button.tag);
+    SPKLog(@"快拍", @"[EDR] Applied EDR tint to button (tag=%ld)", (long)button.tag);
 }

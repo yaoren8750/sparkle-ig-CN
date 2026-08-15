@@ -38,7 +38,7 @@ static char kSPKActionsListSwitchAssocKey;
                                                                    topicTitle:topicTitle
                                                              supportedActions:SPKActionButtonSupportedActionsForSource(source)
                                                               defaultSections:SPKActionButtonDefaultSectionsForSource(source)];
-        self.title = @"Configure Actions";
+        self.title = @"配置操作";
     }
     return self;
 }
@@ -102,9 +102,9 @@ static char kSPKActionsListSwitchAssocKey;
 
 - (NSString *)bulkEditorTitleForKind:(NSString *)kind {
     if ([kind isEqualToString:@"copy_info"]) {
-        return @"Configure Copy Info Menu";
+        return @"配置复制信息菜单";
     }
-    return @"Configure Menu";
+    return @"配置菜单";
 }
 
 - (NSString *)bulkEditorSubtitleForKind:(NSString *)kind {
@@ -114,7 +114,7 @@ static char kSPKActionsListSwitchAssocKey;
 
 - (SPKBulkActionMenuEditViewController *)bulkEditorControllerForKind:(NSString *)kind {
     if ([kind isEqualToString:@"copy_info"]) {
-        return [[SPKBulkActionMenuEditViewController alloc] initWithTitle:@"Copy Info Menu"
+        return [[SPKBulkActionMenuEditViewController alloc] initWithTitle:@"复制信息菜单"
                                                                    source:self.source
                                                          supportedActions:SPKProfileCopyInfoSupportedActions()
                                                         configuredActions:SPKProfileConfiguredCopyInfoActions()
@@ -144,25 +144,25 @@ static char kSPKActionsListSwitchAssocKey;
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     if (section == 0)
-        return @"Menu Sections";
+        return @"菜单分组";
     if (section == [self bulkEditorSectionIndex])
-        return @"All Menus";
+        return @"所有菜单";
     if (section == [self unassignedSectionIndex])
-        return @"Unassigned Actions";
+        return @"未分配操作";
     if (section == [self resetSectionIndex])
         return nil;
-    return @"Available Actions";
+    return @"可用操作";
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
     if (section == 0)
-        return @"Long press and drag to reorder sections.";
+        return @"长按并拖动可重新排列分组顺序。";
     if (section == [self unassignedSectionIndex])
-        return @"Actions here are supported but do not appear in the runtime menu.";
+        return @"这里的操作虽然受支持，但不会显示在实际运行的菜单中。";
     if (section == [self availableSectionIndex])
-        return @"Disabled actions are hidden even if they remain assigned to a section.";
+        return @"已禁用的操作即使仍分配到某个分组中，也不会显示。";
     if (section == [self resetSectionIndex])
-        return @"Restores this surface's menu sections, default action, and bulk menus to their defaults. Other surfaces are unaffected.";
+        return @"恢复此页面的菜单分组、默认操作和批量菜单为默认设置。其他页面不受影响。";
     return nil;
 }
 
@@ -188,7 +188,7 @@ static char kSPKActionsListSwitchAssocKey;
     if (indexPath.section == 0) {
         SPKActionMenuSection *section = self.configuration.sections[indexPath.row];
         config.text = section.title;
-        NSString *stateText = section.collapsible ? @"Collapsible" : @"Inline";
+        NSString *stateText = section.collapsible ? @"可折叠" : @"内联";
         if ([self sectionHasDisabledAction:section]) {
             // Prefix the Collapsible/Inline subtitle with an amber warning triangle so
             // it's obvious — while arranging sections — that this section contains an
@@ -225,7 +225,7 @@ static char kSPKActionsListSwitchAssocKey;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     } else if (indexPath.section == [self resetSectionIndex]) {
-        config.text = @"Reset to Default";
+        config.text = @"恢复默认";
         config.textProperties.color = [SPKUtils SPKColor_InstagramDestructive];
         config.image = SPKSettingsIcon(@"arrow_ccw");
         config.imageProperties.tintColor = [SPKUtils SPKColor_InstagramDestructive];
@@ -372,13 +372,13 @@ static char kSPKActionsListSwitchAssocKey;
                                                                              }];
     deleteAction.image = [SPKAssetUtils menuIconNamed:@"trash"];
     deleteAction.backgroundColor = [SPKUtils SPKColor_InstagramDestructive];
-    deleteAction.accessibilityLabel = @"Remove Section";
+    deleteAction.accessibilityLabel = @"删除分组";
     return [UISwipeActionsConfiguration configurationWithActions:@[ deleteAction ]];
 }
 
 - (void)addSectionTapped {
     SPKActionMenuSection *section = [SPKActionMenuSection sectionWithIdentifier:NSUUID.UUID.UUIDString
-                                                                          title:[NSString stringWithFormat:@"Section %lu", (unsigned long)(self.configuration.sections.count + 1)]
+                                                                          title:[NSString stringWithFormat:@"分组 %lu", (unsigned long)(self.configuration.sections.count + 1)]
                                                                        iconName:@"more"
                                                                     collapsible:YES
                                                                         actions:@[]];
@@ -417,9 +417,9 @@ static char kSPKActionsListSwitchAssocKey;
     __weak typeof(self) weakSelf = self;
     [[SPKSettingsTransferManager sharedManager]
         resetConfigurationGroupFromController:self
-                                        title:@"Reset to Default"
-                                      message:@"This restores this surface's menu sections, default action, and bulk menus to their defaults. The action button stays enabled and other surfaces are unaffected."
-                                 confirmTitle:@"Reset"
+                                        title:@"恢复默认"
+                                      message:@"这将恢复此页面的菜单分组、默认操作和批量菜单为默认设置。操作按钮本身保持启用，其他页面不受影响。"
+                                 confirmTitle:@"恢复"
                                          keys:[self configurationResetKeys]
                                       onReset:^{
                                           typeof(self) strongSelf = weakSelf;

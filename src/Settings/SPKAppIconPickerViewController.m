@@ -25,7 +25,7 @@
     if (self) {
         self.selectedIdentifier = [selectedIdentifier copy] ?: @"";
         _onSelect = [onSelect copy];
-        self.title = @"App Icon";
+        self.title = @"应用图标";
     }
     return self;
 }
@@ -93,8 +93,8 @@
     if (!supportsAlternate) {
         SPKLog(@"AppIcon", @"[Sparkle] abort: supportsAlternateIcons == NO");
         [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                      title:@"App Icons Unavailable"
-                                                    message:@"This device or app build does not allow alternate app icons."
+                                                      title:@"应用图标不可用"
+                                                    message:@"此设备或当前应用版本不支持替代应用图标。"
                                                     actions:@[ [SPKIGAlertAction actionWithTitle:@"OK" style:SPKIGAlertActionStyleDefault handler:nil] ]];
         return;
     }
@@ -111,7 +111,7 @@
 
                             if (error) {
                                 [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                                              title:@"Changing App Icon Failed"
+                                                                              title:@"更改应用图标失败"
                                                                             message:error.localizedDescription ?: @"Unable to change the app icon."
                                                                             actions:@[ [SPKIGAlertAction actionWithTitle:@"OK" style:SPKIGAlertActionStyleDefault handler:nil] ]];
                                 return;

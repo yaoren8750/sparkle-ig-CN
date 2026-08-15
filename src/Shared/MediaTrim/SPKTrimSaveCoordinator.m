@@ -125,7 +125,7 @@
                                                                     }
                                                                       completion:completion];
                                                           }];
-    SPKIGAlertAction *cancel = [SPKIGAlertAction actionWithTitle:@"Cancel"
+    SPKIGAlertAction *cancel = [SPKIGAlertAction actionWithTitle:@"取消"
                                                            style:SPKIGAlertActionStyleCancel
                                                          handler:^{
                                                              if (completion)
@@ -246,7 +246,7 @@
                                                      metadata:metadata
                                                    completion:^(BOOL ok, NSError *error) {
                                                        dispatch_async(dispatch_get_main_queue(), ^{
-                                                           done(ok, ok ? @"Saved to Photos" : (error.localizedDescription ?: @"Could not save to Photos."));
+                                                           done(ok, ok ? @"已保存到照片" : (error.localizedDescription ?: @"Could not save to Photos."));
                                                        });
                                                    }];
         };
@@ -267,7 +267,7 @@
                 NSData *data = [NSData dataWithContentsOfURL:rendered options:NSDataReadingMappedIfSafe error:nil];
                 if (data) {
                     [UIPasteboard generalPasteboard].items = @[ @{UTTypeAudio.identifier : data} ];
-                    done(YES, @"Copied audio to clipboard");
+                    done(YES, @"音频已复制到剪贴板");
                 } else {
                     done(NO, @"Could not copy the audio.");
                 }
@@ -572,8 +572,8 @@
                                                                onConfirm();
                                                        }];
     [SPKIGAlertPresenter presentAlertFromViewController:host
-                                                  title:@"Cancel Trim"
-                                                message:@"Stop trimming and discard progress?"
+                                                  title:@"取消裁剪"
+                                                message:@"停止裁剪并放弃当前进度？"
                                                 actions:@[ keep, stop ]];
 }
 

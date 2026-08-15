@@ -30,7 +30,7 @@
 + (instancetype)freeformConfiguration {
     SPKPhotoEditorConfiguration *c = [SPKPhotoEditorConfiguration new];
     c.aspectMode = SPKCropAspectModeFreeform;
-    c.confirmButtonTitle = @"Done";
+    c.confirmButtonTitle = @"完成";
     return c;
 }
 
@@ -163,14 +163,14 @@ static UIImage *SPKPhotoEditorFlipped(UIImage *image) {
 
 - (void)setupChrome {
     UIBarButtonItem *cancelItem = SPKMediaChromeTopBarButtonItem(@"close", self, @selector(cancelTapped));
-    cancelItem.accessibilityLabel = @"Cancel";
+    cancelItem.accessibilityLabel = @"取消";
     // When the caller supplies destinations, Done is a menu (pick where to save
     // without dismissing first); otherwise it's a plain confirm that just returns
     // the edited image to the caller.
     UIBarButtonItem *doneItem;
     if (self.configuration.doneOptions.count > 0) {
         doneItem = SPKMediaChromeTopBarMenuButtonItem(
-            @"check", [self buildDoneMenu], self.configuration.confirmButtonTitle ?: @"Done");
+            @"check", [self buildDoneMenu], self.configuration.confirmButtonTitle ?: @"完成");
     } else {
         // An intermediate confirm is a plain, untinted button: only the final Done
         // of a flow gets the emphasized capsule and the blue glyph.
@@ -179,7 +179,7 @@ static UIImage *SPKPhotoEditorFlipped(UIImage *image) {
             @"check", self, @selector(confirmTapped),
             intermediate ? UIBarButtonItemStylePlain : UIBarButtonItemStyleDone,
             intermediate ? nil : [SPKUtils SPKColor_InstagramBlue],
-            self.configuration.confirmButtonTitle ?: @"Done");
+            self.configuration.confirmButtonTitle ?: @"完成");
     }
     SPKMediaChromeSetLeadingTopBarItems(self.navigationItem, @[ cancelItem ]);
     SPKMediaChromeSetTrailingTopBarItems(self.navigationItem, @[ doneItem ]);

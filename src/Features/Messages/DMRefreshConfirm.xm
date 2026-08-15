@@ -85,21 +85,39 @@ static void replaced_refreshControlDidScroll(id self, SEL _cmd) {
 }
 
 static IGRefreshControl *SPKDMFindIGRefreshControl(id self, id arg) {
-    // Check if arg is an IGRefreshControl
     Class igRefreshControlClass = NSClassFromString(@"IGRefreshControl");
-    if (arg && igRefreshControlClass && [arg isKindOfClass:igRefreshControlClass])
+
+    if (!igRefreshControlClass)
+        return nil;
+
+    if (arg && [arg isKindOfClass:igRefreshControlClass])
         return (IGRefreshControl *)arg;
 
-    // Try the view controller's own ivar. The legacy ObjC inbox VC names it _refreshControl;
-    // the Swift rewrite (IG 440) names it refreshControl, with no underscore.
+    if ([self isKindOfClass:igRefreshControlClass])
+        return (IGRefreshControl *)self;
+
     if ([self isKindOfClass:[UIViewController class]]) {
-        for (const char *ivarName : { "_refreshControl", "refreshControl" }) {
+        const char *ivarNames[] = {
+            "_refreshControl",
+            "refreshControl"
+        };
+
+        for (NSUInteger i = 0;
+             i < sizeof(ivarNames) / sizeof(ivarNames[0]);
+             i++) {
+
+            const char *ivarName = ivarNames[i];
+
             Ivar ivar = class_getInstanceVariable([self class], ivarName);
             if (!ivar)
                 continue;
+
             id control = object_getIvar(self, ivar);
-            if (igRefreshControlClass && [control isKindOfClass:igRefreshControlClass])
+
+            if (control &&
+                [control isKindOfClass:igRefreshControlClass]) {
                 return (IGRefreshControl *)control;
+            }
         }
     }
 

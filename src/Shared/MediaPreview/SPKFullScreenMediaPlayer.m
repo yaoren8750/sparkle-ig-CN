@@ -693,11 +693,11 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
         // generator writes posted == saved when IG exposed no taken_at).
         if (postedDate &&
             (!savedDate || ABS([postedDate timeIntervalSinceDate:savedDate]) > 120.0)) {
-            [parts addObject:[NSString stringWithFormat:@"Posted %@",
+            [parts addObject:[NSString stringWithFormat:@"发布于 %@",
                                                         SPKPreviewMediumDateString(postedDate)]];
         }
         if (savedDate) {
-            [parts addObject:[NSString stringWithFormat:@"Saved %@",
+            [parts addObject:[NSString stringWithFormat:@"保存于 %@",
                                                         SPKPreviewMediumDateString(savedDate)]];
         }
         subtitle = [parts componentsJoinedByString:@" · "];
@@ -854,7 +854,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
 - (void)setupBottomBar {
     UINavigationController *nav = self.navigationController;
     if (_previewOnly) {
-        // No action toolbar in bare preview mode — keep it hidden and skip item setup.
+        // 纯预览模式下不显示操作工具栏 — 保持隐藏并跳过项目设置。
         [nav setToolbarHidden:YES animated:NO];
         SPKMediaChromeSetBarsMaterialActive(nav, NO);
         return;
@@ -862,44 +862,43 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
     SPKMediaChromeConfigureBottomToolbar(nav.toolbar);
 
     _savePhotosItem = SPKMediaChromeBottomBarButtonItem(
-        @"download", @"Save to Photos", self, @selector(saveToPhotos));
-    _shareItem = SPKMediaChromeBottomBarButtonItem(@"share", @"Share", self,
+        @"download", @"保存到照片", self, @selector(saveToPhotos));
+    _shareItem = SPKMediaChromeBottomBarButtonItem(@"share", @"分享", self,
                                                    @selector(shareMedia));
-    _clipboardItem = SPKMediaChromeBottomBarButtonItem(@"copy", @"Copy", self,
+    _clipboardItem = SPKMediaChromeBottomBarButtonItem(@"copy", @"复制", self,
                                                        @selector(copyMedia));
-    _trimItem = SPKMediaChromeBottomBarButtonItem(@"trim", @"Trim", self,
+    _trimItem = SPKMediaChromeBottomBarButtonItem(@"trim", @"裁剪", self,
                                                   @selector(trimCurrentItem));
-    _editItem = SPKMediaChromeBottomBarButtonItem(@"crop", @"Edit", self,
+    _editItem = SPKMediaChromeBottomBarButtonItem(@"crop", @"编辑", self,
                                                   @selector(editCurrentItem));
 
     if (!_isFromGallery && [self itemCount] > 1) {
         _bulkActionsItem =
-            SPKMediaChromeBottomBarButtonItem(@"more", @"Download All", nil, nil);
+            SPKMediaChromeBottomBarButtonItem(@"more", @"全部下载", nil, nil);
     }
 
     if (_isFromGallery) {
         _galleryOriginItem =
-            SPKMediaChromeBottomBarButtonItem(@"more", @"More", nil, nil);
+            SPKMediaChromeBottomBarButtonItem(@"more", @"更多", nil, nil);
 
         _deleteGalleryItem = SPKMediaChromeBottomBarButtonItem(
-            @"trash", @"Delete from Gallery", self, @selector(deleteFromGallery));
+            @"trash", @"从图库删除", self, @selector(deleteFromGallery));
         _deleteGalleryItem.tintColor = [SPKUtils SPKColor_InstagramDestructive];
     } else {
         _saveGalleryItem = SPKMediaChromeBottomBarButtonItem(
-            @"sparkle_gallery", @"Save to Gallery", self, @selector(saveToGallery));
+            @"sparkle_gallery", @"保存到图库", self, @selector(saveToGallery));
         _downloadURLItem = SPKMediaChromeBottomBarButtonItem(
-            @"link", @"Copy Download URL", self,
+            @"link", @"复制下载链接", self,
             @selector(copyDownloadURLForCurrentItem));
     }
 
     [self rebuildBottomToolbarItems];
     [nav setToolbarHidden:NO animated:NO];
 
-    // Start with transparent bars (letterboxed content). On iOS <= 18 we switch
-    // to a material backing when the image is zoomed in behind the bars.
+    // 初始使用透明工具栏（内容采用黑边显示）。在 iOS <= 18 上，
+    // 当图片在工具栏后方放大时，切换为材质背景。
     SPKMediaChromeSetBarsMaterialActive(nav, NO);
 }
-
 - (void)rebuildBottomToolbarItems {
     NSMutableArray<UIBarButtonItem *> *primary = [NSMutableArray array];
     NSMutableArray<UIBarButtonItem *> *trailing = [NSMutableArray array];
@@ -1330,7 +1329,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
     _topFavoriteItem.image = img;
     _topFavoriteItem.tintColor =
         isFav ? [UIColor systemPinkColor] : [UIColor labelColor];
-    _topFavoriteItem.accessibilityLabel = isFav ? @"Unfavorite" : @"Favorite";
+    _topFavoriteItem.accessibilityLabel = isFav ? @"取消收藏" : @"收藏";
     SPKMediaChromeSetTrailingTopBarItems(self.navigationItem,
                                          @[ _topFavoriteItem ]);
 }
@@ -1338,7 +1337,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
 - (void)showGalleryOpenFailureMessage:(NSString *)title
                      actionIdentifier:(NSString *)actionIdentifier {
     SPKNotify(actionIdentifier, title,
-              @"The original content may no longer exist.", @"error_filled",
+              @"原始内容可能已不存在。", @"error_filled",
               SPKNotificationToneError);
 }
 
@@ -1405,7 +1404,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
                                                fromViewController:self
                                                    legacyFallback:^{
                                                        [weakSelf dismissGalleryFlowForOriginOpenWithCompletion:^{
-                                                           SPKNotify(kSPKNotificationGalleryOpenOriginal, @"Opened original post",
+                                                           SPKNotify(kSPKNotificationGalleryOpenOriginal, @"已打开原帖",
                                                                      nil, @"external_link",
                                                                      SPKNotificationToneForIconResource(@"external_link"));
                                                        }];
@@ -1415,7 +1414,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
                                                         }]) {
         // Nothing to announce: the post is on screen.
     } else {
-        [self showGalleryOpenFailureMessage:@"Unable to open original post"
+        [self showGalleryOpenFailureMessage:@"无法打开原帖"
                            actionIdentifier:kSPKNotificationGalleryOpenOriginal];
     }
 }
@@ -1463,7 +1462,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
     if (file.hasOpenableProfile) {
         [actions
             addObject:[UIAction
-                          actionWithTitle:@"Open Profile"
+                          actionWithTitle:@"打开个人资料"
                                     image:SPKGalleryPreviewMenuIcon(@"user_circle")
                                identifier:nil
                                   handler:^(__unused UIAction *action) {
@@ -1528,15 +1527,15 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
         // Photos can't hold an audio file, so for audio offer "Save Audio to Files"
         // (broadly available for audio) in its place.
         if (isAudio) {
-            [options addObject:[SPKTrimDoneOption optionWithTitle:@"Save Audio to Files" identifier:@"files" iconName:@"audio_download"]];
-            [options addObject:[SPKTrimDoneOption optionWithTitle:@"Share Audio" identifier:@"share" iconName:@"share"]];
+            [options addObject:[SPKTrimDoneOption optionWithTitle:@"将音频保存到文件" identifier:@"files" iconName:@"audio_download"]];
+            [options addObject:[SPKTrimDoneOption optionWithTitle:@"分享音频" identifier:@"share" iconName:@"share"]];
             [options addObject:[SPKTrimDoneOption optionWithTitle:@"Copy Audio" identifier:@"clipboard" iconName:@"copy"]];
-            [options addObject:[SPKTrimDoneOption optionWithTitle:@"Save Audio to Gallery" identifier:@"gallery" iconName:@"sparkle_gallery"]];
+            [options addObject:[SPKTrimDoneOption optionWithTitle:@"将音频保存到图库" identifier:@"gallery" iconName:@"sparkle_gallery"]];
         } else {
-            [options addObject:[SPKTrimDoneOption optionWithTitle:@"Save to Photos" identifier:@"photos" iconName:@"download"]];
-            [options addObject:[SPKTrimDoneOption optionWithTitle:@"Share" identifier:@"share" iconName:@"share"]];
-            [options addObject:[SPKTrimDoneOption optionWithTitle:@"Copy" identifier:@"clipboard" iconName:@"copy"]];
-            [options addObject:[SPKTrimDoneOption optionWithTitle:@"Save to Gallery" identifier:@"gallery" iconName:@"sparkle_gallery"]];
+            [options addObject:[SPKTrimDoneOption optionWithTitle:@"保存到照片" identifier:@"photos" iconName:@"download"]];
+            [options addObject:[SPKTrimDoneOption optionWithTitle:@"分享" identifier:@"share" iconName:@"share"]];
+            [options addObject:[SPKTrimDoneOption optionWithTitle:@"复制" identifier:@"clipboard" iconName:@"copy"]];
+            [options addObject:[SPKTrimDoneOption optionWithTitle:@"保存到图库" identifier:@"gallery" iconName:@"sparkle_gallery"]];
         }
         config.doneOptions = options;
     }
@@ -1636,16 +1635,16 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
     // trim flow — no silent Gallery dump.
     SPKPhotoEditorConfiguration *config = [SPKPhotoEditorConfiguration freeformConfiguration];
     config.doneOptions = @[
-        [SPKPhotoEditorDoneOption optionWithTitle:@"Save to Photos"
+        [SPKPhotoEditorDoneOption optionWithTitle:@"保存到照片"
                                        identifier:@"photos"
                                          iconName:@"download"],
-        [SPKPhotoEditorDoneOption optionWithTitle:@"Share"
+        [SPKPhotoEditorDoneOption optionWithTitle:@"分享"
                                        identifier:@"share"
                                          iconName:@"share"],
-        [SPKPhotoEditorDoneOption optionWithTitle:@"Copy"
+        [SPKPhotoEditorDoneOption optionWithTitle:@"复制"
                                        identifier:@"clipboard"
                                          iconName:@"copy"],
-        [SPKPhotoEditorDoneOption optionWithTitle:@"Save to Gallery"
+        [SPKPhotoEditorDoneOption optionWithTitle:@"保存到图库"
                                        identifier:@"gallery"
                                          iconName:@"sparkle_gallery"],
     ];
@@ -1746,7 +1745,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
 
     if (actionCount <= 0) {
         _galleryOriginItem.image = SPKMediaChromeBottomBarIcon(@"more");
-        _galleryOriginItem.accessibilityLabel = @"More";
+        _galleryOriginItem.accessibilityLabel = @"更多";
         _galleryOriginItem.enabled = NO;
         _galleryOriginItem.menu = nil;
         [self rebuildBottomToolbarItems];
@@ -1757,7 +1756,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
 
     if (actionCount == 1) {
         NSString *resourceName = hasProfile ? @"user_circle" : @"external_link";
-        NSString *label = hasProfile ? @"Open Profile" : @"Open Original Post";
+        NSString *label = hasProfile ? @"打开个人资料" : @"Open Original Post";
         _galleryOriginItem.image = SPKMediaChromeBottomBarIcon(resourceName);
         _galleryOriginItem.accessibilityLabel = label;
         _galleryOriginItem.menu = nil;
@@ -1768,7 +1767,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
     }
 
     _galleryOriginItem.image = SPKMediaChromeBottomBarIcon(@"more");
-    _galleryOriginItem.accessibilityLabel = @"More";
+    _galleryOriginItem.accessibilityLabel = @"更多";
     _galleryOriginItem.menu = [self galleryOriginMenuForCurrentItem];
     [self rebuildBottomToolbarItems];
 }
@@ -2323,7 +2322,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
 
 - (void)showSaveResult:(BOOL)success error:(NSError *)error {
     if (success) {
-        SPKNotify(kSPKNotificationMediaPreviewSavePhotos, @"Saved to Photos", nil,
+        SPKNotify(kSPKNotificationMediaPreviewSavePhotos, @"已保存到照片", nil,
                   @"circle_check_filled", SPKNotificationToneSuccess);
     } else {
         SPKNotify(kSPKNotificationMediaPreviewSavePhotos, @"Failed to save",
@@ -2621,7 +2620,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
         UIImage *image = item.image ?: [UIImage imageWithData:imageData];
         if (image) {
             [[UIPasteboard generalPasteboard] setImage:image];
-            SPKNotify(kSPKNotificationMediaPreviewCopy, @"Copied photo to clipboard",
+            SPKNotify(kSPKNotificationMediaPreviewCopy, @"照片已复制到剪贴板",
                       nil, @"circle_check_filled", SPKNotificationToneSuccess);
         }
     } else {
@@ -2629,7 +2628,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
         if (data) {
             [[UIPasteboard generalPasteboard] setData:data
                                     forPasteboardType:@"public.mpeg-4"];
-            SPKNotify(kSPKNotificationMediaPreviewCopy, @"Copied video to clipboard",
+            SPKNotify(kSPKNotificationMediaPreviewCopy, @"视频已复制到剪贴板",
                       nil, @"circle_check_filled", SPKNotificationToneSuccess);
         }
     }
@@ -2643,15 +2642,15 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
     __weak typeof(self) weakSelf = self;
     [SPKIGAlertPresenter
         presentAlertFromViewController:self
-                                 title:@"Delete from Gallery"
+                                 title:@"从图库删除"
                                message:@"This will permanently remove this file."
                                actions:@[
                                    [SPKIGAlertAction
-                                       actionWithTitle:@"Cancel"
+                                       actionWithTitle:@"取消"
                                                  style:SPKIGAlertActionStyleCancel
                                                handler:nil],
                                    [SPKIGAlertAction
-                                       actionWithTitle:@"Delete"
+                                       actionWithTitle:@"删除"
                                                  style:
                                                      SPKIGAlertActionStyleDestructive
                                                handler:^{

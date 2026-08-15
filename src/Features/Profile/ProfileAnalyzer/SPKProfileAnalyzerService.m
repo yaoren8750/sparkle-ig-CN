@@ -143,7 +143,7 @@ NSNotificationName const SPKProfileAnalyzerProgressDidChangeNotification = @"SPK
 
                                     SPKProfileAnalyzerSnapshot *snap = [SPKProfileAnalyzerSnapshot new];
                                     snap.selfPK = selfPK;
-                                    snap.selfUsername = user[@"username"];
+                                    snap.selfUsername = user[@"用户名"];
                                     snap.selfFullName = user[@"full_name"];
                                     snap.selfProfilePicURL = user[@"profile_pic_url"];
                                     snap.followerCount = followerCount;

@@ -159,7 +159,7 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
                                  presenter:(UIViewController *)presenter
                                 sourceView:(UIView *)sourceView {
     if (![self senderTargetSupportsAudioUpload:senderTarget] || !presenter) {
-        SPKAudioDMNotify(@"Audio upload unavailable", @"This Instagram build does not expose the direct audio sender.", NO);
+        SPKAudioDMNotify(@"音频上传不可用", @"This Instagram build does not expose the direct audio sender.", NO);
         SPKWarnLog(@"AudioUpload", @"Missing direct audio sender on target: %@", senderTarget);
         return;
     }
@@ -171,8 +171,8 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
     sSPKAudioActiveDMUploadCoordinator = coordinator;
 
     [SPKIGAlertPresenter presentActionSheetFromViewController:presenter
-                                                        title:@"Send Audio Message"
-                                                      message:@"Choose an audio or video file to convert and send as a voice note."
+                                                        title:@"发送音频消息"
+                                                      message:@"选择音频或视频文件，将其转换并作为语音消息发送。"
                                                       actions:@[
                                                           [SPKIGAlertAction actionWithTitle:@"Select from Photos"
                                                                                       style:SPKIGAlertActionStyleDefault
@@ -189,7 +189,7 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
                                                                                     handler:^{
                                                                                         [coordinator presentFilesPicker];
                                                                                     }],
-                                                          [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                          [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                       style:SPKIGAlertActionStyleCancel
                                                                                     handler:^{
                                                                                         if (sSPKAudioActiveDMUploadCoordinator == coordinator)
@@ -237,7 +237,7 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
     }
 
     [SPKGalleryPickerViewController presentFromViewController:self.presenter
-                                                        title:@"Gallery"
+                                                        title:@"图库"
                                             allowedMediaTypes:mediaTypes
                                       allowsMultipleSelection:NO
                                                    completion:^(NSArray<SPKGalleryFile *> *selectedFiles) {
@@ -257,9 +257,9 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
     if (!SPKNotificationIsEnabled(kSPKNotificationDownloadShare))
         return;
     if (!self.progressView) {
-        self.progressView = SPKNotifyProgress(kSPKNotificationDownloadShare, title ?: @"Preparing audio", nil);
+        self.progressView = SPKNotifyProgress(kSPKNotificationDownloadShare, title ?: @"正在准备音频", nil);
     }
-    [self.progressView updateProgressTitle:title ?: @"Preparing audio" subtitle:subtitle];
+    [self.progressView updateProgressTitle:title ?: @"正在准备音频" subtitle:subtitle];
     [self.progressView setProgress:0.05f animated:NO];
 }
 
@@ -272,27 +272,27 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
 
 - (void)finishUploadProgressWithSuccess {
     if (self.progressView) {
-        [self.progressView showSuccessWithTitle:@"Audio sent"
-                                       subtitle:@"Uploaded the selected file as a voice note."
+        [self.progressView showSuccessWithTitle:@"音频已发送"
+                                       subtitle:@"已将所选文件作为语音消息上传。"
                                            icon:nil];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(SPKNotificationPillDuration() * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self.progressView dismiss];
             self.progressView = nil;
         });
     } else {
-        SPKAudioDMNotify(@"Audio sent", @"Uploaded the selected file as a voice note.", YES);
+        SPKAudioDMNotify(@"音频已发送", @"已将所选文件作为语音消息上传。", YES);
     }
 }
 
 - (void)finishUploadProgressWithErrorTitle:(NSString *)title subtitle:(NSString *)subtitle {
     if (self.progressView) {
-        [self.progressView showErrorWithTitle:title ?: @"Audio upload failed" subtitle:subtitle icon:nil];
+        [self.progressView showErrorWithTitle:title ?: @"音频上传失败" subtitle:subtitle icon:nil];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(SPKNotificationPillDuration() * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self.progressView dismiss];
             self.progressView = nil;
         });
     } else {
-        SPKAudioDMNotify(title ?: @"Audio upload failed", subtitle, NO);
+        SPKAudioDMNotify(title ?: @"音频上传失败", subtitle, NO);
     }
 }
 
@@ -350,20 +350,20 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
         [url stopAccessingSecurityScopedResource];
 
     if (copyError && ![inputURL isFileURL]) {
-        SPKAudioDMNotify(@"Audio upload failed", copyError.localizedDescription ?: @"Could not import the selected file.", NO);
+        SPKAudioDMNotify(@"音频上传失败", copyError.localizedDescription ?: @"Could not import the selected file.", NO);
         if (sSPKAudioActiveDMUploadCoordinator == self)
             sSPKAudioActiveDMUploadCoordinator = nil;
         return;
     }
 
-    [self beginUploadProgressWithTitle:@"Preparing audio" subtitle:@"Preparing a voice note compatible file."];
+    [self beginUploadProgressWithTitle:@"正在准备音频" subtitle:@"正在准备兼容语音消息的文件。"];
 
     AVURLAsset *asset = [AVURLAsset URLAssetWithURL:inputURL options:nil];
     NSArray<NSString *> *compatiblePresets = [AVAssetExportSession exportPresetsCompatibleWithAsset:asset];
     NSString *preset = [compatiblePresets containsObject:AVAssetExportPresetAppleM4A] ? AVAssetExportPresetAppleM4A : AVAssetExportPresetPassthrough;
     AVAssetExportSession *session = [[AVAssetExportSession alloc] initWithAsset:asset presetName:preset];
     if (!session) {
-        [self finishUploadProgressWithErrorTitle:@"Audio upload failed" subtitle:@"Could not create an audio conversion session."];
+        [self finishUploadProgressWithErrorTitle:@"音频上传失败" subtitle:@"Could not create an audio conversion session."];
         if (sSPKAudioActiveDMUploadCoordinator == self)
             sSPKAudioActiveDMUploadCoordinator = nil;
         return;
@@ -373,7 +373,7 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
     [[NSFileManager defaultManager] removeItemAtURL:outputURL error:nil];
     session.outputURL = outputURL;
     session.outputFileType = AVFileTypeAppleM4A;
-    [self updateUploadProgress:0.15f title:@"Converting audio" subtitle:@"Preparing a voice note compatible file."];
+    [self updateUploadProgress:0.15f title:@"正在转换音频" subtitle:@"正在准备兼容语音消息的文件。"];
 
     [session exportAsynchronouslyWithCompletionHandler:^{
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -397,14 +397,14 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
 // as-is; "Trim & Send" opens the audio trim editor and sends the rendered cut.
 - (void)offerTrimThenSendURL:(NSURL *)url duration:(NSTimeInterval)duration {
     if (![SPKUtils getBoolPref:@"msgs_audio_upload_trim"]) {
-        [self updateUploadProgress:0.85f title:@"Sending audio" subtitle:nil];
+        [self updateUploadProgress:0.85f title:@"正在发送音频" subtitle:nil];
         [self sendConvertedURL:url duration:duration];
         return;
     }
 
     UIViewController *presenter = self.presenter;
     if (!presenter) {
-        [self updateUploadProgress:0.85f title:@"Sending audio" subtitle:nil];
+        [self updateUploadProgress:0.85f title:@"正在发送音频" subtitle:nil];
         [self sendConvertedURL:url duration:duration];
         return;
     }
@@ -414,13 +414,13 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
 
     __weak typeof(self) weakSelf = self;
     [SPKIGAlertPresenter presentActionSheetFromViewController:presenter
-                                                        title:@"Send Voice Note"
-                                                      message:@"Send now, or trim the audio first."
+                                                        title:@"发送语音消息"
+                                                      message:@"立即发送，或先裁剪音频。"
                                                       actions:@[
                                                           [SPKIGAlertAction actionWithTitle:@"Send"
                                                                                       style:SPKIGAlertActionStyleDefault
                                                                                     handler:^{
-                                                                                        [weakSelf beginUploadProgressWithTitle:@"Sending audio" subtitle:nil];
+                                                                                        [weakSelf beginUploadProgressWithTitle:@"正在发送音频" subtitle:nil];
                                                                                         [weakSelf sendConvertedURL:url duration:duration];
                                                                                     }],
                                                           [SPKIGAlertAction actionWithTitle:@"Trim & Send"
@@ -428,7 +428,7 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
                                                                                     handler:^{
                                                                                         [weakSelf presentAudioTrimForURL:url];
                                                                                     }],
-                                                          [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                          [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                       style:SPKIGAlertActionStyleCancel
                                                                                     handler:^{
                                                                                         if (sSPKAudioActiveDMUploadCoordinator == weakSelf)
@@ -482,14 +482,14 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
                                                   sSPKAudioActiveDMUploadCoordinator = nil;
                                               return;
                                           }
-                                          [strongSelf updateUploadProgress:0.85f title:@"Sending audio" subtitle:nil];
+                                          [strongSelf updateUploadProgress:0.85f title:@"正在发送音频" subtitle:nil];
                                           [strongSelf sendConvertedURL:outputURL duration:result.durationSeconds];
                                       }];
 }
 
 - (void)sendConvertedURL:(NSURL *)url duration:(NSTimeInterval)duration {
     if (![SPKAudioDMUploadCoordinator senderTargetSupportsAudioUpload:self.senderTarget]) {
-        [self finishUploadProgressWithErrorTitle:@"Audio upload unavailable" subtitle:@"The direct audio sender disappeared before sending."];
+        [self finishUploadProgressWithErrorTitle:@"音频上传不可用" subtitle:@"The direct audio sender disappeared before sending."];
         if (sSPKAudioActiveDMUploadCoordinator == self)
             sSPKAudioActiveDMUploadCoordinator = nil;
         return;
@@ -498,7 +498,7 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
     NSTimeInterval safeDuration = isfinite(duration) && duration > 0 ? duration : 0;
     id waveform = SPKAudioDMCreateWaveform(safeDuration);
     if (!waveform) {
-        [self finishUploadProgressWithErrorTitle:@"Audio upload unavailable" subtitle:@"Could not create an Instagram audio waveform."];
+        [self finishUploadProgressWithErrorTitle:@"音频上传不可用" subtitle:@"Could not create an Instagram audio waveform."];
         if (sSPKAudioActiveDMUploadCoordinator == self)
             sSPKAudioActiveDMUploadCoordinator = nil;
         return;
@@ -516,7 +516,7 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
                 void (*sendVoiceLegacy)(id, SEL, id, id, id, double, long long, long long) = (void (*)(id, SEL, id, id, id, double, long long, long long))objc_msgSend;
                 sendVoiceLegacy(voiceController, voiceLegacySelector, nil, url, waveform, safeDuration, 0, 0);
             }
-            [self updateUploadProgress:1.0f title:@"Audio sent" subtitle:nil];
+            [self updateUploadProgress:1.0f title:@"音频已发送" subtitle:nil];
             [self finishUploadProgressWithSuccess];
             if (sSPKAudioActiveDMUploadCoordinator == self)
                 sSPKAudioActiveDMUploadCoordinator = nil;
@@ -531,7 +531,7 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
 
     id sender = SPKAudioDMMessageSenderFromTarget(self.senderTarget) ?: self.senderTarget;
     if (![sender respondsToSelector:SPKAudioDMSendSelector()] && ![sender respondsToSelector:SPKAudioDMSendLegacySelector()]) {
-        [self finishUploadProgressWithErrorTitle:@"Audio upload unavailable" subtitle:@"The direct audio sender disappeared before sending."];
+        [self finishUploadProgressWithErrorTitle:@"音频上传不可用" subtitle:@"The direct audio sender disappeared before sending."];
         if (sSPKAudioActiveDMUploadCoordinator == self)
             sSPKAudioActiveDMUploadCoordinator = nil;
         return;
@@ -562,7 +562,7 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
                             nil,
                             nil);
         }
-        [self updateUploadProgress:1.0f title:@"Audio sent" subtitle:nil];
+        [self updateUploadProgress:1.0f title:@"音频已发送" subtitle:nil];
         [self finishUploadProgressWithSuccess];
         if (sSPKAudioActiveDMUploadCoordinator == self)
             sSPKAudioActiveDMUploadCoordinator = nil;

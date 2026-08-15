@@ -99,7 +99,7 @@
     }
     __weak typeof(self) weakSelf = self;
     [self downloadURLs:@[ editURL ]
-                 title:@"Preparing video..."
+                 title:@"正在准备视频……"
                   pill:nil
             completion:^(NSArray<NSURL *> *locals) {
                 if (locals.count > 0) {
@@ -237,16 +237,16 @@
     }
     // Done becomes a menu of destinations (chosen without dismissing first).
     config.doneOptions = @[
-        [SPKTrimDoneOption optionWithTitle:@"Save to Photos"
+        [SPKTrimDoneOption optionWithTitle:@"保存到照片"
                                 identifier:@"photos"
                                   iconName:@"download"],
-        [SPKTrimDoneOption optionWithTitle:@"Share"
+        [SPKTrimDoneOption optionWithTitle:@"分享"
                                 identifier:@"share"
                                   iconName:@"share"],
-        [SPKTrimDoneOption optionWithTitle:@"Copy"
+        [SPKTrimDoneOption optionWithTitle:@"复制"
                                 identifier:@"clipboard"
                                   iconName:@"copy"],
-        [SPKTrimDoneOption optionWithTitle:@"Save to Gallery"
+        [SPKTrimDoneOption optionWithTitle:@"保存到图库"
                                 identifier:@"gallery"
                                   iconName:@"sparkle_gallery"],
     ];
@@ -287,7 +287,7 @@
                                                                    onCancel:nil];
         __weak typeof(self) weakSelf = self;
         [self downloadURLs:sources
-                     title:@"Downloading high quality..."
+                     title:@"正在下载高质量版本……"
                       pill:pill
                 completion:^(NSArray<NSURL *> *locals) {
                     __strong typeof(weakSelf) self = weakSelf;

@@ -173,13 +173,13 @@ static NSArray<NSDictionary *> *SPKDirectUsersFromObject(id object) {
 
         for (id user in rawUsers) {
             NSString *pk = SPKDirectFirstStringForSelectors(user, @[ @"pk", @"userId", @"userID", @"id" ]);
-            NSString *username = SPKDirectFirstStringForSelectors(user, @[ @"username", @"userName" ]);
+            NSString *username = SPKDirectFirstStringForSelectors(user, @[ @"用户名", @"userName" ]);
             NSString *fullName = SPKDirectFirstStringForSelectors(user, @[ @"fullName", @"full_name", @"name" ]);
             NSMutableDictionary *entry = [NSMutableDictionary dictionary];
             if (pk.length > 0)
                 entry[@"pk"] = pk;
             if (username.length > 0)
-                entry[@"username"] = username;
+                entry[@"用户名"] = username;
             if (fullName.length > 0)
                 entry[@"fullName"] = fullName;
             NSString *profilePicUrl = spkDirectUserResolverProfilePicURLStringFromUser(user);
@@ -222,7 +222,7 @@ static NSString *SPKDirectGroupPhotoURLFromTarget(id target) {
 static NSString *SPKDirectNameFromUsers(NSArray<NSDictionary *> *users) {
     NSMutableArray<NSString *> *names = [NSMutableArray array];
     for (NSDictionary *user in users) {
-        NSString *username = [user[@"username"] isKindOfClass:[NSString class]] ? user[@"username"] : nil;
+        NSString *username = [user[@"用户名"] isKindOfClass:[NSString class]] ? user[@"用户名"] : nil;
         NSString *fullName = [user[@"fullName"] isKindOfClass:[NSString class]] ? user[@"fullName"] : nil;
         NSString *name = fullName.length > 0 ? fullName : (username.length > 0 ? [@"@" stringByAppendingString:username] : nil);
         if (name.length > 0)
@@ -334,7 +334,7 @@ static SPKDirectThreadContext *SPKDirectContextDirectlyFromObject(id object) {
     }
 
     if (SPKDirectSeenDebugPrintEnabled) {
-        SPKLog(@"Messages", @"SPKDirectContextDirectlyFromObject: object=%@ provider=%@ metadata=%@ target=%@ threadId=%@ name=%@ usersCount=%lu users=%@",
+        SPKLog(@"消息", @"SPKDirectContextDirectlyFromObject: object=%@ provider=%@ metadata=%@ target=%@ threadId=%@ name=%@ usersCount=%lu users=%@",
                NSStringFromClass([object class]),
                provider ? NSStringFromClass([provider class]) : @"nil",
                metadata ? NSStringFromClass([metadata class]) : @"nil",
@@ -499,7 +499,7 @@ void SPKDirectOpenProfileForThreadEntry(NSDictionary *entry) {
     if (users.count != 1)
         return;
     NSDictionary *userDict = users.firstObject;
-    NSString *username = SPKDirectStringFromValue(userDict[@"username"]);
+    NSString *username = SPKDirectStringFromValue(userDict[@"用户名"]);
     NSString *pk = SPKDirectStringFromValue(userDict[@"pk"]);
     if (username.length > 0 || pk.length > 0)
         [SPKUtils openInstagramProfileForUser:nil pk:pk username:username fromViewController:nil];
@@ -675,12 +675,12 @@ void SPKDirectSetActiveThreadContext(SPKDirectThreadContext *context) {
     NSString *newThreadId = context.threadId ?: @"";
     SPKDirectActiveContext = context;
     if (newThreadId.length > 0 && ![oldThreadId isEqualToString:newThreadId]) {
-        SPKLog(@"Messages", @"[Sparkle MessagesSeen] Active thread context set threadId=%@ threadName=%@ isGroup=%d",
+        SPKLog(@"消息", @"[Sparkle MessagesSeen] Active thread context set threadId=%@ threadName=%@ isGroup=%d",
                newThreadId,
                context.threadName ?: @"",
                context.isGroup);
     } else if (newThreadId.length == 0 && oldThreadId.length > 0) {
-        SPKLog(@"Messages", @"[Sparkle MessagesSeen] Active thread context cleared threadId=%@", oldThreadId);
+        SPKLog(@"消息", @"[Sparkle MessagesSeen] Active thread context cleared threadId=%@", oldThreadId);
     }
 }
 
@@ -765,7 +765,7 @@ BOOL SPKDirectManualSeenListContainsThreadId(NSString *threadId, BOOL manualSeen
 void SPKDirectAddOrUpdateManualSeenThreadEntry(NSDictionary *entry, BOOL manualSeenEnabled) {
     NSString *threadId = SPKDirectStringFromValue(entry[@"threadId"]);
     if (threadId.length == 0) {
-        SPKLog(@"Messages", @"[Sparkle MessagesSeen] Ignored add/update for manual seen list: missing threadId entry=%@", entry);
+        SPKLog(@"消息", @"[Sparkle MessagesSeen] Ignored add/update for manual seen list: missing threadId entry=%@", entry);
         return;
     }
 
@@ -806,7 +806,7 @@ void SPKDirectAddOrUpdateManualSeenThreadEntry(NSDictionary *entry, BOOL manualS
         [threads addObject:merged.copy];
     }
     SPKDirectSetManualSeenThreadList(threads, manualSeenEnabled);
-    SPKLog(@"Messages", @"[Sparkle MessagesSeen] %@ manual seen list entry threadId=%@ threadName=%@ list=%@ count=%lu",
+    SPKLog(@"消息", @"[Sparkle MessagesSeen] %@ manual seen list entry threadId=%@ threadName=%@ list=%@ count=%lu",
            existingIndex >= 0 ? @"Updated" : @"Added",
            threadId,
            merged[@"threadName"] ?: @"",
@@ -817,7 +817,7 @@ void SPKDirectAddOrUpdateManualSeenThreadEntry(NSDictionary *entry, BOOL manualS
 void SPKDirectRemoveManualSeenThreadId(NSString *threadId, BOOL manualSeenEnabled) {
     NSString *normalizedThreadId = SPKDirectStringFromValue(threadId);
     if (normalizedThreadId.length == 0) {
-        SPKLog(@"Messages", @"[Sparkle MessagesSeen] Ignored remove for manual seen list: missing threadId");
+        SPKLog(@"消息", @"[Sparkle MessagesSeen] Ignored remove for manual seen list: missing threadId");
         return;
     }
     NSMutableArray<NSDictionary *> *threads = [SPKDirectManualSeenThreadList(manualSeenEnabled) mutableCopy];
@@ -827,7 +827,7 @@ void SPKDirectRemoveManualSeenThreadId(NSString *threadId, BOOL manualSeenEnable
                  return ![entry[@"threadId"] isEqualToString:normalizedThreadId];
              }]];
     SPKDirectSetManualSeenThreadList(threads, manualSeenEnabled);
-    SPKLog(@"Messages", @"[Sparkle MessagesSeen] Removed manual seen list entry threadId=%@ list=%@ before=%lu after=%lu",
+    SPKLog(@"消息", @"[Sparkle MessagesSeen] Removed manual seen list entry threadId=%@ list=%@ before=%lu after=%lu",
            normalizedThreadId,
            SPKDirectManualSeenListTitle(manualSeenEnabled),
            (unsigned long)beforeCount,
@@ -855,7 +855,7 @@ static void SPKDirectEnrichManualSeenThreadEntryIfNeeded(NSDictionary *entry, BO
         user = users.firstObject;
     }
 
-    NSString *username = SPKDirectStringFromValue(user[@"username"]);
+    NSString *username = SPKDirectStringFromValue(user[@"用户名"]);
     NSString *pk = SPKDirectStringFromValue(user[@"pk"]);
     NSString *profilePicUrl = SPKDirectStringFromValue(user[@"profilePicUrl"]);
     if (threadId.length == 0 || username.length == 0)
@@ -866,14 +866,14 @@ static void SPKDirectEnrichManualSeenThreadEntryIfNeeded(NSDictionary *entry, BO
     [SPKInstagramAPI resolveUserForUsername:username
                                   completion:^(NSDictionary *resolvedUser, NSError *error) {
                                     if (![resolvedUser isKindOfClass:[NSDictionary class]] || error) {
-                                        SPKLog(@"Messages", @"[Sparkle MessagesSeen] Thread metadata enrichment failed threadId=%@ username=%@ error=%@",
+                                        SPKLog(@"消息", @"[Sparkle MessagesSeen] Thread metadata enrichment failed threadId=%@ username=%@ error=%@",
                                                threadId,
                                                username,
                                                error);
                                         return;
                                     }
 
-                                    NSString *resolvedUsername = SPKDirectStringFromValue(resolvedUser[@"username"]) ?: username;
+                                    NSString *resolvedUsername = SPKDirectStringFromValue(resolvedUser[@"用户名"]) ?: username;
                                     NSString *resolvedPk = SPKDirectStringFromValue(resolvedUser[@"id"] ?: resolvedUser[@"pk"]) ?: pk ?
                                                                                                                                       : @"";
                                     NSString *fullName = SPKDirectCleanFullName(SPKDirectStringFromValue(resolvedUser[@"full_name"] ?: resolvedUser[@"fullName"]), resolvedUsername) ?: SPKDirectStringFromValue(user[@"fullName"]) ?
@@ -892,7 +892,7 @@ static void SPKDirectEnrichManualSeenThreadEntryIfNeeded(NSDictionary *entry, BO
 
                                     NSMutableDictionary *mutUser = [NSMutableDictionary dictionary];
                                     mutUser[@"pk"] = resolvedPk;
-                                    mutUser[@"username"] = resolvedUsername;
+                                    mutUser[@"用户名"] = resolvedUsername;
                                     mutUser[@"fullName"] = fullName;
                                     if (profilePic.length > 0)
                                         mutUser[@"profilePicUrl"] = profilePic;
@@ -1043,7 +1043,7 @@ BOOL SPKDirectToggleCurrentThreadRule(SPKDirectThreadContext *context, NSString 
     BOOL listed = NO;
     BOOL manualSeenEnabled = NO;
     if (!SPKDirectCurrentThreadRuleState(context, &threadId, &threadName, &listTitle, &listed, &manualSeenEnabled)) {
-        SPKLog(@"Messages", @"[Sparkle MessagesSeen] Toggle thread rule failed: missing current thread context=%@", context);
+        SPKLog(@"消息", @"[Sparkle MessagesSeen] Toggle thread rule failed: missing current thread context=%@", context);
         return NO;
     }
 
@@ -1058,7 +1058,7 @@ BOOL SPKDirectToggleCurrentThreadRule(SPKDirectThreadContext *context, NSString 
         SPKDirectAddOrUpdateManualSeenThreadEntry(entry, manualSeenEnabled);
         SPKDirectEnrichManualSeenThreadEntryIfNeeded(entry, manualSeenEnabled);
     }
-    SPKLog(@"Messages", @"[Sparkle MessagesSeen] %@ %@ threadId=%@ threadName=%@ manualSeenEnabled=%d",
+    SPKLog(@"消息", @"[Sparkle MessagesSeen] %@ %@ threadId=%@ threadName=%@ manualSeenEnabled=%d",
            listed ? @"Removed from" : @"Added to",
            listTitle,
            threadId,
@@ -1108,7 +1108,7 @@ BOOL SPKDirectToggleCurrentThreadRule(SPKDirectThreadContext *context, NSString 
     NSArray *users = [entry[@"users"] isKindOfClass:[NSArray class]] ? entry[@"users"] : @[];
     NSMutableArray<NSString *> *parts = [NSMutableArray array];
     for (NSDictionary *user in users) {
-        NSString *username = [user[@"username"] isKindOfClass:[NSString class]] ? user[@"username"] : nil;
+        NSString *username = [user[@"用户名"] isKindOfClass:[NSString class]] ? user[@"用户名"] : nil;
         if (username.length > 0)
             [parts addObject:[@"@" stringByAppendingString:username]];
     }
@@ -1148,8 +1148,8 @@ BOOL SPKDirectToggleCurrentThreadRule(SPKDirectThreadContext *context, NSString 
             for (NSDictionary *user in users) {
                 if (!pk.length && [user[@"pk"] isKindOfClass:[NSString class]])
                     pk = user[@"pk"];
-                if (!username.length && [user[@"username"] isKindOfClass:[NSString class]])
-                    username = user[@"username"];
+                if (!username.length && [user[@"用户名"] isKindOfClass:[NSString class]])
+                    username = user[@"用户名"];
                 if (!fullName.length && [user[@"fullName"] isKindOfClass:[NSString class]])
                     fullName = user[@"fullName"];
                 if (!profilePicUrl.length && [user[@"profilePicUrl"] isKindOfClass:[NSString class]])
@@ -1194,7 +1194,7 @@ BOOL SPKDirectToggleCurrentThreadRule(SPKDirectThreadContext *context, NSString 
 
 - (void)presentError:(NSString *)message {
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Unable to Add Chat"
+                                                  title:@"无法添加聊天"
                                                 message:message
                                                 actions:@[ [SPKIGAlertAction actionWithTitle:@"OK" style:SPKIGAlertActionStyleCancel handler:nil] ]];
 }
@@ -1202,13 +1202,13 @@ BOOL SPKDirectToggleCurrentThreadRule(SPKDirectThreadContext *context, NSString 
 - (void)didTapAdd {
     __weak typeof(self) weakSelf = self;
     [SPKIGAlertPresenter presentTextInputAlertFromViewController:self
-                                                           title:@"Add Chat"
-                                                         message:@"Enter the Instagram username for a 1:1 DM thread."
-                                                     placeholder:@"username"
+                                                           title:@"添加聊天"
+                                                         message:@"输入 Instagram 用户名以添加一对一私信。"
+                                                     placeholder:@"用户名"
                                                      initialText:nil
                                                  autocapitalized:NO
-                                                    confirmTitle:@"Search"
-                                                     cancelTitle:@"Cancel"
+                                                    confirmTitle:@"搜索"
+                                                     cancelTitle:@"取消"
                                                     confirmStyle:SPKIGAlertActionStyleDefault
                                                     confirmBlock:^(NSString *text) {
                                                         [weakSelf lookupUsername:text];
@@ -1221,7 +1221,7 @@ BOOL SPKDirectToggleCurrentThreadRule(SPKDirectThreadContext *context, NSString 
     if (username.length == 0)
         return;
 
-    SPKLog(@"Messages", @"[Sparkle MessagesSeen] Settings add chat lookup started username=%@ list=%@",
+    SPKLog(@"消息", @"[Sparkle MessagesSeen] Settings add chat lookup started username=%@ list=%@",
            username, SPKDirectManualSeenListTitle(self.manualSeenEnabled));
 
     __weak typeof(self) weakSelf = self;
@@ -1231,16 +1231,16 @@ BOOL SPKDirectToggleCurrentThreadRule(SPKDirectThreadContext *context, NSString 
                                       if (!strongSelf)
                                           return;
                                       if (![user isKindOfClass:[NSDictionary class]] || error) {
-                                          SPKLog(@"Messages", @"[Sparkle MessagesSeen] Settings add chat user lookup failed username=%@ error=%@", username, error);
+                                          SPKLog(@"消息", @"[Sparkle MessagesSeen] Settings add chat user lookup failed username=%@ error=%@", username, error);
                                           [strongSelf presentError:[NSString stringWithFormat:@"User '%@' was not found.", username]];
                                           return;
                                       }
                                       NSString *pk = SPKDirectStringFromValue(user[@"pk"] ?: user[@"id"]);
-                                      NSString *resolvedUsername = SPKDirectStringFromValue(user[@"username"]) ?: username;
+                                      NSString *resolvedUsername = SPKDirectStringFromValue(user[@"用户名"]) ?: username;
                                       NSString *fullName = SPKDirectStringFromValue(user[@"full_name"] ?: user[@"fullName"]) ?: @"";
                                       NSString *profilePicUrl = SPKDirectStringFromValue(user[@"profile_pic_url"] ?: user[@"profile_pic_url_hd"]);
                                       if (pk.length == 0) {
-                                          SPKLog(@"Messages", @"[Sparkle MessagesSeen] Settings add chat user lookup missing pk username=%@ response=%@", username, user);
+                                          SPKLog(@"消息", @"[Sparkle MessagesSeen] Settings add chat user lookup missing pk username=%@ response=%@", username, user);
                                           [strongSelf presentError:@"Could not resolve this user's Instagram id."];
                                           return;
                                       }
@@ -1260,13 +1260,13 @@ BOOL SPKDirectToggleCurrentThreadRule(SPKDirectThreadContext *context, NSString 
                                         return;
                                     NSDictionary *thread = threadResponse[@"thread"];
                                     if (![thread isKindOfClass:[NSDictionary class]] || threadError) {
-                                        SPKLog(@"Messages", @"[Sparkle MessagesSeen] Settings add chat thread lookup failed username=%@ pk=%@ error=%@", resolvedUsername, pk, threadError);
+                                        SPKLog(@"消息", @"[Sparkle MessagesSeen] Settings add chat thread lookup failed username=%@ pk=%@ error=%@", resolvedUsername, pk, threadError);
                                         [innerSelf presentError:[NSString stringWithFormat:@"No 1:1 DM thread was found with @%@.", resolvedUsername]];
                                         return;
                                     }
                                     NSString *threadId = SPKDirectStringFromValue(thread[@"thread_id"] ?: thread[@"threadId"]);
                                     if (threadId.length == 0) {
-                                        SPKLog(@"Messages", @"[Sparkle MessagesSeen] Settings add chat thread lookup missing threadId username=%@ pk=%@ response=%@", resolvedUsername, pk, thread);
+                                        SPKLog(@"消息", @"[Sparkle MessagesSeen] Settings add chat thread lookup missing threadId username=%@ pk=%@ response=%@", resolvedUsername, pk, thread);
                                         [innerSelf presentError:[NSString stringWithFormat:@"No 1:1 DM thread was found with @%@.", resolvedUsername]];
                                         return;
                                     }
@@ -1275,10 +1275,10 @@ BOOL SPKDirectToggleCurrentThreadRule(SPKDirectThreadContext *context, NSString 
                                                             ? [NSString stringWithFormat:@"@%@ (%@)", resolvedUsername, fullName]
                                                             : [@"@" stringByAppendingString:resolvedUsername];
                                     [SPKIGAlertPresenter presentAlertFromViewController:innerSelf
-                                                                                  title:@"Add to List?"
+                                                                                  title:@"添加到列表？"
                                                                                 message:message
                                                                                 actions:@[
-                                                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                                                 style:SPKIGAlertActionStyleCancel
                                                                                                               handler:nil],
                                                                                     [SPKIGAlertAction actionWithTitle:@"Add"
@@ -1286,7 +1286,7 @@ BOOL SPKDirectToggleCurrentThreadRule(SPKDirectThreadContext *context, NSString 
                                                                                                               handler:^{
                                                                                                                   NSMutableDictionary *usersEntry = [@{
                                                                                                                       @"pk" : pk,
-                                                                                                                      @"username" : resolvedUsername,
+                                                                                                                      @"用户名" : resolvedUsername,
                                                                                                                       @"fullName" : fullName,
                                                                                                                   } mutableCopy];
                                                                                                                   if (profilePicUrl.length > 0)

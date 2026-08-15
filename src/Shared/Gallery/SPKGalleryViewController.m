@@ -345,7 +345,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
                    : @"Select Files";
     } else {
         text = self.currentFolderPath.length > 0 ? [self.currentFolderPath lastPathComponent]
-                                                 : (self.seededFilterTitle.length > 0 ? self.seededFilterTitle : @"Gallery");
+                                                 : (self.seededFilterTitle.length > 0 ? self.seededFilterTitle : @"图库");
     }
     self.navigationItem.titleView = nil;
     self.title = text;
@@ -370,7 +370,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
     [controller.searchBar setImage:[SPKAssetUtils instagramIconNamed:@"search" pointSize:18.0]
                   forSearchBarIcon:UISearchBarIconSearch
                              state:UIControlStateNormal];
-    controller.searchBar.placeholder = @"Search Gallery";
+    controller.searchBar.placeholder = @"搜索图库";
     // Scope toggle: search the current folder, or across all folders. Let the
     // search controller manage the scope bar's visibility (shown while searching).
     controller.searchBar.scopeButtonTitles = @[ @"This Folder", @"All Folders" ];
@@ -431,7 +431,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
         UIBarButtonItem *leadingItem;
         if (self.selectionMode) {
             leadingItem = SPKMediaChromeTopBarButtonItem(@"xmark", self, @selector(exitSelectionMode));
-            leadingItem.accessibilityLabel = @"Cancel";
+            leadingItem.accessibilityLabel = @"取消";
         } else if ([self canNavigateBackInFolders]) {
             leadingItem = SPKMediaChromeTopBarButtonItem(@"chevron_left", self, @selector(navigateBackInFolders));
         } else if (isPushed) {
@@ -487,7 +487,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
 
         primary = @[ shareItem, moveItem, favoriteItem, deleteItem ];
     } else {
-        UIBarButtonItem *filterItem = [self galleryBottomBarItemWithResource:@"filter" accessibility:@"Filter" action:@selector(presentFilter)];
+        UIBarButtonItem *filterItem = [self galleryBottomBarItemWithResource:@"filter" accessibility:@"筛选" action:@selector(presentFilter)];
         UIBarButtonItem *sortItem = [self galleryBottomBarItemWithResource:@"sort" accessibility:@"Sort" action:@selector(presentSort)];
 
         NSString *toggleResource = self.viewMode == SPKGalleryViewModeGrid ? @"list" : @"grid";
@@ -528,7 +528,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
         }
     }
     if (!searchItem) {
-        searchItem = [self galleryBottomBarItemWithResource:@"search" accessibility:@"Search" action:@selector(activateSearch)];
+        searchItem = [self galleryBottomBarItemWithResource:@"search" accessibility:@"搜索" action:@selector(activateSearch)];
     }
     return searchItem;
 }
@@ -710,7 +710,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
 
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectZero];
     label.translatesAutoresizingMaskIntoConstraints = NO;
-    label.text = @"No files in Gallery";
+    label.text = @"图库中没有文件";
     label.textColor = [SPKUtils SPKColor_InstagramPrimaryText];
     label.font = [UIFont systemFontOfSize:17 weight:UIFontWeightMedium];
     label.textAlignment = NSTextAlignmentCenter;
@@ -719,7 +719,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
 
     UILabel *subtitle = [[UILabel alloc] initWithFrame:CGRectZero];
     subtitle.translatesAutoresizingMaskIntoConstraints = NO;
-    subtitle.text = @"Media you save with Sparkle will appear here.";
+    subtitle.text = @"使用 Sparkle 保存的媒体会显示在这里。";
     subtitle.textColor = [SPKUtils SPKColor_InstagramSecondaryText];
     subtitle.font = [UIFont systemFontOfSize:14];
     subtitle.textAlignment = NSTextAlignmentCenter;
@@ -772,17 +772,17 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
     NSString *title;
     NSString *subtitle;
     if (query.length > 0) {
-        title = @"No results";
+        title = @"没有结果";
         subtitle = @"No media matches your search.";
     } else if (hasFilters) {
-        title = @"No matching files";
-        subtitle = @"Try adjusting your filters.";
+        title = @"没有匹配的文件";
+        subtitle = @"请尝试调整筛选条件。";
     } else if (folderName.length > 0) {
-        title = @"This folder is empty";
+        title = @"此文件夹为空";
         subtitle = [NSString stringWithFormat:@"Media you save to “%@” will appear here.", folderName];
     } else {
-        title = @"No files in Gallery";
-        subtitle = @"Media you save with Sparkle will appear here.";
+        title = @"图库中没有文件";
+        subtitle = @"使用 Sparkle 保存的媒体会显示在这里。";
     }
     self.emptyStateLabel.text = title;
     self.emptyStateSubtitle.text = subtitle;
@@ -1601,13 +1601,13 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
 
     NSString *message = [NSString stringWithFormat:@"This will permanently remove %ld file%@ from the gallery.", (long)files.count, files.count == 1 ? @"" : @"s"];
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Delete Selected Files?"
+                                                  title:@"删除选中的文件？"
                                                 message:message
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
-                                                    [SPKIGAlertAction actionWithTitle:@"Delete"
+                                                    [SPKIGAlertAction actionWithTitle:@"删除"
                                                                                 style:SPKIGAlertActionStyleDestructive
                                                                               handler:^{
                                                                                   NSError *firstError = nil;
@@ -1667,7 +1667,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
                                                  }];
 
     UIImage *editImg = SPKGalleryMenuActionIcon(@"edit");
-    UIAction *renameAction = [UIAction actionWithTitle:@"Edit Details"
+    UIAction *renameAction = [UIAction actionWithTitle:@"编辑详细信息"
                                                  image:editImg
                                             identifier:nil
                                                handler:^(UIAction *a) {
@@ -1675,7 +1675,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
                                                }];
 
     UIImage *moveImg = SPKGalleryMenuActionIcon(@"folder_move");
-    UIAction *moveAction = [UIAction actionWithTitle:@"Move to Folder"
+    UIAction *moveAction = [UIAction actionWithTitle:@"移动到文件夹"
                                                image:moveImg
                                           identifier:nil
                                              handler:^(UIAction *a) {
@@ -1684,7 +1684,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
 
     UIAction *trimAction = nil;
     if (file.mediaType == SPKGalleryMediaTypeVideo || file.mediaType == SPKGalleryMediaTypeAudio) {
-        trimAction = [UIAction actionWithTitle:@"Trim"
+        trimAction = [UIAction actionWithTitle:@"裁剪"
                                          image:SPKGalleryMenuActionIcon(@"trim")
                                     identifier:nil
                                        handler:^(__unused UIAction *a) {
@@ -1703,7 +1703,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
     }
 
     UIImage *shareImg = SPKGalleryMenuActionIcon(@"share");
-    UIAction *shareAction = [UIAction actionWithTitle:@"Share"
+    UIAction *shareAction = [UIAction actionWithTitle:@"分享"
                                                 image:shareImg
                                            identifier:nil
                                               handler:^(UIAction *a) {
@@ -1724,7 +1724,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
 
     UIAction *openProfileAction = nil;
     if (file.hasOpenableProfile) {
-        openProfileAction = [UIAction actionWithTitle:@"Open Profile"
+        openProfileAction = [UIAction actionWithTitle:@"打开个人资料"
                                                 image:SPKGalleryMenuActionIcon(@"user_circle")
                                            identifier:nil
                                               handler:^(__unused UIAction *a) {
@@ -1733,18 +1733,18 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
     }
 
     UIImage *deleteImg = SPKGalleryMenuActionIcon(@"trash");
-    UIAction *deleteAction = [UIAction actionWithTitle:@"Delete"
+    UIAction *deleteAction = [UIAction actionWithTitle:@"删除"
                                                  image:deleteImg
                                             identifier:nil
                                                handler:^(UIAction *a) {
                                                    [SPKIGAlertPresenter presentAlertFromViewController:weakSelf
-                                                                                                 title:@"Delete from Gallery"
-                                                                                               message:@"This will permanently remove this file from the gallery."
+                                                                                                 title:@"从图库删除"
+                                                                                               message:@"此操作将永久从图库中删除该文件。"
                                                                                                actions:@[
-                                                                                                   [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                                                                   [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                                                                style:SPKIGAlertActionStyleCancel
                                                                                                                              handler:nil],
-                                                                                                   [SPKIGAlertAction actionWithTitle:@"Delete"
+                                                                                                   [SPKIGAlertAction actionWithTitle:@"删除"
                                                                                                                                style:SPKIGAlertActionStyleDestructive
                                                                                                                              handler:^{
                                                                                                                                  NSError *err;
@@ -1823,7 +1823,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
 - (UIMenu *)folderActionsMenuForFolderPath:(NSString *)folderPath {
     __weak typeof(self) weakSelf = self;
     UIImage *folderRenameImg = SPKGalleryMenuActionIcon(@"edit");
-    UIAction *renameAction = [UIAction actionWithTitle:@"Rename Folder"
+    UIAction *renameAction = [UIAction actionWithTitle:@"重命名文件夹"
                                                  image:folderRenameImg
                                             identifier:nil
                                                handler:^(UIAction *a) {
@@ -1847,13 +1847,13 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
 
 - (void)presentCreateFolder {
     [SPKIGAlertPresenter presentTextInputAlertFromViewController:self
-                                                           title:@"New Folder"
+                                                           title:@"新建文件夹"
                                                          message:@""
-                                                     placeholder:@"Folder name"
+                                                     placeholder:@"文件夹名称"
                                                      initialText:nil
                                                  autocapitalized:YES
                                                     confirmTitle:@"Create"
-                                                     cancelTitle:@"Cancel"
+                                                     cancelTitle:@"取消"
                                                     confirmStyle:SPKIGAlertActionStyleDefault
                                                     confirmBlock:^(NSString *text) {
                                                         NSString *name = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -1908,13 +1908,13 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
 
 - (void)renameFolder:(NSString *)folderPath {
     [SPKIGAlertPresenter presentTextInputAlertFromViewController:self
-                                                           title:@"Rename Folder"
-                                                         message:@"Enter a new name for this folder."
+                                                           title:@"重命名文件夹"
+                                                         message:@"请输入此文件夹的新名称。"
                                                      placeholder:nil
                                                      initialText:[folderPath lastPathComponent]
                                                  autocapitalized:YES
                                                     confirmTitle:@"Rename"
-                                                     cancelTitle:@"Cancel"
+                                                     cancelTitle:@"取消"
                                                     confirmStyle:SPKIGAlertActionStyleDefault
                                                     confirmBlock:^(NSString *text) {
                                                         NSString *newName = [text stringByTrimmingCharactersInSet:
@@ -1981,13 +1981,13 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
                         : [NSString stringWithFormat:@"This folder contains %ld file(s). They will be moved to the parent folder.", (long)count];
 
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Delete Folder?"
+                                                  title:@"删除文件夹？"
                                                 message:msg
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
-                                                    [SPKIGAlertAction actionWithTitle:@"Delete"
+                                                    [SPKIGAlertAction actionWithTitle:@"删除"
                                                                                 style:SPKIGAlertActionStyleDestructive
                                                                               handler:^{
                                                                                   [self performDeleteFolder:folderPath];
@@ -2163,13 +2163,13 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
                                                    style:SPKIGAlertActionStyleDefault
                                                  handler:^{
                                                      [SPKIGAlertPresenter presentTextInputAlertFromViewController:self
-                                                                                                            title:@"New Folder"
+                                                                                                            title:@"新建文件夹"
                                                                                                           message:@"Enter a new folder name, then move the selected files there."
-                                                                                                      placeholder:@"Folder name"
+                                                                                                      placeholder:@"文件夹名称"
                                                                                                       initialText:nil
                                                                                                   autocapitalized:NO
                                                                                                      confirmTitle:@"Create & Move"
-                                                                                                      cancelTitle:@"Cancel"
+                                                                                                      cancelTitle:@"取消"
                                                                                                      confirmStyle:SPKIGAlertActionStyleDefault
                                                                                                      confirmBlock:^(NSString *text) {
                                                                                                          NSString *name = [text stringByTrimmingCharactersInSet:
@@ -2182,15 +2182,15 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
                                                                                                       cancelBlock:nil];
                                                  }]];
 
-    [actions addObject:[SPKIGAlertAction actionWithTitle:@"Cancel" style:SPKIGAlertActionStyleCancel handler:nil]];
+    [actions addObject:[SPKIGAlertAction actionWithTitle:@"取消" style:SPKIGAlertActionStyleCancel handler:nil]];
 
-    NSString *message = @"Choose where to move the selected file(s).";
+    NSString *message = @"请选择要将选中文件移动到的位置。";
     if (sharesCurrentFolder) {
         NSString *currentName = currentFolder.length > 0 ? [currentFolder lastPathComponent] : @"/";
         message = [NSString stringWithFormat:@"Currently in %@. Choose where to move the selected file(s).", currentName];
     }
     [SPKIGAlertPresenter presentActionSheetFromViewController:self
-                                                        title:@"Move to Folder"
+                                                        title:@"移动到文件夹"
                                                       message:message
                                                       actions:actions
                                                    forceSheet:YES];

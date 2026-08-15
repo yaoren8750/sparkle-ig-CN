@@ -93,7 +93,7 @@ void SPKDirectAutoSaveConsiderController(UIViewController *controller) {
     SPKGallerySaveMetadata *metadata = nil;
     if (!SPKResolveGalleryDownloadForMedia(media, SPKActionButtonSourceDirect, username,
                                            &photoURL, &videoURL, &metadata)) {
-        SPKLog(@"Messages", @"[Sparkle AutoSave] No downloadable media for DM thread=%@ user=@%@", threadId, username);
+        SPKLog(@"消息", @"[Sparkle AutoSave] No downloadable media for DM thread=%@ user=@%@", threadId, username);
         return;
     }
     BOOL isVideo = (videoURL != nil);
@@ -119,16 +119,16 @@ void SPKDirectAutoSaveConsiderController(UIViewController *controller) {
     if ([SPKDownloadDuplicatePolicy destinationContainsMediaForMetadata:metadata
                                                               mediaType:mediaType
                                                             destination:destination]) {
-        SPKLog(@"Messages", @"[Sparkle AutoSave] Already in %@, skipping DM item thread=%@ user=@%@",
+        SPKLog(@"消息", @"[Sparkle AutoSave] Already in %@, skipping DM item thread=%@ user=@%@",
                SPKDownloadDestinationDisplayName(destination), threadId, username);
         return;
     }
 
-    SPKLog(@"Messages", @"[Sparkle AutoSave] Saving DM media thread=%@ user=@%@ video=%d", threadId, username, isVideo);
+    SPKLog(@"消息", @"[Sparkle AutoSave] Saving DM media thread=%@ user=@%@ video=%d", threadId, username, isVideo);
     if (!SPKAutoSaveSubmitMedia(media, SPKActionButtonSourceDirect, username, kSPKNotificationDirectAutoSave)) {
         // Nothing was queued, so let the item be retried next time it's displayed.
         [sessionKeys removeObject:itemKey];
-        SPKLog(@"Messages", @"[Sparkle AutoSave] Failed to submit DM item thread=%@ user=@%@", threadId, username);
+        SPKLog(@"消息", @"[Sparkle AutoSave] Failed to submit DM item thread=%@ user=@%@", threadId, username);
     }
 }
 
@@ -281,7 +281,7 @@ void SPKDirectPresentAutoSaveThreadRuleToggle(SPKDirectThreadContext *context) {
         NSArray *users = [entry[@"users"] isKindOfClass:[NSArray class]] ? entry[@"users"] : @[];
         NSDictionary *user = users.firstObject;
         NSString *pk = SPKStringFromValue(user[@"pk"]);
-        NSString *username = SPKStringFromValue(user[@"username"]);
+        NSString *username = SPKStringFromValue(user[@"用户名"]);
         NSString *fullName = SPKStringFromValue(user[@"fullName"]);
         NSString *profilePicUrl = SPKStringFromValue(user[@"profilePicUrl"]);
         if (profilePicUrl.length == 0 && pk.length > 0)
@@ -298,7 +298,7 @@ void SPKDirectPresentAutoSaveThreadRuleToggle(SPKDirectThreadContext *context) {
 
 - (void)presentError:(NSString *)message {
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Unable to Add Chat"
+                                                  title:@"无法添加聊天"
                                                 message:message
                                                 actions:@[ [SPKIGAlertAction actionWithTitle:@"OK" style:SPKIGAlertActionStyleCancel handler:nil] ]];
 }
@@ -306,13 +306,13 @@ void SPKDirectPresentAutoSaveThreadRuleToggle(SPKDirectThreadContext *context) {
 - (void)didTapAdd {
     __weak typeof(self) weakSelf = self;
     [SPKIGAlertPresenter presentTextInputAlertFromViewController:self
-                                                           title:@"Add Chat"
+                                                           title:@"添加聊天"
                                                          message:@"Enter the Instagram username for a 1:1 DM thread. Group chats can be added from the viewer's action menu."
-                                                     placeholder:@"username"
+                                                     placeholder:@"用户名"
                                                      initialText:nil
                                                  autocapitalized:NO
-                                                    confirmTitle:@"Search"
-                                                     cancelTitle:@"Cancel"
+                                                    confirmTitle:@"搜索"
+                                                     cancelTitle:@"取消"
                                                     confirmStyle:SPKIGAlertActionStyleDefault
                                                     confirmBlock:^(NSString *text) {
                                                         [weakSelf lookupUsername:text];
@@ -341,7 +341,7 @@ void SPKDirectPresentAutoSaveThreadRuleToggle(SPKDirectThreadContext *context) {
                                           return;
                                       }
                                       [strongSelf resolveThreadForPK:pk
-                                                            username:SPKStringFromValue(user[@"username"]) ?: username
+                                                            username:SPKStringFromValue(user[@"用户名"]) ?: username
                                                             fullName:SPKStringFromValue(user[@"full_name"] ?: user[@"fullName"]) ?: @""
                                                        profilePicUrl:SPKStringFromValue(user[@"profile_pic_url"] ?: user[@"profile_pic_url_hd"])];
                                   }];
@@ -368,7 +368,7 @@ void SPKDirectPresentAutoSaveThreadRuleToggle(SPKDirectThreadContext *context) {
                                         return;
                                     }
 
-                                    NSMutableDictionary *userEntry = [@{@"pk" : pk, @"username" : username, @"fullName" : fullName} mutableCopy];
+                                    NSMutableDictionary *userEntry = [@{@"pk" : pk, @"用户名" : username, @"fullName" : fullName} mutableCopy];
                                     if (profilePicUrl.length > 0)
                                         userEntry[@"profilePicUrl"] = profilePicUrl;
                                     NSDictionary *entry = @{
@@ -381,10 +381,10 @@ void SPKDirectPresentAutoSaveThreadRuleToggle(SPKDirectThreadContext *context) {
                                     NSString *message = fullName.length > 0 ? [NSString stringWithFormat:@"@%@ (%@)", username, fullName]
                                                                             : [@"@" stringByAppendingString:username];
                                     [SPKIGAlertPresenter presentAlertFromViewController:strongSelf
-                                                                                  title:@"Auto-Save This Chat?"
+                                                                                  title:@"自动保存此聊天？"
                                                                                 message:message
                                                                                 actions:@[
-                                                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                                                 style:SPKIGAlertActionStyleCancel
                                                                                                               handler:nil],
                                                                                     [SPKIGAlertAction actionWithTitle:@"Add"

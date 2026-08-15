@@ -9,93 +9,117 @@ static NSString *const kSPKReelsActionButtonEnabledKey = @"reels_action_btn";
 
 + (SPKSetting *)rootSetting {
     return SPKTopicNavigationSetting(@"Reels", @"reels", 24.0, @[
-        SPKTopicSection(@"Action Button", @[
-            [SPKSetting switchCellWithTitle:@"Reels Action Button"
+        SPKTopicSection(@"操作按钮", @[
+            [SPKSetting switchCellWithTitle:@"Reels 操作按钮"
                                        icon:SPKSettingsIcon(@"action")
                                 defaultsKey:kSPKReelsActionButtonEnabledKey],
             SPKActionButtonDefaultActionNavigationSetting(SPKActionButtonSourceReels),
-            SPKActionButtonConfigurationNavigationSetting(SPKActionButtonSourceReels, @"Reels", SPKActionButtonSupportedActionsForSource(SPKActionButtonSourceReels), SPKActionButtonDefaultSectionsForSource(SPKActionButtonSourceReels))
+            SPKActionButtonConfigurationNavigationSetting(
+                SPKActionButtonSourceReels,
+                @"Reels",
+                SPKActionButtonSupportedActionsForSource(SPKActionButtonSourceReels),
+                SPKActionButtonDefaultSectionsForSource(SPKActionButtonSourceReels)
+            )
         ],
-                        @"Choose what tapping the action button does. Long press opens the full menu."),
-        SPKTopicSection(@"Behavior", @[
-            [SPKSetting menuCellWithTitle:@"Tap Controls"
+                        @"选择点击 Reels 操作按钮时执行的操作。长按可打开完整操作菜单。"),
+
+        SPKTopicSection(@"播放与操作", @[
+            [SPKSetting menuCellWithTitle:@"点击操作"
                                      icon:SPKSettingsIcon(@"play")
                                      menu:SPKReelsTapControlMenu()],
-            [SPKSetting switchCellWithTitle:@"Show Progress Scrubber"
+
+            [SPKSetting switchCellWithTitle:@"显示播放进度条"
                                        icon:SPKSettingsIcon(@"clock")
                                 defaultsKey:@"reels_show_scrubber"],
-            [SPKSetting switchCellWithTitle:@"Disable Auto-Unmuting Reels"
+
+            [SPKSetting switchCellWithTitle:@"禁止 Reels 自动取消静音"
                                        icon:SPKSettingsIcon(@"volume_off")
                                 defaultsKey:@"reels_disable_auto_unmute"
                             requiresRestart:YES],
-            [SPKSetting switchCellWithTitle:@"Disable Reels Tab Refresh"
+
+            [SPKSetting switchCellWithTitle:@"禁止刷新 Reels 标签页"
                                        icon:SPKSettingsIcon(@"arrow_cw")
                                 defaultsKey:@"reels_disable_tab_refresh"]
         ],
-                        @"Tap Controls changes what happens when you tap on a reel. Auto-unmuting controls prevent reels from unmuting when volume or silent mode changes."),
-        SPKTopicSection(@"Limits", @[
-            [SPKSetting switchCellWithTitle:@"Disable Scrolling Reels"
+                        @"点击操作用于设置点击 Reels 时的行为。"
+                         @"关闭自动取消静音后，Reels 不会因音量或静音模式变化而自动恢复声音。"),
+
+        SPKTopicSection(@"浏览限制", @[
+            [SPKSetting switchCellWithTitle:@"禁止滑动切换 Reels"
                                        icon:SPKSettingsIcon(@"autoscroll")
                                 defaultsKey:@"reels_disable_scrolling"
                             requiresRestart:YES],
-            [SPKSetting switchCellWithTitle:@"Prevent Doom Scrolling"
+
+            [SPKSetting switchCellWithTitle:@"限制连续浏览 Reels"
                                        icon:SPKSettingsIcon(@"arrow_down")
                                 defaultsKey:@"reels_prevent_doom_scroll"],
-            [SPKSetting stepperCellWithTitle:@"Doom Scrolling Limit"
-                                    subtitle:@"Only loads %@ %@"
+
+            [SPKSetting stepperCellWithTitle:@"连续浏览上限"
+                                    subtitle:@"仅加载 %@ 个%@"
                                  defaultsKey:@"reels_doom_scroll_limit"
                                          min:1
                                          max:100
                                         step:1
-                                       label:@"reels"
-                               singularLabel:@"reel"]
+                                       label:@"Reels"
+                               singularLabel:@"Reel"]
         ],
-                        @"1. Stop vertical swiping between reels so the current reel stays put.\n"
-                        @"2. Stop loading more reels once the limit below is reached.\n"
-                        @"3. How many reels load before Prevent Doom Scrolling kicks in."),
-        SPKTopicSection(@"Layout", @[
-            [SPKSetting switchCellWithTitle:@"Hide Reels Header"
+                        @"1. 禁止上下滑动切换 Reels，停留在当前 Reels。\n"
+                         @"2. 达到设定数量后停止继续加载 Reels。\n"
+                         @"3. 设置触发“限制连续浏览”的 Reels 数量。"),
+
+        SPKTopicSection(@"界面", @[
+            [SPKSetting switchCellWithTitle:@"隐藏 Reels 顶部栏"
                                        icon:SPKSettingsIcon(@"reels")
                                 defaultsKey:@"reels_hide_header"],
-            [SPKSetting switchCellWithTitle:@"Hide Repost Button"
+
+            [SPKSetting switchCellWithTitle:@"隐藏转发按钮"
                                        icon:SPKSettingsIcon(@"repost")
                                 defaultsKey:@"reels_hide_repost_btn"
                             requiresRestart:YES]
         ],
                         nil),
-        SPKTopicSection(@"Metrics", @[
-            [SPKSetting switchCellWithTitle:@"Hide Like Count"
+
+        SPKTopicSection(@"互动数据", @[
+            [SPKSetting switchCellWithTitle:@"隐藏点赞数"
                                        icon:SPKSettingsIcon(@"heart")
                                 defaultsKey:@"reels_hide_like_count"],
-            [SPKSetting switchCellWithTitle:@"Hide Comment Count"
+
+            [SPKSetting switchCellWithTitle:@"隐藏评论数"
                                        icon:SPKSettingsIcon(@"comment")
                                 defaultsKey:@"reels_hide_comment_count"],
-            [SPKSetting switchCellWithTitle:@"Hide Repost Count"
+
+            [SPKSetting switchCellWithTitle:@"隐藏转发数"
                                        icon:SPKSettingsIcon(@"repost")
                                 defaultsKey:@"reels_hide_repost_count"],
-            [SPKSetting switchCellWithTitle:@"Hide Reshare Count"
+
+            [SPKSetting switchCellWithTitle:@"隐藏分享数"
                                        icon:SPKSettingsIcon(@"messages")
                                 defaultsKey:@"reels_hide_reshare_count"],
-            [SPKSetting switchCellWithTitle:@"Hide Save Count"
+
+            [SPKSetting switchCellWithTitle:@"隐藏收藏数"
                                        icon:SPKSettingsIcon(@"save")
                                 defaultsKey:@"reels_hide_save_count"]
         ],
                         nil),
-        SPKTopicSection(@"Confirmation", @[
-            [SPKSetting switchCellWithTitle:@"Confirm Like"
+
+        SPKTopicSection(@"操作确认", @[
+            [SPKSetting switchCellWithTitle:@"点赞前确认"
                                        icon:SPKSettingsIcon(@"heart")
                                 defaultsKey:@"reels_confirm_like"],
-            [SPKSetting switchCellWithTitle:@"Confirm Double Tap"
+
+            [SPKSetting switchCellWithTitle:@"双击点赞前确认"
                                        icon:SPKSettingsIcon(@"heart")
                                 defaultsKey:@"reels_confirm_double_tap_like"],
-            [SPKSetting switchCellWithTitle:@"Confirm Reel Refresh"
+
+            [SPKSetting switchCellWithTitle:@"刷新 Reels 前确认"
                                        icon:SPKSettingsIcon(@"arrow_cw")
                                 defaultsKey:@"reels_confirm_refresh"],
-            [SPKSetting switchCellWithTitle:@"Confirm Repost"
+
+            [SPKSetting switchCellWithTitle:@"转发前确认"
                                        icon:SPKSettingsIcon(@"repost")
                                 defaultsKey:@"reels_confirm_repost"]
         ],
-                        @"Shows confirmation alerts before the enabled reels actions are performed.")
+                        @"在执行已启用的 Reels 操作前显示确认提示。")
     ]);
 }
 

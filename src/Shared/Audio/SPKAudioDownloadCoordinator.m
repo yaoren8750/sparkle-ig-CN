@@ -251,7 +251,7 @@ static BOOL SPKAudioObjectLooksAudioLike(id object) {
     if (!object)
         return NO;
     NSString *className = NSStringFromClass([object class]);
-    return [className containsString:@"Audio"] ||
+    return [className containsString:@"音频"] ||
            [className containsString:@"Music"] ||
            [className containsString:@"Sound"] ||
            [className containsString:@"Track"];
@@ -508,7 +508,7 @@ static BOOL SPKAudioShouldTraverseObject(id object) {
         return NO;
     }
     NSString *name = NSStringFromClass([object class]);
-    return [name containsString:@"Direct"] || [name containsString:@"Audio"] ||
+    return [name containsString:@"Direct"] || [name containsString:@"音频"] ||
            [name containsString:@"Message"] || [name containsString:@"Media"] ||
            [name containsString:@"GraphQL"] || [name containsString:@"GQL"] ||
            [name containsString:@"Model"];
@@ -805,7 +805,7 @@ static void SPKAudioConvertToM4A(NSURL *sourceURL, NSString *basename,
     export.outputFileType = AVFileTypeAppleM4A;
     export.shouldOptimizeForNetworkUse = YES;
     if (progress)
-        progress(0.05f, @"Converting audio");
+        progress(0.05f, @"正在转换音频");
     [export exportAsynchronouslyWithCompletionHandler:^{
         dispatch_async(dispatch_get_main_queue(), ^{
             if (export.status == AVAssetExportSessionStatusCompleted &&
@@ -896,7 +896,7 @@ static void SPKAudioDownloadForSaveToFiles(SPKAudioItem *item, BOOL convert,
     void (^processDownloadedFile)(NSURL *) = ^(NSURL *sourceURL) {
         if (SPKAudioShouldConvertURL(sourceURL, convert)) {
             if (pill)
-                [pill updateProgressTitle:@"Converting audio" subtitle:nil];
+                [pill updateProgressTitle:@"正在转换音频" subtitle:nil];
             SPKAudioConvertToM4A(
                 sourceURL, SPKAudioBasename(item),
                 ^(float progress, NSString *title) {
@@ -1016,8 +1016,8 @@ static void SPKAudioDownloadForSaveToFiles(SPKAudioItem *item, BOOL convert,
     item.title = SPKAudioStringValue(SPKAudioObjectForSelector(mediaObject, @"title") ?: SPKAudioKVCObject(mediaObject, @"title") ?
                                                                                                                                   : SPKAudioObjectForSelector(mediaObject, @"displayTitle"));
     item.artist = SPKAudioStringValue(SPKAudioObjectForSelector(mediaObject, @"artistDisplayName") ?: SPKAudioKVCObject(mediaObject, @"artistDisplayName") ?
-                                                                                                  : SPKAudioObjectForSelector(mediaObject, @"username")    ?
-                                                                                                                                                           : SPKAudioKVCObject(mediaObject, @"username"));
+                                                                                                  : SPKAudioObjectForSelector(mediaObject, @"用户名")    ?
+                                                                                                                                                           : SPKAudioKVCObject(mediaObject, @"用户名"));
     item.mediaIdentifier = SPKAudioStringValue(SPKAudioObjectForSelector(mediaObject, @"audioAssetId") ?: SPKAudioKVCObject(mediaObject, @"audioAssetId") ?
                                                                                                       : SPKAudioObjectForSelector(mediaObject, @"pk")     ?
                                                                                                       : SPKAudioKVCObject(mediaObject, @"pk")             ?
@@ -1073,7 +1073,7 @@ static void SPKAudioDownloadForSaveToFiles(SPKAudioItem *item, BOOL convert,
         SPKMediaItem *previewItem = [SPKMediaItem itemWithFileURL:item.url];
         previewItem.mediaType = SPKMediaItemTypeAudio;
         previewItem.galleryMetadata = SPKAudioMetadataFromItem(item, metadata);
-        previewItem.title = item.title.length > 0 ? item.title : @"Audio";
+        previewItem.title = item.title.length > 0 ? item.title : @"音频";
         [SPKFullScreenMediaPlayer showMediaItems:@[ previewItem ]
                                  startingAtIndex:0
                                         metadata:previewItem.galleryMetadata

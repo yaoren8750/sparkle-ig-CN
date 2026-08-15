@@ -17,7 +17,7 @@
         return [SPKGallerySettingsViewController searchSections];
     };
 
-    return SPKTopicNavigationSetting(@"Gallery", @"sparkle_gallery", 24.0, @[
+    return SPKTopicNavigationSetting(@"图库", @"sparkle_gallery", 24.0, @[
         SPKTopicSection(@"Access", @[
             [SPKSetting buttonCellWithTitle:@"Open Gallery"
                                    subtitle:@""
@@ -28,7 +28,7 @@
             SPKSettingApplySelectedMenuIcon([SPKSetting menuCellWithTitle:@"Quick Gallery Access" icon:SPKSettingsIcon(@"circle_off") menu:SPKGalleryShortcutTargetMenu()], SPKSettingsIcon(@"circle_off"))
         ],
                         @"Choose the tab that opens Gallery on long press. None disables the action."),
-        SPKTopicSection(@"Settings", @[
+        SPKTopicSection(@"设置", @[
             gallerySettings
         ],
                         @"The same screen you reach from inside Gallery.")

@@ -174,7 +174,7 @@ static CGFloat const kSPKGalleryFilterChipIconPointSize = 14.0;
 }
 
 - (void)setupNavigationBar {
-    self.title = @"Filter";
+    self.title = @"筛选";
     self.navigationItem.leftBarButtonItem = nil;
     self.navigationItem.rightBarButtonItem = nil;
 }
@@ -214,10 +214,10 @@ static CGFloat const kSPKGalleryFilterChipIconPointSize = 14.0;
 
     [self.contentStack addArrangedSubview:[self sectionTitle:@"Type"]];
     [self.contentStack addArrangedSubview:[self createTypeRow]];
-    [self.contentStack addArrangedSubview:[self sectionTitle:@"Source"]];
+    [self.contentStack addArrangedSubview:[self sectionTitle:@"来源"]];
     [self.contentStack addArrangedSubview:[self createSourceGrid]];
     if (self.availableUsernames.count > 0) {
-        self.usernameSectionTitle = [self sectionTitle:@"Username"];
+        self.usernameSectionTitle = [self sectionTitle:@"用户名"];
         [self updateUsernameSectionTitle];
         [self.contentStack addArrangedSubview:self.usernameSectionTitle];
         [self.contentStack addArrangedSubview:[self createUsernameRow]];
@@ -267,7 +267,7 @@ static CGFloat const kSPKGalleryFilterChipIconPointSize = 14.0;
     NSArray *defs = @[
         @{@"label" : @"Images", @"resource" : @"photo", @"tag" : @(SPKGalleryMediaTypeImage)},
         @{@"label" : @"Videos", @"resource" : @"video", @"tag" : @(SPKGalleryMediaTypeVideo)},
-        @{@"label" : @"Audio", @"resource" : @"audio", @"tag" : @(SPKGalleryMediaTypeAudio)},
+        @{@"label" : @"音频", @"resource" : @"audio", @"tag" : @(SPKGalleryMediaTypeAudio)},
     ];
     for (NSDictionary *d in defs) {
         NSInteger tag = [d[@"tag"] integerValue];
@@ -542,7 +542,7 @@ static CGFloat const kSPKGalleryFilterChipIconPointSize = 14.0;
     // itself, so don't duplicate it here.
     if (!self.usernameSectionTitle)
         return;
-    self.usernameSectionTitle.text = @"Username";
+    self.usernameSectionTitle.text = @"用户名";
 }
 
 - (void)favoritesRowTapped {

@@ -68,7 +68,7 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
     self = [super init];
     if (self) {
         _configuration = configuration;
-        self.title = configuration.title.length > 0 ? configuration.title : @"Trim";
+        self.title = configuration.title.length > 0 ? configuration.title : @"裁剪";
     }
     return self;
 }
@@ -163,7 +163,7 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
 
 - (void)setupChrome {
     UIBarButtonItem *cancelItem = SPKMediaChromeTopBarButtonItem(@"close", self, @selector(cancelTapped));
-    cancelItem.accessibilityLabel = @"Cancel";
+    cancelItem.accessibilityLabel = @"取消";
 
     // When the caller supplies destinations, Done is a menu (pick where to save
     // without dismissing first); otherwise it's a plain confirm.
@@ -179,7 +179,7 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
         // Framing lives on its own screen (like Frame Only's editor) so the trim
         // controls keep the whole bottom of the display.
         self.cropItem = SPKMediaChromeTopBarButtonItem(@"crop", self, @selector(cropTapped));
-        self.cropItem.accessibilityLabel = @"Crop";
+        self.cropItem.accessibilityLabel = @"裁剪";
     }
     SPKMediaChromeSetLeadingTopBarItems(self.navigationItem, @[ cancelItem ]);
     [self refreshTrailingTopBarItems];
@@ -212,7 +212,7 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
     [SPKVideoCropViewController presentForVideoURL:self.configuration.sourceURL
                                  lockedAspectRatio:self.configuration.lockedCropAspectRatio
                                        initialCrop:self.pendingCrop
-                                             title:@"Crop"
+                                             title:@"裁剪"
                                               from:self
                                         completion:^(SPKTrimCrop *crop) {
                                             [weakSelf applyCrop:crop];
@@ -378,7 +378,7 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
     _playPauseButton.tintColor = [SPKUtils SPKColor_InstagramPrimaryText] ?: [UIColor whiteColor];
     [_playPauseButton setImage:SPKTrimPlayerIcon(@"video_play", 36.0) forState:UIControlStateNormal];
     [_playPauseButton addTarget:self action:@selector(togglePlayback) forControlEvents:UIControlEventTouchUpInside];
-    _playPauseButton.accessibilityLabel = @"Play";
+    _playPauseButton.accessibilityLabel = @"播放";
     [_bottomContent addSubview:_playPauseButton];
 
     // In Frame Only mode playback is meaningless, so the play/pause slot becomes
@@ -388,7 +388,7 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
     _editFrameButton.tintColor = [SPKUtils SPKColor_InstagramPrimaryText] ?: [UIColor whiteColor];
     [_editFrameButton setImage:SPKTrimPlayerIcon(@"crop", 24.0) forState:UIControlStateNormal];
     [_editFrameButton addTarget:self action:@selector(editFrameTapped) forControlEvents:UIControlEventTouchUpInside];
-    _editFrameButton.accessibilityLabel = @"Edit Frame";
+    _editFrameButton.accessibilityLabel = @"编辑画面";
     _editFrameButton.hidden = YES;
     [_bottomContent addSubview:_editFrameButton];
 
@@ -399,7 +399,7 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
     _revertFrameButton.tintColor = [SPKUtils SPKColor_InstagramPrimaryText] ?: [UIColor whiteColor];
     [_revertFrameButton setImage:SPKTrimPlayerIcon(@"arrow_ccw", 24.0) forState:UIControlStateNormal];
     [_revertFrameButton addTarget:self action:@selector(revertFrameTapped) forControlEvents:UIControlEventTouchUpInside];
-    _revertFrameButton.accessibilityLabel = @"Revert Edit";
+    _revertFrameButton.accessibilityLabel = @"撤销编辑";
     _revertFrameButton.hidden = YES;
     [_bottomContent addSubview:_revertFrameButton];
 
@@ -698,7 +698,7 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
     BOOL canPlay = self.playerReady && !frameOnly;
     [self.playPauseButton setImage:SPKTrimPlayerIcon(self.isPlaying ? @"video_pause" : @"video_play", 36.0)
                           forState:UIControlStateNormal];
-    self.playPauseButton.accessibilityLabel = self.isPlaying ? @"Pause" : @"Play";
+    self.playPauseButton.accessibilityLabel = self.isPlaying ? @"Pause" : @"播放";
     self.playPauseButton.enabled = canPlay;
     self.playPauseButton.alpha = canPlay ? 1.0 : 0.35;
     [self updateFrameEditingUI];
@@ -902,15 +902,15 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
         NSString *iconName = option.iconName;
         if (audioMode) {
             if ([identifier isEqualToString:@"photos"] || [identifier isEqualToString:@"files"]) {
-                title = @"Save Audio to Files";
+                title = @"将音频保存到文件";
                 identifier = @"files";
                 iconName = @"audio_download";
             } else if ([identifier isEqualToString:@"share"]) {
-                title = @"Share Audio";
+                title = @"分享音频";
             } else if ([identifier isEqualToString:@"clipboard"]) {
                 title = @"Copy Audio";
             } else if ([identifier isEqualToString:@"gallery"]) {
-                title = @"Save Audio to Gallery";
+                title = @"将音频保存到图库";
             }
         }
         UIImage *image = iconName.length > 0

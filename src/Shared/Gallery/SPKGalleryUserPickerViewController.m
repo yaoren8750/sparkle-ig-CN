@@ -50,7 +50,7 @@
     self.searchController.obscuresBackgroundDuringPresentation = NO;
     self.searchController.searchResultsUpdater = self;
     self.searchController.searchBar.delegate = self;
-    self.searchController.searchBar.placeholder = @"Search users";
+    self.searchController.searchBar.placeholder = @"搜索用户";
     self.navigationItem.searchController = self.searchController;
     self.navigationItem.hidesSearchBarWhenScrolling = NO;
     self.definesPresentationContext = YES;
@@ -60,14 +60,14 @@
                                                             target:self
                                                             action:@selector(dismissPicker)];
     done.tintColor = [SPKUtils SPKColor_InstagramBlue];
-    done.accessibilityLabel = @"Done";
+    done.accessibilityLabel = @"完成";
     self.navigationItem.rightBarButtonItem = done;
 
     UIBarButtonItem *clear = [[UIBarButtonItem alloc] initWithImage:[SPKAssetUtils instagramIconNamed:@"backspace" pointSize:24.0]
                                                               style:UIBarButtonItemStylePlain
                                                              target:self
                                                              action:@selector(clearSelection)];
-    clear.accessibilityLabel = @"Clear selection";
+    clear.accessibilityLabel = @"清除选择";
     self.clearItem = clear;
     self.navigationItem.leftBarButtonItem = clear;
 

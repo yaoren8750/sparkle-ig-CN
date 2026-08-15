@@ -212,7 +212,7 @@ static NSArray<NSDictionary *> *SPKRegramReadRows(NSString *sqlitePath, NSString
             row[@"date"] = [NSDate dateWithTimeIntervalSinceReferenceDate:sqlite3_column_double(stmt, 10)];
         }
         if (text(11).length) {
-            row[@"username"] = text(11);
+            row[@"用户名"] = text(11);
         }
         if (text(12).length) {
             row[@"fullName"] = text(12);
@@ -262,7 +262,7 @@ static NSArray<NSDictionary *> *SPKRegramReadRows(NSString *sqlitePath, NSString
 + (SPKGallerySaveMetadata *)metadataForRow:(NSDictionary *)row {
     SPKGallerySaveMetadata *meta = [SPKGallerySaveMetadata new];
     meta.source = (int16_t)SPKRegramSource([row[@"source"] intValue]);
-    meta.sourceUsername = row[@"username"];
+    meta.sourceUsername = row[@"用户名"];
     meta.sourceUserPK = row[@"userPK"];
     meta.sourceFullName = row[@"fullName"];
     meta.sourceMediaCode = row[@"mediaCode"];

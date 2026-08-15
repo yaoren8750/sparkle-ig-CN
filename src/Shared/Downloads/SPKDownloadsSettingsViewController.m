@@ -14,11 +14,11 @@
 
 + (UIMenu *)audioPageDefaultActionMenu {
     NSArray<NSDictionary *> *items = @[
-        @{@"title" : @"Save Audio to Files", @"value" : @"files", @"icon" : @"audio_download"},
-        @{@"title" : @"Share Audio", @"value" : @"share", @"icon" : @"share"},
-        @{@"title" : @"Save Audio to Gallery", @"value" : @"gallery", @"icon" : @"sparkle_gallery"},
-        @{@"title" : @"Play Audio", @"value" : @"play", @"icon" : @"play"},
-        @{@"title" : @"Copy Audio Download URL", @"value" : @"copy_url", @"icon" : @"link"},
+        @{@"title" : @"将音频保存到文件", @"value" : @"files", @"icon" : @"audio_download"},
+        @{@"title" : @"分享音频", @"value" : @"share", @"icon" : @"share"},
+        @{@"title" : @"将音频保存到图库", @"value" : @"gallery", @"icon" : @"sparkle_gallery"},
+        @{@"title" : @"播放音频", @"value" : @"play", @"icon" : @"play"},
+        @{@"title" : @"复制音频下载链接", @"value" : @"copy_url", @"icon" : @"link"},
         @{@"title" : @"Open Menu", @"value" : @"none", @"icon" : @"action"}
     ];
     NSMutableArray<UICommand *> *commands = [NSMutableArray array];
@@ -182,7 +182,7 @@
     SPKSetting *pageDefault = SPKSettingApplySelectedMenuIcon([SPKSetting menuCellWithTitle:@"Audio Page Default Action" icon:SPKSettingsIcon(@"action") menu:[self audioPageDefaultActionMenu]], SPKSettingsIcon(@"action"));
     pageDefault.enabledProvider = audioEnabled;
 
-    return SPKTopicSection(@"Audio", @[ master, pageButton, pageDefault ],
+    return SPKTopicSection(@"音频", @[ master, pageButton, pageDefault ],
                            @"Adds audio actions for audio pages and media action buttons.");
 }
 

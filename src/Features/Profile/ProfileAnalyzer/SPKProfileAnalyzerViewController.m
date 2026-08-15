@@ -205,7 +205,7 @@ typedef NS_ENUM(NSInteger, SPKPACategory) {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"Profile Analyzer";
+    self.title = @"个人资料分析";
     self.view.backgroundColor = [SPKUtils SPKColor_InstagramGroupedBackground];
     self.selfPK = [SPKUtils currentUserPK];
 
@@ -313,7 +313,7 @@ static NSString *SPKPACompact(NSInteger n) {
     // before any analysis has run (no network — read straight off the IGUser).
     NSDictionary *live = [SPKUtils currentUserIdentity];
 
-    NSString *username = cached[@"username"] ?: cur.selfUsername ?: live[@"username"];
+    NSString *username = cached[@"用户名"] ?: cur.selfUsername ?: live[@"用户名"];
     NSString *fullName = cached[@"full_name"] ?: cur.selfFullName ?: live[@"full_name"];
     BOOL haveData = (cached != nil) || (cur != nil);
     NSInteger followers = cached[@"follower_count"] ? [cached[@"follower_count"] integerValue] : cur.followerCount;
@@ -321,7 +321,7 @@ static NSString *SPKPACompact(NSInteger n) {
     NSInteger posts = cached[@"media_count"] ? [cached[@"media_count"] integerValue] : cur.mediaCount;
     NSString *picURL = cached[@"profile_pic_url"] ?: cur.selfProfilePicURL ?: live[@"profile_pic_url"];
 
-    self.header.nameLabel.text = fullName.length ? fullName : (username.length ? username : @"Profile Analyzer");
+    self.header.nameLabel.text = fullName.length ? fullName : (username.length ? username : @"个人资料分析");
     self.header.usernameLabel.text = username.length ? [NSString stringWithFormat:@"@%@", username] : @"";
     [self.header setStatsPosts:haveData ? SPKPACompact(posts) : @"—"
                      followers:haveData ? SPKPACompact(followers) : @"—"
@@ -458,9 +458,9 @@ static NSString *SPKPACompact(NSInteger n) {
     NSMutableArray *current = [NSMutableArray array];
     NSMutableArray *changes = [NSMutableArray array];
     if (rep.current) {
-        [current addObject:[self row:SPKPACategoryMutual title:@"Mutual Followers" icon:@"user_check" count:rep.mutualFollowers.count]];
-        [current addObject:[self row:SPKPACategoryNotFollowingBack title:@"Not Following You Back" icon:@"user_unfollow" count:rep.notFollowingYouBack.count]];
-        [current addObject:[self row:SPKPACategoryDontFollowBack title:@"You Don't Follow Back" icon:@"user_follow" count:rep.youDontFollowBack.count]];
+        [current addObject:[self row:SPKPACategoryMutual title:@"互相关注" icon:@"user_check" count:rep.mutualFollowers.count]];
+        [current addObject:[self row:SPKPACategoryNotFollowingBack title:@"未回关你" icon:@"user_unfollow" count:rep.notFollowingYouBack.count]];
+        [current addObject:[self row:SPKPACategoryDontFollowBack title:@"你未回关" icon:@"user_follow" count:rep.youDontFollowBack.count]];
     }
 
     // Change rows are driven by the durable change log (accumulated across runs),
@@ -475,11 +475,11 @@ static NSString *SPKPACompact(NSInteger n) {
             unseen[k] = @(unseen[k].integerValue + 1);
     }
     if (self.changeEvents.count > 0) {
-        [changes addObject:[self changeRow:SPKPACategoryNewFollowers title:@"New Followers" icon:@"face_happy" total:total unseen:unseen]];
-        [changes addObject:[self changeRow:SPKPACategoryLostFollowers title:@"Lost Followers" icon:@"face_sad" total:total unseen:unseen]];
-        [changes addObject:[self changeRow:SPKPACategoryYouStartedFollowing title:@"You Started Following" icon:@"user_follow" total:total unseen:unseen]];
-        [changes addObject:[self changeRow:SPKPACategoryYouUnfollowed title:@"You Unfollowed" icon:@"user_unfollow" total:total unseen:unseen]];
-        [changes addObject:[self changeRow:SPKPACategoryProfileUpdates title:@"Profile Updates" icon:@"edit" total:total unseen:unseen]];
+        [changes addObject:[self changeRow:SPKPACategoryNewFollowers title:@"新增关注者" icon:@"face_happy" total:total unseen:unseen]];
+        [changes addObject:[self changeRow:SPKPACategoryLostFollowers title:@"失去的关注者" icon:@"face_sad" total:total unseen:unseen]];
+        [changes addObject:[self changeRow:SPKPACategoryYouStartedFollowing title:@"你开始关注的用户" icon:@"user_follow" total:total unseen:unseen]];
+        [changes addObject:[self changeRow:SPKPACategoryYouUnfollowed title:@"你取消关注的用户" icon:@"user_unfollow" total:total unseen:unseen]];
+        [changes addObject:[self changeRow:SPKPACategoryProfileUpdates title:@"个人资料更新" icon:@"edit" total:total unseen:unseen]];
     }
     self.currentRows = current;
     self.changeRows = changes;
@@ -530,7 +530,7 @@ static NSString *SPKPACompact(NSInteger n) {
                 return;
             }
             [pill setProgress:1.0f animated:YES];
-            [pill showSuccessWithTitle:@"Analysis complete" subtitle:@"Tap to view results" icon:nil];
+            [pill showSuccessWithTitle:@"分析完成" subtitle:@"点击查看结果" icon:nil];
             pill.onTapWhenCompleted = ^{
                 [SPKProfileAnalyzerViewController presentFromTop];
             };
@@ -699,7 +699,7 @@ typedef NS_ENUM(NSInteger, SPKPASectionKind) {
             content.secondaryTextProperties.font = [UIFont systemFontOfSize:[UIFont preferredFontForTextStyle:UIFontTextStyleBody].pointSize weight:UIFontWeightMedium];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         } else { // About
-            content.text = @"About Profile Analyzer";
+            content.text = @"关于个人资料分析";
             content.image = [SPKAssetUtils instagramIconNamed:@"info" pointSize:24.0 renderingMode:UIImageRenderingModeAlwaysTemplate];
             content.imageProperties.tintColor = [SPKUtils SPKColor_InstagramPrimaryText];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -801,7 +801,7 @@ typedef NS_ENUM(NSInteger, SPKPASectionKind) {
         @"Analysis runs in the background; you'll get a notification when it finishes.\n\n"
         @"All data stays on your device and is never uploaded.";
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"About Profile Analyzer"
+                                                  title:@"关于个人资料分析"
                                                 message:message
                                                 actions:@[
                                                     [SPKIGAlertAction actionWithTitle:@"OK"
@@ -812,10 +812,10 @@ typedef NS_ENUM(NSInteger, SPKPASectionKind) {
 
 - (void)confirmReset {
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Reset Profile Analyzer"
+                                                  title:@"重置个人资料分析"
                                                 message:@"This deletes all stored snapshots, the change history and visited-profile history. This cannot be undone."
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
                                                     [SPKIGAlertAction actionWithTitle:@"Reset"

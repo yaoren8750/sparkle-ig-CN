@@ -470,7 +470,7 @@ static BOOL SPKGalleryURLIsPostOrReel(NSURL *url) {
                                     didLink = YES;
                                     file.sourceUserPK = resolvedPK;
                                     [[SPKGalleryCoreDataStack shared] saveContext];
-                                    SPKLog(@"Gallery", @"backfilled sourceUserPK=%@ for @%@", resolvedPK, cleanUsername);
+                                    SPKLog(@"图库", @"backfilled sourceUserPK=%@ for @%@", resolvedPK, cleanUsername);
 
                                     NSString *who = currentName.length > 0
                                                         ? [NSString stringWithFormat:@"@%@ (%@)", cleanUsername, currentName]

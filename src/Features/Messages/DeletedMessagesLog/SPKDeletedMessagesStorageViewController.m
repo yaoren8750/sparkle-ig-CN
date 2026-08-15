@@ -140,7 +140,7 @@ static NSString *SPKDMStorageOwnerPK(void) {
     if (self.otherCount > 0) {
         [breakdown addObject:[SPKSetting valueCellWithTitle:@"Other" subtitle:[NSString stringWithFormat:@"%lu", (unsigned long)self.otherCount] icon:SPKSettingsIcon(@"messages")]];
     }
-    [sections addObject:SPKTopicSection(@"Messages", breakdown, nil)];
+    [sections addObject:SPKTopicSection(@"消息", breakdown, nil)];
 
     [sections addObject:SPKTopicSection(@"Disk Usage", @[
                   [SPKSetting valueCellWithTitle:@"Captured Media"
@@ -191,10 +191,10 @@ static NSString *SPKDMStorageOwnerPK(void) {
 
 - (void)confirmClearMedia {
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Clear captured media?"
-                                                message:@"This removes all captured media (photos, videos, voice notes) but keeps the message log."
+                                                  title:@"清除已捕获媒体？"
+                                                message:@"这将删除所有已捕获的媒体（照片、视频、语音消息），但会保留消息记录。"
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
                                                     [SPKIGAlertAction actionWithTitle:@"Clear Media"
@@ -218,13 +218,13 @@ static NSString *SPKDMStorageOwnerPK(void) {
 
 - (void)confirmClearLog {
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Clear entire log?"
-                                                message:@"This removes every logged deleted message and captured media for this account."
+                                                  title:@"清除全部记录？"
+                                                message:@"这将删除当前账户的所有已删除消息记录和已捕获媒体。"
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
-                                                    [SPKIGAlertAction actionWithTitle:@"Clear"
+                                                    [SPKIGAlertAction actionWithTitle:@"清除"
                                                                                 style:SPKIGAlertActionStyleDestructive
                                                                               handler:^{
                                                                                   [SPKDeletedMessagesStorage resetForOwnerPK:self.ownerPK];
@@ -235,10 +235,10 @@ static NSString *SPKDMStorageOwnerPK(void) {
 
 - (void)confirmClearStagedMedia {
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Clear media recovery cache?"
+                                                  title:@"清除媒体恢复缓存？"
                                                 message:@"This removes pre-cached view-once, view-twice, GIF, and sticker media. Lightweight metadata remains so Sparkle can still attempt a best-effort download after a future unsend."
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
                                                     [SPKIGAlertAction actionWithTitle:@"Clear Media"

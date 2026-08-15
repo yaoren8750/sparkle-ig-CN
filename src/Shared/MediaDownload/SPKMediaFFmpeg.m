@@ -1382,9 +1382,9 @@ static void SPKFFmpegRunMergeAttempts(NSArray<NSDictionary<NSString *, id> *> *a
     ]];
 
     UIBarButtonItem *shareItem = SPKMediaChromeTopBarButtonItem(@"share", self, @selector(shareTapped));
-    shareItem.accessibilityLabel = @"Share";
+    shareItem.accessibilityLabel = @"分享";
     UIBarButtonItem *copyItem = SPKMediaChromeTopBarButtonItem(@"copy", self, @selector(copyTapped));
-    copyItem.accessibilityLabel = @"Copy";
+    copyItem.accessibilityLabel = @"复制";
     SPKMediaChromeSetTrailingTopBarItems(self.navigationItem, @[ copyItem, shareItem ]);
 
     [self reloadContent];
@@ -1420,7 +1420,7 @@ static void SPKFFmpegRunMergeAttempts(NSArray<NSDictionary<NSString *, id> *> *a
     self = [super initWithStyle:UITableViewStyleInsetGrouped];
     if (!self)
         return nil;
-    self.title = @"Encoding Logs";
+    self.title = @"编码日志";
     return self;
 }
 
@@ -1430,9 +1430,9 @@ static void SPKFFmpegRunMergeAttempts(NSArray<NSDictionary<NSString *, id> *> *a
     self.tableView.backgroundColor = [SPKUtils SPKColor_InstagramGroupedBackground];
     self.tableView.separatorColor = [SPKUtils SPKColor_InstagramSeparator];
     UIBarButtonItem *shareAllItem = SPKMediaChromeTopBarButtonItem(@"share", self, @selector(shareAllTapped));
-    shareAllItem.accessibilityLabel = @"Share all";
+    shareAllItem.accessibilityLabel = @"全部分享";
     UIBarButtonItem *clearItem = SPKMediaChromeTopBarButtonItem(@"trash", self, @selector(clearTapped));
-    clearItem.accessibilityLabel = @"Clear";
+    clearItem.accessibilityLabel = @"清除";
     clearItem.tintColor = [SPKUtils SPKColor_InstagramDestructive];
     SPKMediaChromeSetTrailingTopBarItems(self.navigationItem, @[ clearItem, shareAllItem ]);
 }
@@ -1629,7 +1629,7 @@ static void SPKFFmpegRunMergeAttempts(NSArray<NSDictionary<NSString *, id> *> *a
         // Once converted, the merge happily stream-copies the audio.
         NSURL *convertedAudioURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@-audio-aaclc.m4a", basename]]];
         if (progress)
-            progress(0.0, @"Converting audio");
+            progress(0.0, @"正在转换音频");
         SPKFFmpegConvertAudioToAACLCAsync(audioFileURL, convertedAudioURL, ^(NSURL *_Nullable preparedAudioURL, NSError *_Nullable convertError) {
             if (preparedAudioURL && !convertError) {
                 [self _mergePreparedVideoFileURL:videoFileURL
@@ -2030,7 +2030,7 @@ static void SPKFFmpegRunMergeAttempts(NSArray<NSDictionary<NSString *, id> *> *a
     // audio if conversion fails (works for plain AAC-LC sources).
     NSURL *convertedAudioURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@-audio-aaclc.m4a", basename]]];
     if (progress)
-        progress(0.0, @"Converting audio");
+        progress(0.0, @"正在转换音频");
     SPKFFmpegConvertAudioToAACLCAsync(audioURL, convertedAudioURL, ^(NSURL *_Nullable preparedAudioURL, NSError *_Nullable convertError) {
         if (preparedAudioURL && !convertError) {
             runWithAudioSource(preparedAudioURL.path, ^{

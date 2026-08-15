@@ -65,7 +65,7 @@ NSString *SPKDeletedMessageKindLocalizedName(SPKDeletedMessageKind kind) {
     case SPKDeletedMessageKindPhoto:
         return @"Photo";
     case SPKDeletedMessageKindVideo:
-        return @"Video";
+        return @"视频";
     case SPKDeletedMessageKindVoice:
         return @"Voice";
     case SPKDeletedMessageKindGif:
@@ -73,11 +73,11 @@ NSString *SPKDeletedMessageKindLocalizedName(SPKDeletedMessageKind kind) {
     case SPKDeletedMessageKindSticker:
         return @"Sticker";
     case SPKDeletedMessageKindShare:
-        return @"Share";
+        return @"分享";
     case SPKDeletedMessageKindLink:
-        return @"Link";
+        return @"链接";
     case SPKDeletedMessageKindAudioShare:
-        return @"Audio";
+        return @"音频";
     case SPKDeletedMessageKindReaction:
         return @"Reaction";
     case SPKDeletedMessageKindOther:
@@ -130,13 +130,13 @@ NSString *SPKDeletedMessageShareSubtypeName(NSString *subtype) {
     if ([subtype isEqualToString:@"story"])
         return @"Story";
     if ([subtype isEqualToString:@"profile"])
-        return @"Profile";
+        return @"个人资料";
     if ([subtype isEqualToString:@"note"])
         return @"Note";
     if ([subtype isEqualToString:@"location"])
         return @"Location";
     if ([subtype isEqualToString:@"audio"])
-        return @"Audio";
+        return @"音频";
     return @"Shared post";
 }
 

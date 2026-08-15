@@ -447,7 +447,7 @@ static NSString *SPKNormalizedLogBody(NSString *category, NSString *body, NSStri
     NSString *resolvedBody = body ?: @"";
     NSArray<NSDictionary<NSString *, NSString *> *> *legacyPrefixes = @[
         @{@"prefix" : @"[Sparkle][startup]", @"category" : @"Startup"},
-        @{@"prefix" : @"[Sparkle Gallery]", @"category" : @"Gallery"},
+        @{@"prefix" : @"[Sparkle Gallery]", @"category" : @"图库"},
         @{@"prefix" : @"[Sparkle BulkDownload]", @"category" : @"BulkDownload"},
         @{@"prefix" : @"[Sparkle]", @"category" : resolvedCategory},
     ];
@@ -1290,9 +1290,9 @@ static id SPKPrefValueWithMasterOverlay(NSString *key) {
     if (pk.length)
         info[@"pk"] = pk;
 
-    id username = SPKObjectForSelector(user, @"username");
+    id username = SPKObjectForSelector(user, @"用户名");
     if ([username isKindOfClass:[NSString class]] && [(NSString *)username length])
-        info[@"username"] = username;
+        info[@"用户名"] = username;
 
     id fullName = SPKObjectForSelector(user, @"fullName");
     if (![fullName isKindOfClass:[NSString class]] || ![(NSString *)fullName length])
@@ -2005,7 +2005,7 @@ static const unsigned long long kSPKUserReferenceSubtypeUser = 2;
 
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObject:pk forKey:@"pk"];
     if (username.length > 0)
-        dict[@"username"] = username;
+        dict[@"用户名"] = username;
 
     @try {
         return [userMap performSelector:@selector(userWithDict:) withObject:dict];
@@ -2618,7 +2618,7 @@ static void SPKSetResolvedPKForUsername(NSString *username, NSString *pk) {
                                                   title:title ?: @"Confirm Action"
                                                 message:message ?: @"Are you sure you want to continue?"
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:^{
                                                                                   if (cancelHandler)
@@ -2641,8 +2641,8 @@ static void SPKSetResolvedPKForUsername(NSString *username, NSString *pk) {
 }
 + (void)showRestartConfirmation {
     [SPKIGAlertPresenter presentAlertFromViewController:topMostController()
-                                                  title:@"Restart Required"
-                                                message:@"You must restart the app to apply this change"
+                                                  title:@"需要重新启动"
+                                                message:@"必须重新启动应用才能应用此更改"
                                                 actions:@[
                                                     [SPKIGAlertAction actionWithTitle:@"Later"
                                                                                 style:SPKIGAlertActionStyleCancel

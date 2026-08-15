@@ -513,7 +513,7 @@ static NSString *spkGeneratedGroupTitle(NSArray<SPKDeletedMessage *> *msgs, NSSt
                 ownerPK:(NSString *)ownerPK {
     if (!senderPK.length || ![info isKindOfClass:[NSDictionary class]])
         return NO;
-    NSString *u = [info[@"username"] isKindOfClass:[NSString class]] ? info[@"username"] : nil;
+    NSString *u = [info[@"用户名"] isKindOfClass:[NSString class]] ? info[@"用户名"] : nil;
     NSString *fn = [info[@"full_name"] isKindOfClass:[NSString class]] ? info[@"full_name"] : nil;
     NSString *p = [info[@"profile_pic_url"] isKindOfClass:[NSString class]] ? info[@"profile_pic_url"] : nil;
     if (!u.length && !fn.length && !p.length)

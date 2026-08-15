@@ -100,7 +100,7 @@ static SPKMediaDMUploadCoordinator *sSPKMediaActiveDMUploadCoordinator;
 
     __weak typeof(coordinator) weakCoordinator = coordinator;
     [SPKGalleryPickerViewController presentFromViewController:presenter
-                                                        title:@"Gallery"
+                                                        title:@"图库"
                                             allowedMediaTypes:mediaTypes
                                       allowsMultipleSelection:NO
                                                    completion:^(NSArray<SPKGalleryFile *> *selectedFiles) {

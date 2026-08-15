@@ -21,7 +21,7 @@
         return nil;
 
     NSString *identifier = [dictionary[@"identifier"] isKindOfClass:[NSString class]] ? dictionary[@"identifier"] : NSUUID.UUID.UUIDString;
-    NSString *title = [dictionary[@"title"] isKindOfClass:[NSString class]] ? dictionary[@"title"] : @"Section";
+    NSString *title = [dictionary[@"title"] isKindOfClass:[NSString class]] ? dictionary[@"title"] : @"分组";
     NSString *iconName = [dictionary[@"icon_name"] isKindOfClass:[NSString class]] ? dictionary[@"icon_name"] : @"action";
     NSString *type = [dictionary[@"type"] isKindOfClass:[NSString class]] ? dictionary[@"type"] : @"collapsible";
     NSArray *actions = [dictionary[@"actions"] isKindOfClass:[NSArray class]] ? dictionary[@"actions"] : @[];
@@ -35,7 +35,7 @@
 - (NSDictionary *)dictionaryRepresentation {
     return @{
         @"identifier" : self.identifier ?: NSUUID.UUID.UUIDString,
-        @"title" : self.title ?: @"Section",
+        @"title" : self.title ?: @"分组",
         @"icon_name" : self.iconName ?: @"action",
         @"type" : self.collapsible ? @"collapsible" : @"inline",
         @"actions" : [self.actions copy] ?: @[]

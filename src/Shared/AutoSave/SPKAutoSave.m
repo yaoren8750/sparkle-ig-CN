@@ -84,7 +84,7 @@ static void SPKAutoSaveFlushSummaryIfDrained(void) {
 
     NSString *title = saved == 1 ? @"Auto-saved 1 item"
                                  : [NSString stringWithFormat:@"Auto-saved %lu items", (unsigned long)saved];
-    NSString *subtitle = toPhotos ? @"Tap to open Photos" : @"Tap to open Gallery";
+    NSString *subtitle = toPhotos ? @"点击打开照片" : @"点击打开图库";
     if (failed > 0) {
         subtitle = failed == 1 ? @"1 item failed" : [NSString stringWithFormat:@"%lu items failed", (unsigned long)failed];
         if (saved == 0)

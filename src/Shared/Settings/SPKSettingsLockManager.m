@@ -20,7 +20,7 @@
 }
 
 - (NSString *)protectedContentName {
-    return @"Settings";
+    return @"设置";
 }
 
 - (void)lockSettings {

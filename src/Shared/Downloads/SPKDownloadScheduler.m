@@ -686,7 +686,7 @@ static NSString *SPKRenameStagedPath(NSString *stagedPath, SPKDownloadItem *item
                                                               itemID:itemID
                                                                block:^(SPKDownloadItem *snap) {
                                                                    snap.progress = 0.72;
-                                                                   snap.detail = @"Converting audio";
+                                                                   snap.detail = @"正在转换音频";
                                                                    snap.bytesWritten = 0;
                                                                    snap.totalBytesExpected = 0;
                                                                }];
@@ -697,7 +697,7 @@ static NSString *SPKRenameStagedPath(NSString *stagedPath, SPKDownloadItem *item
                                                                       itemID:itemID
                                                                        block:^(SPKDownloadItem *snap) {
                                                                            snap.progress = 0.72 + (convertProgress * 0.23);
-                                                                           snap.detail = title.length > 0 ? title : @"Converting audio";
+                                                                           snap.detail = title.length > 0 ? title : @"正在转换音频";
                                                                            snap.bytesWritten = 0;
                                                                            snap.totalBytesExpected = 0;
                                                                        }];

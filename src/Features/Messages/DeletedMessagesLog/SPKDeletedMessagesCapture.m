@@ -615,7 +615,7 @@ static void spkResolveSenderInfo(NSString *pk, NSString **outUser, NSString **ou
             return [v isKindOfClass:[NSString class]] && [(NSString *)v length] > 0 ? v : nil;
         };
         if (!u.length)
-            u = fcStr(@"username");
+            u = fcStr(@"用户名");
         if (!p.length)
             p = fcStr(@"profile_pic_url");
         fn = fcStr(@"full_name");
@@ -647,7 +647,7 @@ static NSString *spkExtractShareTitle(id obj) {
     NSString *best = nil;
     NSArray<NSString *> *keys = @[ @"title", @"caption", @"text", @"name",
                                    @"description", @"summary", @"label",
-                                   @"username", @"headline" ];
+                                   @"用户名", @"headline" ];
     int hops = 0;
     while (stack.count && hops++ < 64) {
         id cur = stack.lastObject;
@@ -1195,14 +1195,14 @@ static NSDictionary *spkBuildSnapshot(id message, NSString *ownerHint) {
         if (!text.length)
             text = spkTryStringSelectors(reshare,
                                          @[ @"caption", @"captionText", @"title", @"headline", @"summary",
-                                            @"name", @"username", @"text" ]);
+                                            @"name", @"用户名", @"text" ]);
         if (!mediaURL.length) {
             NSString *u = spkTryURLSelectors(reshare,
                                              @[ @"webURL", @"shareURL", @"deepLink", @"url", @"mediaURL", @"playableURL" ]);
             if (u.length)
                 mediaURL = u;
         }
-        shareAuthor = spkTryStringSelectors(reshare, @[ @"username", @"ownerUsername", @"name" ]);
+        shareAuthor = spkTryStringSelectors(reshare, @[ @"用户名", @"ownerUsername", @"name" ]);
     }
 
     // Link branch — IGDirectLinkContext has direct ivars.
@@ -2180,13 +2180,13 @@ static NSArray<NSString *> *spkThreadUserNames(id metadata) {
         if (!n.length) {
             id fc = spkAnyIvar(u, "_fieldCache");
             if ([fc isKindOfClass:[NSDictionary class]]) {
-                id v = ((NSDictionary *)fc)[@"full_name"] ?: ((NSDictionary *)fc)[@"username"];
+                id v = ((NSDictionary *)fc)[@"full_name"] ?: ((NSDictionary *)fc)[@"用户名"];
                 if ([v isKindOfClass:[NSString class]] && [(NSString *)v length])
                     n = v;
             }
         }
         if (!n.length)
-            n = spkTryStringSelectors(u, @[ @"username" ]);
+            n = spkTryStringSelectors(u, @[ @"用户名" ]);
         if (n.length)
             [names addObject:n];
     }

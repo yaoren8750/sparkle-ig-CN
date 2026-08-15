@@ -232,45 +232,164 @@ static void SPKStoryReplySideEffects(void) {
 // Confirmation handlers
 
 static BOOL SPKBypassFeedPostLikeConfirm = NO;
+
+#define SPK_RUN_WITH_FEED_POST_LIKE_CONFIRM_BYPASS(orig) \
+    do {                                                 \
+        SPKBypassFeedPostLikeConfirm = YES;              \
+        @try {                                           \
+            orig;                                        \
+        } @finally {                                     \
+            SPKBypassFeedPostLikeConfirm = NO;           \
+        }                                                \
+    } while (0)
+
+// A single comment like tap fans out through a forwarding chain: the Swift
+// IGCommentCell handler forwards to IGCommentCellController (and the combined
+// like/dislike variants forward to the plain ones). Each link is hooked, so
+// without a guard the confirmation is presented once per link — the user sees
+// a second prompt after confirming the first. We wrap the confirmed %orig in a
+// re-entrancy flag so the forwarded calls run through untouched.
 static BOOL SPKBypassCommentLikeConfirm = NO;
 
-static void SPKRunFeedPostLikeConfirm(void (^origBlock)(void)) {
-    SPKBypassFeedPostLikeConfirm = YES;
-    @try {
-        if (origBlock)
-            origBlock();
-    } @finally {
-        SPKBypassFeedPostLikeConfirm = NO;
-    }
-}
+#define SPK_RUN_WITH_COMMENT_LIKE_CONFIRM_BYPASS(orig) \
+    do {                                               \
+        SPKBypassCommentLikeConfirm = YES;             \
+        @try {                                         \
+            orig;                                      \
+        } @finally {                                   \
+            SPKBypassCommentLikeConfirm = NO;          \
+        }                                              \
+    } while (0)
 
-static void SPKRunCommentLikeConfirm(void (^origBlock)(void)) {
-    SPKBypassCommentLikeConfirm = YES;
-    @try {
-        if (origBlock)
-            origBlock();
-    } @finally {
-        SPKBypassCommentLikeConfirm = NO;
-    }
-}
-
-// The confirm-like pref must never affect the dislike button.
+// The confirm-like pref must never affect the dislike button. Its state update
+// enum (dislikeUpdate) is unreliable across builds, so we key off the tapped
+// button's accessibility identifier ("comment-dislike-button") / label instead.
 static BOOL SPKCommentButtonIsDislike(id button) {
     if (![button isKindOfClass:[UIView class]])
         return NO;
-
     UIView *view = (UIView *)button;
-
     NSString *identifier = view.accessibilityIdentifier.lowercaseString;
     if ([identifier containsString:@"dislike"])
         return YES;
-
     NSString *label = view.accessibilityLabel.lowercaseString;
     if ([label containsString:@"dislike"])
         return YES;
-
     return NO;
 }
+
+#define SPKCONFIRMLIKE(prefKey, logText, titleText, messageText, orig) \
+    if ([SPKUtils getBoolPref:prefKey]) {                              \
+        SPKLog(@"General", @"[Sparkle] %@", logText);                  \
+        [SPKUtils                                                      \
+            showConfirmation:^(void) {                                 \
+                orig;                                                  \
+            }                                                          \
+                       title:titleText                                 \
+                     message:messageText];                             \
+    } else {                                                           \
+        return orig;                                                   \
+    }
+
+#define CONFIRMFEEDPOSTLIKE(context, button, orig)                                                       \
+    if (SPKBypassFeedPostLikeConfirm) {                                                                  \
+        return orig;                                                                                     \
+    }                                                                                                    \
+    if ([SPKUtils getBoolPref:@"feed_confirm_post_like"]) {                                              \
+        BOOL isUnlike = SPKFeedLikeIsUnlike((button), (context));                                        \
+        SPKLog(@"General", @"[Sparkle] Confirm feed post %@ triggered", isUnlike ? @"unlike" : @"like"); \
+        SPKPresentLikeToggleConfirmation(                                                                \
+            isUnlike,                                                                                    \
+            @"Confirm Post Like",                                                                        \
+            @"Are you sure you want to like this post?",                                                 \
+            @"Confirm Post Unlike",                                                                      \
+            @"Are you sure you want to unlike this post?",                                               \
+            ^{                                                                                           \
+                SPK_RUN_WITH_FEED_POST_LIKE_CONFIRM_BYPASS(orig);                                        \
+            });                                                                                          \
+    } else {                                                                                             \
+        return orig;                                                                                     \
+    }
+
+#define CONFIRMFEEDDOUBLETAPLIKE(context, orig)                                                                \
+    if ([SPKUtils getBoolPref:@"feed_confirm_double_tap_like"]) {                                              \
+        BOOL isUnlike = SPKFeedLikeIsUnlike(nil, (context));                                                   \
+        SPKLog(@"General", @"[Sparkle] Confirm feed double-tap %@ triggered", isUnlike ? @"unlike" : @"like"); \
+        SPKPresentLikeToggleConfirmation(                                                                      \
+            isUnlike,                                                                                          \
+            @"Confirm Post Like",                                                                              \
+            @"Are you sure you want to like this post?",                                                       \
+            @"Confirm Post Unlike",                                                                            \
+            @"Are you sure you want to unlike this post?",                                                     \
+            ^{                                                                                                 \
+                SPK_RUN_WITH_FEED_POST_LIKE_CONFIRM_BYPASS(orig);                                              \
+            });                                                                                                \
+    } else {                                                                                                   \
+        SPK_RUN_WITH_FEED_POST_LIKE_CONFIRM_BYPASS(orig);                                                      \
+    }
+
+#define CONFIRMCOMMENTLIKE(context, button, orig)                                                      \
+    if (SPKBypassCommentLikeConfirm || SPKCommentButtonIsDislike(button)) {                            \
+        return orig;                                                                                   \
+    }                                                                                                  \
+    if ([SPKUtils getBoolPref:@"general_comments_confirm_like"]) {                                     \
+        BOOL isUnlike = SPKCommentLikeIsUnlike((button), (context));                                   \
+        SPKLog(@"General", @"[Sparkle] Confirm comment %@ triggered", isUnlike ? @"unlike" : @"like"); \
+        SPKPresentLikeToggleConfirmation(                                                              \
+            isUnlike,                                                                                  \
+            @"Confirm Comment Like",                                                                   \
+            @"Are you sure you want to like this comment?",                                            \
+            @"Confirm Comment Unlike",                                                                 \
+            @"Are you sure you want to unlike this comment?",                                          \
+            ^{                                                                                         \
+                SPK_RUN_WITH_COMMENT_LIKE_CONFIRM_BYPASS(orig);                                        \
+            });                                                                                        \
+    } else {                                                                                           \
+        return orig;                                                                                   \
+    }
+
+// The combined like/dislike handlers fire for BOTH the like and the dislike
+// button. `dislikeUpdate` being nonzero is a secondary signal that the dislike
+// button was tapped (the button-identifier check in CONFIRMCOMMENTLIKE is the
+// primary one) — either way the confirm-like pref must not apply.
+#define CONFIRMCOMMENTLIKEORDISLIKE(context, button, dislikeUpdate, orig) \
+    if ((dislikeUpdate) != 0) {                                          \
+        return orig;                                                     \
+    }                                                                    \
+    CONFIRMCOMMENTLIKE(context, button, orig)
+
+#define CONFIRMREELSLIKE(context, button, orig)                                                      \
+    if ([SPKUtils getBoolPref:@"reels_confirm_like"]) {                                              \
+        BOOL isUnlike = SPKFeedLikeIsUnlike((button), (context));                                    \
+        SPKLog(@"General", @"[Sparkle] Confirm reels %@ triggered", isUnlike ? @"unlike" : @"like"); \
+        SPKPresentLikeToggleConfirmation(                                                            \
+            isUnlike,                                                                                \
+            @"Confirm Reel Like",                                                                    \
+            @"Are you sure you want to like this reel?",                                             \
+            @"Confirm Reel Unlike",                                                                  \
+            @"Are you sure you want to unlike this reel?",                                           \
+            ^{                                                                                       \
+                orig;                                                                                \
+            });                                                                                      \
+    } else {                                                                                         \
+        return orig;                                                                                 \
+    }
+
+#define CONFIRMREELSDOUBLETAPLIKE(context, orig)                                                                \
+    if ([SPKUtils getBoolPref:@"reels_confirm_double_tap_like"]) {                                              \
+        BOOL isUnlike = SPKFeedLikeIsUnlike(nil, (context));                                                    \
+        SPKLog(@"General", @"[Sparkle] Confirm reels double-tap %@ triggered", isUnlike ? @"unlike" : @"like"); \
+        SPKPresentLikeToggleConfirmation(                                                                       \
+            isUnlike,                                                                                           \
+            @"Confirm Reel Like",                                                                               \
+            @"Are you sure you want to like this reel?",                                                        \
+            @"Confirm Reel Unlike",                                                                             \
+            @"Are you sure you want to unlike this reel?",                                                      \
+            ^{                                                                                                  \
+                orig;                                                                                           \
+            });                                                                                                 \
+    } else {                                                                                                    \
+        return orig;                                                                                            \
+    }
 
 ///////////////////////////////////////////////////////////
 
@@ -278,721 +397,130 @@ static BOOL SPKCommentButtonIsDislike(id button) {
 %group SPKLikeConfirmHooks
 
 %hook IGUFIButtonBarView
-
 - (void)_onLikeButtonPressed {
-    if (SPKBypassFeedPostLikeConfirm) {
-        %orig;
-        return;
-    }
-
-    if ([SPKUtils getBoolPref:@"feed_confirm_post_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(nil, self);
-
-        SPKLog(@"General",
-               @"[Sparkle] Confirm feed post %@ triggered",
-               isUnlike ? @"unlike" : @"like");
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Post Like",
-            @"Are you sure you want to like this post?",
-            @"Confirm Post Unlike",
-            @"Are you sure you want to unlike this post?",
-            ^{
-                SPKRunFeedPostLikeConfirm(^{
-                    %orig;
-                });
-            });
-
-        return;
-    }
-
-    %orig;
+    CONFIRMFEEDPOSTLIKE(self, nil, %orig);
 }
-
 - (void)_onLikeButtonPressed:(id)arg1 {
-    if (SPKBypassFeedPostLikeConfirm) {
-        %orig(arg1);
-        return;
-    }
-
-    if ([SPKUtils getBoolPref:@"feed_confirm_post_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(arg1, self);
-
-        SPKLog(@"General",
-               @"[Sparkle] Confirm feed post %@ triggered",
-               isUnlike ? @"unlike" : @"like");
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Post Like",
-            @"Are you sure you want to like this post?",
-            @"Confirm Post Unlike",
-            @"Are you sure you want to unlike this post?",
-            ^{
-                SPKRunFeedPostLikeConfirm(^{
-                    %orig(arg1);
-                });
-            });
-
-        return;
-    }
-
-    %orig(arg1);
+    CONFIRMFEEDPOSTLIKE(self, arg1, %orig);
 }
-
 %end
-
-
 %hook IGFeedItemUFICell
-
 - (void)UFIButtonBarDidTapOnLike:(id)arg1 {
-    if (SPKBypassFeedPostLikeConfirm) {
-        %orig(arg1);
-        return;
-    }
-
-    if ([SPKUtils getBoolPref:@"feed_confirm_post_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(arg1, self);
-
-        SPKLog(@"General",
-               @"[Sparkle] Confirm feed post %@ triggered",
-               isUnlike ? @"unlike" : @"like");
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Post Like",
-            @"Are you sure you want to like this post?",
-            @"Confirm Post Unlike",
-            @"Are you sure you want to unlike this post?",
-            ^{
-                SPKRunFeedPostLikeConfirm(^{
-                    %orig(arg1);
-                });
-            });
-
-        return;
-    }
-
-    %orig(arg1);
+    CONFIRMFEEDPOSTLIKE(self, arg1, %orig);
 }
-
 %end
-
-
 %hook IGFeedItemUFICellConfigurableDelegateImpl
-
 - (void)feedItemUFICellDidTapLikeButton:(id)arg1 {
-    if (SPKBypassFeedPostLikeConfirm) {
-        %orig(arg1);
-        return;
-    }
-
-    if ([SPKUtils getBoolPref:@"feed_confirm_post_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(arg1, self);
-
-        SPKLog(@"General",
-               @"[Sparkle] Confirm feed post %@ triggered",
-               isUnlike ? @"unlike" : @"like");
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Post Like",
-            @"Are you sure you want to like this post?",
-            @"Confirm Post Unlike",
-            @"Are you sure you want to unlike this post?",
-            ^{
-                SPKRunFeedPostLikeConfirm(^{
-                    %orig(arg1);
-                });
-            });
-
-        return;
-    }
-
-    %orig(arg1);
+    CONFIRMFEEDPOSTLIKE(self, arg1, %orig);
 }
-
 - (void)_performSingleTapLikeToggle {
-    if (SPKBypassFeedPostLikeConfirm) {
-        %orig;
-        return;
-    }
-
-    if ([SPKUtils getBoolPref:@"feed_confirm_post_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(nil, self);
-
-        SPKLog(@"General",
-               @"[Sparkle] Confirm feed post %@ triggered",
-               isUnlike ? @"unlike" : @"like");
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Post Like",
-            @"Are you sure you want to like this post?",
-            @"Confirm Post Unlike",
-            @"Are you sure you want to unlike this post?",
-            ^{
-                SPKRunFeedPostLikeConfirm(^{
-                    %orig;
-                });
-            });
-
-        return;
-    }
-
-    %orig;
+    CONFIRMFEEDPOSTLIKE(self, nil, %orig);
 }
-
 %end
-
-
-///////////////////////////////////////////////////////////
-
-// Double tap feed like
-
 %hook IGFeedPhotoView
-
 - (void)_onDoubleTap {
-    if ([SPKUtils getBoolPref:@"feed_confirm_double_tap_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(nil, self);
-
-        SPKLog(@"General",
-               @"[Sparkle] Confirm feed double-tap %@ triggered",
-               isUnlike ? @"unlike" : @"like");
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Post Like",
-            @"Are you sure you want to like this post?",
-            @"Confirm Post Unlike",
-            @"Are you sure you want to unlike this post?",
-            ^{
-                SPKRunFeedPostLikeConfirm(^{
-                    %orig;
-                });
-            });
-
-        return;
-    }
-
-    %orig;
+    CONFIRMFEEDDOUBLETAPLIKE(self, %orig);
 }
-
 - (void)_onDoubleTap:(id)arg1 {
-    if ([SPKUtils getBoolPref:@"feed_confirm_double_tap_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(nil, self);
-
-        SPKLog(@"General",
-               @"[Sparkle] Confirm feed double-tap %@ triggered",
-               isUnlike ? @"unlike" : @"like");
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Post Like",
-            @"Are you sure you want to like this post?",
-            @"Confirm Post Unlike",
-            @"Are you sure you want to unlike this post?",
-            ^{
-                SPKRunFeedPostLikeConfirm(^{
-                    %orig(arg1);
-                });
-            });
-
-        return;
-    }
-
-    %orig(arg1);
+    CONFIRMFEEDDOUBLETAPLIKE(self, %orig);
 }
-
 %end
-
-
 %hook IGVideoPlayerOverlayContainerView
-
 - (void)_handleDoubleTapGesture:(id)arg1 {
-    if ([SPKUtils getBoolPref:@"feed_confirm_double_tap_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(nil, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Post Like",
-            @"Are you sure you want to like this post?",
-            @"Confirm Post Unlike",
-            @"Are you sure you want to unlike this post?",
-            ^{
-                SPKRunFeedPostLikeConfirm(^{
-                    %orig(arg1);
-                });
-            });
-
-        return;
-    }
-
-    %orig(arg1);
+    CONFIRMFEEDDOUBLETAPLIKE(self, %orig);
 }
-
+// IG 436+ : the Swift-rewritten IGModernFeedVideoOverlays.IGVideoPlayerOverlayContainerView
+// dropped the leading underscore from this selector.
 - (void)handleDoubleTapGesture:(id)arg1 {
-    if ([SPKUtils getBoolPref:@"feed_confirm_double_tap_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(nil, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Post Like",
-            @"Are you sure you want to like this post?",
-            @"Confirm Post Unlike",
-            @"Are you sure you want to unlike this post?",
-            ^{
-                SPKRunFeedPostLikeConfirm(^{
-                    %orig(arg1);
-                });
-            });
-
-        return;
-    }
-
-    %orig(arg1);
+    CONFIRMFEEDDOUBLETAPLIKE(self, %orig);
 }
-
 %end
-
-
-///////////////////////////////////////////////////////////
 
 // Liking reels
-
 %hook IGSundialViewerVideoCell
-
 - (void)controlsOverlayControllerDidTapLikeButton:(id)arg1 {
-    if ([SPKUtils getBoolPref:@"reels_confirm_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(arg1, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Reel Like",
-            @"Are you sure you want to like this reel?",
-            @"Confirm Reel Unlike",
-            @"Are you sure you want to unlike this reel?",
-            ^{
-                %orig(arg1);
-            });
-
-        return;
-    }
-
-    %orig(arg1);
+    CONFIRMREELSLIKE(self, arg1, %orig);
 }
-
 - (void)controlsOverlayControllerDidLongPressLikeButton:(id)arg1 gestureRecognizer:(id)arg2 {
-    if ([SPKUtils getBoolPref:@"reels_confirm_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(arg1, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Reel Like",
-            @"Are you sure you want to like this reel?",
-            @"Confirm Reel Unlike",
-            @"Are you sure you want to unlike this reel?",
-            ^{
-                %orig(arg1, arg2);
-            });
-
-        return;
-    }
-
-    %orig(arg1, arg2);
+    CONFIRMREELSLIKE(self, arg1, %orig);
 }
-
 - (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2 {
-    if ([SPKUtils getBoolPref:@"reels_confirm_double_tap_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(nil, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Reel Like",
-            @"Are you sure you want to like this reel?",
-            @"Confirm Reel Unlike",
-            @"Are you sure you want to unlike this reel?",
-            ^{
-                %orig(arg1, arg2);
-            });
-
-        return;
-    }
-
-    %orig(arg1, arg2);
+    CONFIRMREELSDOUBLETAPLIKE(self, %orig);
 }
-
 %end
-
-
 %hook IGSundialViewerPhotoCell
-
 - (void)controlsOverlayControllerDidTapLikeButton:(id)arg1 {
-    if ([SPKUtils getBoolPref:@"reels_confirm_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(arg1, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Reel Like",
-            @"Are you sure you want to like this reel?",
-            @"Confirm Reel Unlike",
-            @"Are you sure you want to unlike this reel?",
-            ^{
-                %orig(arg1);
-            });
-
-        return;
-    }
-
-    %orig(arg1);
+    CONFIRMREELSLIKE(self, arg1, %orig);
 }
-
 - (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2 {
-    if ([SPKUtils getBoolPref:@"reels_confirm_double_tap_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(nil, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Reel Like",
-            @"Are you sure you want to like this reel?",
-            @"Confirm Reel Unlike",
-            @"Are you sure you want to unlike this reel?",
-            ^{
-                %orig(arg1, arg2);
-            });
-
-        return;
-    }
-
-    %orig(arg1, arg2);
+    CONFIRMREELSDOUBLETAPLIKE(self, %orig);
 }
-
 - (void)swift_photoCell:(id)arg1 didObserveDoubleTapWithLocationInfo:(id)arg2 gestureRecognizer:(id)arg3 {
-    if ([SPKUtils getBoolPref:@"reels_confirm_double_tap_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(nil, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Reel Like",
-            @"Are you sure you want to like this reel?",
-            @"Confirm Reel Unlike",
-            @"Are you sure you want to unlike this reel?",
-            ^{
-                %orig(arg1, arg2, arg3);
-            });
-
-        return;
-    }
-
-    %orig(arg1, arg2, arg3);
+    CONFIRMREELSDOUBLETAPLIKE(self, %orig);
 }
-
 %end
-
-
 %hook IGSundialViewerCarouselCell
-
 - (void)controlsOverlayControllerDidTapLikeButton:(id)arg1 {
-    if ([SPKUtils getBoolPref:@"reels_confirm_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(arg1, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Reel Like",
-            @"Are you sure you want to like this reel?",
-            @"Confirm Reel Unlike",
-            @"Are you sure you want to unlike this reel?",
-            ^{
-                %orig(arg1);
-            });
-
-        return;
-    }
-
-    %orig(arg1);
+    CONFIRMREELSLIKE(self, arg1, %orig);
 }
-
 - (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2 {
-    if ([SPKUtils getBoolPref:@"reels_confirm_double_tap_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(nil, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Reel Like",
-            @"Are you sure you want to like this reel?",
-            @"Confirm Reel Unlike",
-            @"Are you sure you want to unlike this reel?",
-            ^{
-                %orig(arg1, arg2);
-            });
-
-        return;
-    }
-
-    %orig(arg1, arg2);
+    CONFIRMREELSDOUBLETAPLIKE(self, %orig);
 }
-
 - (void)carouselCell:(id)arg1 didObserveDoubleTapWithLocationInfo:(id)arg2 gestureRecognizer:(id)arg3 {
-    if ([SPKUtils getBoolPref:@"reels_confirm_double_tap_like"]) {
-        BOOL isUnlike = SPKFeedLikeIsUnlike(nil, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Reel Like",
-            @"Are you sure you want to like this reel?",
-            @"Confirm Reel Unlike",
-            @"Are you sure you want to unlike this reel?",
-            ^{
-                %orig(arg1, arg2, arg3);
-            });
-
-        return;
-    }
-
-    %orig(arg1, arg2, arg3);
+    CONFIRMREELSDOUBLETAPLIKE(self, %orig);
 }
-
 %end
-
-
-///////////////////////////////////////////////////////////
 
 // Liking comments
-
 %hook IGCommentCellController
-
 - (void)commentCell:(id)arg1 didTapLikeButton:(id)arg2 {
-    if (SPKBypassCommentLikeConfirm || SPKCommentButtonIsDislike(arg2)) {
-        %orig(arg1, arg2);
-        return;
-    }
-
-    if ([SPKUtils getBoolPref:@"general_comments_confirm_like"]) {
-        BOOL isUnlike = SPKCommentLikeIsUnlike(arg2, arg1);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Comment Like",
-            @"Are you sure you want to like this comment?",
-            @"Confirm Comment Unlike",
-            @"Are you sure you want to unlike this comment?",
-            ^{
-                SPKRunCommentLikeConfirm(^{
-                    %orig(arg1, arg2);
-                });
-            });
-
-        return;
-    }
-
-    %orig(arg1, arg2);
+    CONFIRMCOMMENTLIKE(arg1, arg2, %orig);
 }
-
+// IG 436+ (comment dislikes): like taps route through this combined handler.
 - (void)commentCell:(id)arg1 didTapLikeOrDislikeButton:(id)arg2 likeButton:(id)arg3 dislikeUpdate:(long long)arg4 {
-    if (arg4 != 0 || SPKCommentButtonIsDislike(arg2)) {
-        %orig(arg1, arg2, arg3, arg4);
-        return;
-    }
-
-    if ([SPKUtils getBoolPref:@"general_comments_confirm_like"]) {
-        BOOL isUnlike = SPKCommentLikeIsUnlike(arg2, arg1);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Comment Like",
-            @"Are you sure you want to like this comment?",
-            @"Confirm Comment Unlike",
-            @"Are you sure you want to unlike this comment?",
-            ^{
-                SPKRunCommentLikeConfirm(^{
-                    %orig(arg1, arg2, arg3, arg4);
-                });
-            });
-
-        return;
-    }
-
-    %orig(arg1, arg2, arg3, arg4);
+    // arg2 is the button that was actually tapped (like or dislike); check it so
+    // the dislike button is filtered by identifier, not just by dislikeUpdate.
+    CONFIRMCOMMENTLIKEORDISLIKE(arg1, arg2, arg4, %orig);
 }
-
 - (void)commentCell:(id)arg1 didTapLikedByButtonForUser:(id)arg2 {
-    if (SPKBypassCommentLikeConfirm) {
-        %orig(arg1, arg2);
-        return;
-    }
-
-    if ([SPKUtils getBoolPref:@"general_comments_confirm_like"]) {
-        SPKPresentLikeToggleConfirmation(
-            NO,
-            @"Confirm Comment Like",
-            @"Are you sure you want to like this comment?",
-            @"Confirm Comment Unlike",
-            @"Are you sure you want to unlike this comment?",
-            ^{
-                SPKRunCommentLikeConfirm(^{
-                    %orig(arg1, arg2);
-                });
-            });
-
-        return;
-    }
-
-    %orig(arg1, arg2);
+    CONFIRMCOMMENTLIKE(nil, nil, %orig);
 }
-
 - (void)commentCellDidLongPressOnLikeButton:(id)arg1 {
-    if (SPKBypassCommentLikeConfirm) {
-        %orig(arg1);
-        return;
-    }
-
-    if ([SPKUtils getBoolPref:@"general_comments_confirm_like"]) {
-        BOOL isUnlike = SPKCommentLikeIsUnlike(arg1, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Comment Like",
-            @"Are you sure you want to like this comment?",
-            @"Confirm Comment Unlike",
-            @"Are you sure you want to unlike this comment?",
-            ^{
-                SPKRunCommentLikeConfirm(^{
-                    %orig(arg1);
-                });
-            });
-
-        return;
-    }
-
-    %orig(arg1);
+    CONFIRMCOMMENTLIKE(nil, arg1, %orig);
 }
-
 - (void)commentCellDidEndLongPressOnLikeButton:(id)arg1 {
-    if (SPKBypassCommentLikeConfirm) {
-        %orig(arg1);
-        return;
-    }
-
-    if ([SPKUtils getBoolPref:@"general_comments_confirm_like"]) {
-        BOOL isUnlike = SPKCommentLikeIsUnlike(arg1, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Comment Like",
-            @"Are you sure you want to like this comment?",
-            @"Confirm Comment Unlike",
-            @"Are you sure you want to unlike this comment?",
-            ^{
-                SPKRunCommentLikeConfirm(^{
-                    %orig(arg1);
-                });
-            });
-
-        return;
-    }
-
-    %orig(arg1);
+    CONFIRMCOMMENTLIKE(nil, arg1, %orig);
 }
-
 - (void)commentCellDidDoubleTap:(id)arg1 {
-    if (SPKBypassCommentLikeConfirm) {
-        %orig(arg1);
-        return;
-    }
-
-    if ([SPKUtils getBoolPref:@"general_comments_confirm_like"]) {
-        BOOL isUnlike = SPKCommentLikeIsUnlike(arg1, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Comment Like",
-            @"Are you sure you want to like this comment?",
-            @"Confirm Comment Unlike",
-            @"Are you sure you want to unlike this comment?",
-            ^{
-                SPKRunCommentLikeConfirm(^{
-                    %orig(arg1);
-                });
-            });
-
-        return;
-    }
-
-    %orig(arg1);
+    CONFIRMCOMMENTLIKE(arg1, nil, %orig);
 }
-
 %end
-
-
 %hook IGFeedItemPreviewCommentCell
-
 - (void)_didTapLikeButton {
-    if (SPKBypassCommentLikeConfirm) {
-        %orig;
-        return;
-    }
-
-    if ([SPKUtils getBoolPref:@"general_comments_confirm_like"]) {
-        BOOL isUnlike = SPKCommentLikeIsUnlike(nil, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Comment Like",
-            @"Are you sure you want to like this comment?",
-            @"Confirm Comment Unlike",
-            @"Are you sure you want to unlike this comment?",
-            ^{
-                SPKRunCommentLikeConfirm(^{
-                    %orig;
-                });
-            });
-
-        return;
-    }
-
-    %orig;
+    CONFIRMCOMMENTLIKE(self, nil, %orig);
 }
-
 %end
-
-
+// IG 436+ : in the comment thread/detail view the like (and like/dislike) tap
+// lands on the Swift comment cell (IGCommentCells.IGCommentCell) before it
+// forwards to its UFI delegate (IGCommentCellController). Both links are hooked
+// so gating works whichever fires; the SPKBypassCommentLikeConfirm guard keeps
+// the forwarded call from surfacing a second prompt after the first is confirmed.
 %hook IGCommentCell
-
 - (void)contentViewDidTapLike:(id)arg1 {
-    if (SPKBypassCommentLikeConfirm || SPKCommentButtonIsDislike(arg1)) {
-        %orig(arg1);
-        return;
-    }
-
-    if ([SPKUtils getBoolPref:@"general_comments_confirm_like"]) {
-        BOOL isUnlike = SPKCommentLikeIsUnlike(arg1, self);
-
-        SPKPresentLikeToggleConfirmation(
-            isUnlike,
-            @"Confirm Comment Like",
-            @"Are you sure you want to like this comment?",
-            @"Confirm Comment Unlike",
-            @"Are you sure you want to unlike this comment?",
-            ^{
-                SPKRunCommentLikeConfirm(^{
-                    %orig(arg1);
-                });
-            });
-
-        return;
-    }
-
-    %orig(arg1);
+    CONFIRMCOMMENTLIKE(self, arg1, %orig);
 }
-
+// Combined like/dislike handler. Unlike the controller variant, this method has
+// NO tapped-button parameter — it always receives both the dislike button (arg1)
+// and the like button (arg2), whichever was tapped — and `dislikeUpdate` is
+// unreliable across builds. So we can't tell here whether the user liked or
+// disliked. Pass it straight through: a *like* tap fans out to the plain
+// contentViewDidTapLike: above (which confirms with the unambiguous like button),
+// while a *dislike* tap fans out to an unhooked dislike handler and never
+// surfaces the like-confirm prompt.
 - (void)contentViewDidTapLikeOrDislikeButtonWithDislikeButton:(id)arg1 likeButton:(id)arg2 dislikeUpdate:(long long)arg3 {
-    %orig(arg1, arg2, arg3);
+    return %orig;
 }
-
 %end
-
-///////////////////////////////////////////////////////////
 
 // Liking stories (newer Instagram builds)
 static void (*orig_spkStoryLikeTap)(id, SEL, id);

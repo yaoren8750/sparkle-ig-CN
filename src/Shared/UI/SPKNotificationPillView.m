@@ -739,7 +739,7 @@ typedef NS_ENUM(NSUInteger, SPKPillVisualTone) {
     self.onRetry = nil;
     self.onTapWhenCompleted = nil;
 
-    self.titleLabel.text = title.length ? title : @"Done";
+    self.titleLabel.text = title.length ? title : @"完成";
     self.subtitleLabel.text = subtitle;
     self.subtitleLabel.hidden = (subtitle.length == 0);
     [self updateToastWidthForTitle:self.titleLabel.text subtitle:subtitle];
@@ -1009,7 +1009,7 @@ typedef NS_ENUM(NSUInteger, SPKPillVisualTone) {
 }
 
 - (void)showSuccess {
-    [self showSuccessWithTitle:@"Download complete" subtitle:nil icon:nil];
+    [self showSuccessWithTitle:@"下载完成" subtitle:nil icon:nil];
 }
 
 - (void)showSuccessWithTitle:(NSString *)title subtitle:(NSString *)subtitle icon:(UIImage *)icon {
@@ -1037,7 +1037,7 @@ typedef NS_ENUM(NSUInteger, SPKPillVisualTone) {
                     animations:^{
                         self.iconView.image = checkImage;
                         self.iconView.tintColor = [self iconTintForTone:SPKPillVisualToneSuccess];
-                        self.titleLabel.text = title.length ? title : @"Download complete";
+                        self.titleLabel.text = title.length ? title : @"下载完成";
                         self.subtitleLabel.text = subtitle;
                         self.subtitleLabel.hidden = (subtitle.length == 0);
                         [self updateToastWidthForTitle:self.titleLabel.text subtitle:subtitle];
@@ -1087,7 +1087,7 @@ typedef NS_ENUM(NSUInteger, SPKPillVisualTone) {
                     animations:^{
                         self.iconView.image = errorImage;
                         self.iconView.tintColor = [self iconTintForTone:SPKPillVisualToneError];
-                        self.titleLabel.text = title.length ? title : @"Download failed";
+                        self.titleLabel.text = title.length ? title : @"下载失败";
                         self.subtitleLabel.text = resolvedSubtitle;
                         self.subtitleLabel.hidden = (resolvedSubtitle.length == 0);
                         [self updateToastWidthForTitle:self.titleLabel.text subtitle:resolvedSubtitle];

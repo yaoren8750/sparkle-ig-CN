@@ -41,7 +41,7 @@ static NSString *SPKAutoSaveFilterActiveListKey(SPKAutoSaveFilterConfig *config)
 // A username identity is normalized on both write and read, so entries stay comparable
 // no matter how they were typed in.
 static BOOL SPKAutoSaveFilterIdentityIsUsername(SPKAutoSaveFilterConfig *config) {
-    return [config.identityField isEqualToString:@"username"];
+    return [config.identityField isEqualToString:@"用户名"];
 }
 
 static NSString *SPKAutoSaveFilterNormalizedIdentity(SPKAutoSaveFilterConfig *config, NSString *identity) {
@@ -64,9 +64,9 @@ static NSArray<NSDictionary *> *SPKAutoSaveFilterEntriesFromRawValue(SPKAutoSave
         NSMutableDictionary *entry = [dict mutableCopy];
         // Normalize before the identity is read, so a username identity dedupes on its
         // normalized form.
-        NSString *username = SPKAutoSaveFilterNormalizedUsername(dict[@"username"]);
+        NSString *username = SPKAutoSaveFilterNormalizedUsername(dict[@"用户名"]);
         if (username.length > 0)
-            entry[@"username"] = username;
+            entry[@"用户名"] = username;
 
         NSString *identity = SPKAutoSaveFilterNormalizedIdentity(config, entry[config.identityField]);
         if (identity.length == 0 || [seenIdentities containsObject:identity])

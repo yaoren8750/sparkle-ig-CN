@@ -39,7 +39,7 @@
 
 // Chip filter columns — see SPKDeletedMessagesViewController for the rationale.
 static NSArray<NSString *> *SPKDMDetailChipTitles(void) {
-    return @[ @"Text", @"Photo", @"Video", @"Voice", @"GIF", @"Sticker", @"Shares", @"Link", @"Reaction" ];
+    return @[ @"Text", @"Photo", @"视频", @"Voice", @"GIF", @"Sticker", @"Shares", @"链接", @"Reaction" ];
 }
 static NSArray<NSString *> *SPKDMDetailChipSymbols(void) {
     return @[ @"message", @"photo", @"video", @"voice", @"gif", @"sticker", @"shares", @"link", @"reactions" ];
@@ -100,7 +100,7 @@ static SPKDeletedMessageKind SPKDMDetailChipKindForIndex(NSInteger index) {
     // sticky profile header can serve as the primary identity anchor.
     self.title = self.group.isGroup
                      ? (self.group.displayName.length ? self.group.displayName : @"Group Chat")
-                     : @"Deleted Messages";
+                     : @"已删除消息";
     self.view.backgroundColor = [SPKUtils SPKColor_InstagramBackground];
 
     if (!self.group.isGroup) {
@@ -119,18 +119,18 @@ static SPKDeletedMessageKind SPKDMDetailChipKindForIndex(NSInteger index) {
         titleLabel.textColor = [SPKUtils SPKColor_InstagramPrimaryText];
         titleLabel.textAlignment = NSTextAlignmentCenter;
         titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        titleLabel.text = @"Deleted Messages";
+        titleLabel.text = @"已删除消息";
         self.navigationItem.titleView = titleLabel;
         self.titleLabel = titleLabel;
     }
 
-    UIBarButtonItem *moreItem = SPKMediaChromeTopBarMenuButtonItem(@"more", [self moreMenu], @"More");
+    UIBarButtonItem *moreItem = SPKMediaChromeTopBarMenuButtonItem(@"more", [self moreMenu], @"更多");
     SPKMediaChromeSetTrailingTopBarItems(self.navigationItem, @[ moreItem ]);
 
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     self.searchController.searchResultsUpdater = self;
     self.searchController.obscuresBackgroundDuringPresentation = NO;
-    self.searchController.searchBar.placeholder = @"Search Messages";
+    self.searchController.searchBar.placeholder = @"搜索消息";
     [self.searchController.searchBar setImage:[SPKAssetUtils instagramIconNamed:@"search" pointSize:18.0]
                              forSearchBarIcon:UISearchBarIconSearch
                                         state:UIControlStateNormal];
@@ -316,7 +316,7 @@ static SPKDeletedMessageKind SPKDMDetailChipKindForIndex(NSInteger index) {
     if (shouldShowIdentity == self.titleShowingIdentity)
         return;
     self.titleShowingIdentity = shouldShowIdentity;
-    NSString *text = shouldShowIdentity ? [self identityTitleText] : @"Deleted Messages";
+    NSString *text = shouldShowIdentity ? [self identityTitleText] : @"已删除消息";
     [UIView transitionWithView:self.titleLabel
                       duration:0.2
                        options:UIViewAnimationOptionTransitionCrossDissolve
@@ -416,10 +416,10 @@ static SPKDeletedMessageKind SPKDMDetailChipKindForIndex(NSInteger index) {
                                                                                                  title:isGroup ? @"Delete group log?" : @"Delete sender log?"
                                                                                                message:[NSString stringWithFormat:@"This removes all logged messages from %@.", who]
                                                                                                actions:@[
-                                                                                                   [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                                                                   [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                                                                style:SPKIGAlertActionStyleCancel
                                                                                                                              handler:nil],
-                                                                                                   [SPKIGAlertAction actionWithTitle:@"Delete"
+                                                                                                   [SPKIGAlertAction actionWithTitle:@"删除"
                                                                                                                                style:SPKIGAlertActionStyleDestructive
                                                                                                                              handler:^{
                                                                                                                                  if (weakSelf.group.isGroup)
@@ -447,7 +447,7 @@ static SPKDeletedMessageKind SPKDMDetailChipKindForIndex(NSInteger index) {
         NSString *username = self.group.senderUsername;
         // See the header button: passing the pk avoids a lookup round trip.
         NSString *senderPK = self.group.senderPk;
-        UIAction *openProfileAction = [UIAction actionWithTitle:@"Open Profile"
+        UIAction *openProfileAction = [UIAction actionWithTitle:@"打开个人资料"
                                                           image:[SPKAssetUtils menuIconNamed:@"user"]
                                                      identifier:nil
                                                          handler:^(__unused UIAction *a) {
@@ -516,7 +516,7 @@ static SPKDeletedMessageKind SPKDMDetailChipKindForIndex(NSInteger index) {
             icon = [UIImage systemImageNamed:@"arrow.up.right"];
         [openBtn setImage:icon forState:UIControlStateNormal];
         openBtn.tintColor = [SPKUtils SPKColor_InstagramSecondaryText];
-        openBtn.accessibilityLabel = @"Open Profile";
+        openBtn.accessibilityLabel = @"打开个人资料";
         [openBtn addAction:[UIAction actionWithTitle:@""
                                                image:nil
                                           identifier:nil
@@ -694,14 +694,14 @@ static SPKDeletedMessageKind SPKDMDetailChipKindForIndex(NSInteger index) {
                                               identifier:nil
                                                  handler:^(__unused UIAction *a) {
                                                      UIPasteboard.generalPasteboard.string = message.text ?: message.previewText;
-                                                     SPKNotify(kSPKNotificationUnsentMessage, @"Copied to clipboard", nil, @"circle_check_filled", SPKNotificationToneSuccess);
+                                                     SPKNotify(kSPKNotificationUnsentMessage, @"已复制到剪贴板", nil, @"circle_check_filled", SPKNotificationToneSuccess);
                                                  }];
         [children addObject:copyAction];
     }
 
     NSURL *mediaURL = [self localOrRemoteURLForMessage:message];
     if (mediaURL) {
-        UIAction *shareAction = [UIAction actionWithTitle:@"Share"
+        UIAction *shareAction = [UIAction actionWithTitle:@"分享"
                                                     image:[SPKAssetUtils menuIconNamed:@"share"]
                                                identifier:nil
                                                   handler:^(__unused UIAction *a) {
@@ -711,7 +711,7 @@ static SPKDeletedMessageKind SPKDMDetailChipKindForIndex(NSInteger index) {
         [children addObject:shareAction];
 
         if (![mediaURL isFileURL]) {
-            UIAction *copyLinkAction = [UIAction actionWithTitle:@"Copy Link"
+            UIAction *copyLinkAction = [UIAction actionWithTitle:@"复制链接"
                                                            image:[SPKAssetUtils menuIconNamed:@"link"]
                                                       identifier:nil
                                                          handler:^(__unused UIAction *a) {
@@ -722,7 +722,7 @@ static SPKDeletedMessageKind SPKDMDetailChipKindForIndex(NSInteger index) {
         }
     }
 
-    UIAction *deleteAction = [UIAction actionWithTitle:@"Delete"
+    UIAction *deleteAction = [UIAction actionWithTitle:@"删除"
                                                  image:[SPKAssetUtils menuIconNamed:@"trash"]
                                             identifier:nil
                                                handler:^(__unused UIAction *a) {
@@ -758,7 +758,7 @@ static SPKDeletedMessageKind SPKDMDetailChipKindForIndex(NSInteger index) {
                                                                              }];
     deleteAction.image = [SPKAssetUtils menuIconNamed:@"trash"];
     deleteAction.backgroundColor = [SPKUtils SPKColor_InstagramDestructive];
-    deleteAction.accessibilityLabel = @"Delete";
+    deleteAction.accessibilityLabel = @"删除";
     return [UISwipeActionsConfiguration configurationWithActions:@[ deleteAction ]];
 }
 

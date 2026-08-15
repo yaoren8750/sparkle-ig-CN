@@ -20,7 +20,7 @@
         _selectedIconName = [selectedIconName copy] ?: @"more";
         _selectedCanonicalName = [[self class] canonicalNameForIconName:_selectedIconName];
         _onSelect = [onSelect copy];
-        self.title = @"Section Icon";
+        self.title = @"分组图标";
     }
     return self;
 }

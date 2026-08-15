@@ -112,7 +112,7 @@ static BOOL SPKParseInstagramLink(NSString *raw, SPKGallerySaveMetadata *m) {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"Source";
+    self.title = @"来源";
     self.tableView.backgroundColor = [SPKUtils SPKColor_InstagramGroupedBackground];
     self.tableView.separatorColor = [SPKUtils SPKColor_InstagramSeparator];
     _sources = @[
@@ -415,17 +415,17 @@ static BOOL SPKParseInstagramLink(NSString *raw, SPKGallerySaveMetadata *m) {
     case SPKGalleryImportFormRowDisplayName:
         return @"Name";
     case SPKGalleryImportFormRowUsername:
-        return @"Username";
+        return @"用户名";
     case SPKGalleryImportFormRowPasteLink:
-        return @"Link";
+        return @"链接";
     case SPKGalleryImportFormRowSource:
-        return @"Source";
+        return @"来源";
     case SPKGalleryImportFormRowFileStem:
         return @"File key";
     case SPKGalleryImportFormRowUserPK:
         return @"User ID";
     case SPKGalleryImportFormRowProfileURL:
-        return @"Profile";
+        return @"个人资料";
     case SPKGalleryImportFormRowMediaPK:
         return @"Media ID";
     case SPKGalleryImportFormRowMediaCode:
@@ -635,7 +635,7 @@ static BOOL SPKParseInstagramLink(NSString *raw, SPKGallerySaveMetadata *m) {
 
     SPKGallerySource src = (SPKGallerySource)self.metadata.source;
     UIListContentConfiguration *cfg = cell.defaultContentConfiguration;
-    cfg.text = @"Source";
+    cfg.text = @"来源";
     cfg.textProperties.color = [SPKUtils SPKColor_InstagramPrimaryText];
     cfg.secondaryText = [SPKGalleryFile labelForSource:src];
     cfg.prefersSideBySideTextAndSecondaryText = YES;
@@ -669,7 +669,7 @@ static BOOL SPKParseInstagramLink(NSString *raw, SPKGallerySaveMetadata *m) {
 
     if (self.metadata.importCapturedDate != nil) {
         UIButton *clear = [UIButton buttonWithType:UIButtonTypeSystem];
-        [clear setTitle:@"Clear" forState:UIControlStateNormal];
+        [clear setTitle:@"清除" forState:UIControlStateNormal];
         clear.titleLabel.font = [UIFont systemFontOfSize:14.0];
         [clear setTitleColor:[SPKUtils SPKColor_InstagramSecondaryText] forState:UIControlStateNormal];
         [clear addTarget:self action:@selector(clearDate) forControlEvents:UIControlEventTouchUpInside];

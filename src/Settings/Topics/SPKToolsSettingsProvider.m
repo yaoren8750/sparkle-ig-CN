@@ -41,171 +41,252 @@ static void SPKSettingsLockReloadPresenter(UIViewController *presenter) {
 }
 
 static NSDictionary *SPKSettingsLockSection(void) {
-    SPKSetting *lockSwitch = [SPKSetting switchCellWithTitle:@"Settings Passcode Lock"
-                                                        icon:SPKSettingsIcon(@"lock")
-                                                 defaultsKey:@""];
+    SPKSetting *lockSwitch = [SPKSetting switchCellWithTitle:@"设置密码锁"
+                                                       icon:SPKSettingsIcon(@"lock")
+                                                defaultsKey:@""];
     lockSwitch.switchValueProvider = ^BOOL {
         return [SPKSettingsLockManager sharedManager].isLockEnabled;
     };
+
     lockSwitch.switchChangeHandler = ^(BOOL enabled) {
         SPKSettingsLockManager *currentManager = [SPKSettingsLockManager sharedManager];
         UIViewController *presenter = SPKSettingsLockPresenter();
+
         if (enabled && !currentManager.isLockEnabled) {
             [SPKGalleryLockViewController presentMode:SPKGalleryLockModeSetPasscode
                                            forManager:currentManager
-                                   fromViewController:presenter
-                                           completion:^(__unused BOOL success) {
-                                               SPKSettingsLockReloadPresenter(presenter);
-                                           }];
+                                     fromViewController:presenter
+                                            completion:^(__unused BOOL success) {
+                SPKSettingsLockReloadPresenter(presenter);
+            }];
             return;
         }
+
         if (!enabled && currentManager.isLockEnabled) {
             [SPKIGAlertPresenter presentAlertFromViewController:presenter
-                                                          title:@"Disable Settings Passcode"
-                                                        message:@"Sparkle Settings will no longer require authentication to open."
+                                                          title:@"关闭设置密码锁"
+                                                        message:@"打开 Sparkle 设置时将不再需要身份验证。"
                                                         actions:@[
-                                                            [SPKIGAlertAction actionWithTitle:@"Cancel"
-                                                                                        style:SPKIGAlertActionStyleCancel
-                                                                                      handler:^{
-                                                                                          SPKSettingsLockReloadPresenter(presenter);
-                                                                                      }],
-                                                            [SPKIGAlertAction actionWithTitle:@"Disable"
-                                                                                        style:SPKIGAlertActionStyleDestructive
-                                                                                      handler:^{
-                                                                                          [currentManager removePasscode];
-                                                                                          SPKSettingsLockReloadPresenter(presenter);
-                                                                                      }],
-                                                        ]];
+                [SPKIGAlertAction actionWithTitle:@"取消"
+                                             style:SPKIGAlertActionStyleCancel
+                                           handler:^{
+                    SPKSettingsLockReloadPresenter(presenter);
+                }],
+                [SPKIGAlertAction actionWithTitle:@"关闭"
+                                             style:SPKIGAlertActionStyleDestructive
+                                           handler:^{
+                    [currentManager removePasscode];
+                    SPKSettingsLockReloadPresenter(presenter);
+                }],
+            ]];
         }
     };
 
-    SPKSetting *changePasscode = [SPKSetting buttonCellWithTitle:@"Change Settings Passcode"
-                                                        subtitle:nil
-                                                            icon:SPKSettingsIcon(@"key")
-                                                          action:^{
-                                                              [SPKGalleryLockViewController presentMode:SPKGalleryLockModeChangePasscode
-                                                                                             forManager:[SPKSettingsLockManager sharedManager]
-                                                                                     fromViewController:SPKSettingsLockPresenter()
-                                                                                             completion:^(__unused BOOL success){
-                                                                                             }];
-                                                          }];
+    SPKSetting *changePasscode =
+        [SPKSetting buttonCellWithTitle:@"修改设置密码"
+                                subtitle:nil
+                                    icon:SPKSettingsIcon(@"key")
+                                  action:^{
+        [SPKGalleryLockViewController presentMode:SPKGalleryLockModeChangePasscode
+                                       forManager:[SPKSettingsLockManager sharedManager]
+                                 fromViewController:SPKSettingsLockPresenter()
+                                        completion:^(__unused BOOL success) {
+        }];
+    }];
+
     changePasscode.enabledProvider = ^BOOL {
         return [SPKSettingsLockManager sharedManager].isLockEnabled;
     };
 
-    return SPKTopicSection(@"Settings Lock", @[ lockSwitch, changePasscode ], @"Require the independent Settings passcode or biometrics when opening Sparkle Settings, including topic sheets.");
+    return SPKTopicSection(
+        @"设置锁",
+        @[ lockSwitch, changePasscode ],
+        @"打开 Sparkle 设置（包括各个设置页面）时，需要输入独立的设置密码或进行生物识别验证。"
+    );
 }
+
 
 @implementation SPKToolsSettingsProvider
 
 + (SPKSetting *)rootSetting {
     BOOL flexInstalled = SPKFlexIsBundled();
+
     NSString *flexFooter = flexInstalled
-                               ? @"The first time FLEX is opened in a session it can take a moment to initialize."
-                               : @"FLEX is not installed. Rebuild with \"--flex\" flag or install \"libFLEX.dylib\" to enable these options.";
-    SPKSetting *flexGesture = [SPKSetting switchCellWithTitle:@"Three-finger Hold" defaultsKey:@"tools_flex_instagram"];
-    SPKSetting *flexLaunch = [SPKSetting switchCellWithTitle:@"Open on App Launch" defaultsKey:@"tools_flex_app_launch"];
-    SPKSetting *flexFocus = [SPKSetting switchCellWithTitle:@"Open on App Focus" defaultsKey:@"tools_flex_app_start"];
-    SPKSetting *flexOpen = [SPKSetting buttonCellWithTitle:@"Open FLEX Now"
-                                                  subtitle:@""
-                                                      icon:nil
-                                                    action:^(void) {
-                                                        SPKFlexShowExplorer(@"settings");
-                                                    }];
+        ? @"FLEX 在每次会话中首次打开时，可能需要一些时间进行初始化。"
+        : @"未安装 FLEX。请使用 \"--flex\" 参数重新编译，或安装 \"libFLEX.dylib\" 以启用这些选项。";
+
+    SPKSetting *flexGesture =
+        [SPKSetting switchCellWithTitle:@"三指长按"
+                            defaultsKey:@"tools_flex_instagram"];
+
+    SPKSetting *flexLaunch =
+        [SPKSetting switchCellWithTitle:@"启动 App 时打开"
+                            defaultsKey:@"tools_flex_app_launch"];
+
+    SPKSetting *flexFocus =
+        [SPKSetting switchCellWithTitle:@"进入 App 时打开"
+                            defaultsKey:@"tools_flex_app_start"];
+
+    SPKSetting *flexOpen =
+        [SPKSetting buttonCellWithTitle:@"立即打开 FLEX"
+                                subtitle:@""
+                                    icon:nil
+                                  action:^(void) {
+        SPKFlexShowExplorer(@"settings");
+    }];
+
     if (!flexInstalled) {
         flexGesture.userInfo = @{@"enabled" : @NO};
         flexLaunch.userInfo = @{@"enabled" : @NO};
         flexFocus.userInfo = @{@"enabled" : @NO};
         flexOpen.userInfo = @{@"enabled" : @NO};
     }
-    NSMutableArray *sections = [NSMutableArray arrayWithArray:@[
-        SPKTopicSection(@"FLEX", @[ flexOpen, flexGesture, flexLaunch, flexFocus ], flexFooter),
-        SPKTopicSection(@"Tweak", @[
-            [SPKSetting switchCellWithTitle:@"Quick Settings Access"
-                                defaultsKey:@"tools_settings_shortcut"
-                            requiresRestart:YES],
-            [SPKSetting switchCellWithTitle:@"Shortcut Haptics"
-                                defaultsKey:@"tools_shortcut_haptics"],
-            [SPKSetting switchCellWithTitle:@"Show Settings on App Launch"
-                                defaultsKey:@"tools_open_settings_on_launch"],
-            [SPKSetting switchCellWithTitle:@"Disable All Settings"
-                                defaultsKey:@"tools_disable_all"
-                            requiresRestart:YES],
-            [SPKSetting buttonCellWithTitle:@"Show Onboarding"
-                                   subtitle:@""
-                                       icon:nil
-                                     action:^(void) {
-                                         [SPKOnboardingViewController presentFromViewController:nil onFinish:nil];
-                                     }],
-            [SPKSetting buttonCellWithTitle:@"Show What's New"
-                                   subtitle:@""
-                                       icon:nil
-                                     action:^(void) {
-                                         [SPKWhatsNewViewController presentFromViewController:nil onFinish:nil];
-                                     }],
-        ],
-                        @"1. Opens settings when long pressing the Home tab or the next visible tab if the Home tab is hidden.\n"
-                        @"2. Haptic feedback when the settings shortcut gesture fires.\n"
-                        @"3. Open Sparkle settings automatically every time Instagram launches.\n"
-                        @"4. Suppress every Sparkle feature hook, leaving only the shortcut to reach this screen. Use to isolate crashes."),
 
-        SPKTopicSection(@"", @[
-            [SPKSetting buttonCellWithTitle:@"Reset Safe Startup Mode"
-                                   subtitle:@""
-                                       icon:nil
-                                     action:^(void) {
-                                         SPKStabilityGuardReset();
-                                         [SPKUtils showRestartConfirmation];
-                                     }],
+    NSMutableArray *sections = [NSMutableArray arrayWithArray:@[
+
+        SPKTopicSection(
+            @"FLEX",
+            @[ flexOpen, flexGesture, flexLaunch, flexFocus ],
+            flexFooter
+        ),
+
+        SPKTopicSection(
+            @"插件",
+            @[
+                [SPKSetting switchCellWithTitle:@"快速访问设置"
+                                    defaultsKey:@"tools_settings_shortcut"
+                                requiresRestart:YES],
+
+                [SPKSetting switchCellWithTitle:@"快捷方式触感反馈"
+                                    defaultsKey:@"tools_shortcut_haptics"],
+
+                [SPKSetting switchCellWithTitle:@"启动 App 时显示设置"
+                                    defaultsKey:@"tools_open_settings_on_launch"],
+
+                [SPKSetting switchCellWithTitle:@"禁用所有设置"
+                                    defaultsKey:@"tools_disable_all"
+                                requiresRestart:YES],
+
+                [SPKSetting buttonCellWithTitle:@"显示引导"
+                                        subtitle:@""
+                                            icon:nil
+                                          action:^(void) {
+                    [SPKOnboardingViewController presentFromViewController:nil
+                                                                   onFinish:nil];
+                }],
+
+                [SPKSetting buttonCellWithTitle:@"显示更新内容"
+                                        subtitle:@""
+                                            icon:nil
+                                          action:^(void) {
+                    [SPKWhatsNewViewController presentFromViewController:nil
+                                                                  onFinish:nil];
+                }],
+            ],
+            @"1. 长按主页标签即可打开设置；如果主页标签被隐藏，则长按下一个可见标签。\n"
+             "2. 触发设置快捷手势时提供触感反馈。\n"
+             "3. 每次启动 Instagram 时自动打开 Sparkle 设置。\n"
+             "4. 禁用所有 Sparkle 功能 Hook，仅保留进入此页面的快捷方式。用于排查崩溃问题。"
+        ),
+
+        SPKTopicSection(
+            @"",
+            @[
+                [SPKSetting buttonCellWithTitle:@"重置安全启动模式"
+                                        subtitle:@""
+                                            icon:nil
+                                          action:^(void) {
+                    SPKStabilityGuardReset();
+                    [SPKUtils showRestartConfirmation];
+                }],
+
 #if SPK_DEV
-            // Dev builds only: wipe the intro-sheet state so the onboarding /
-            // What's New gating fires from scratch on the next launch.
-            [SPKSetting buttonCellWithTitle:@"[DEV] Reset Intro State"
-                                   subtitle:@""
-                                       icon:nil
-                                     action:^(void) {
-                                         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-                                         [defaults removeObjectForKey:@"app_first_run"];
-                                         [defaults removeObjectForKey:@"app_last_whatsnew_version"];
-                                         [SPKUtils showRestartConfirmation];
-                                     }],
+
+                // Dev builds only: wipe the intro-sheet state so the onboarding /
+                // What's New gating fires from scratch on the next launch.
+                [SPKSetting buttonCellWithTitle:@"[开发版] 重置引导状态"
+                                        subtitle:@""
+                                            icon:nil
+                                          action:^(void) {
+                    NSUserDefaults *defaults =
+                        [NSUserDefaults standardUserDefaults];
+
+                    [defaults removeObjectForKey:@"app_first_run"];
+                    [defaults removeObjectForKey:@"app_last_whatsnew_version"];
+
+                    [SPKUtils showRestartConfirmation];
+                }],
+
 #endif
-        ], @"Clears failed-launch counters and temporary hook suppression. Tap this button if it appears as if features aren't enabled."),
+            ],
+            @"清除启动失败计数和临时 Hook 禁用状态。如果功能看起来没有生效，请点击此按钮。"
+        ),
+
 #if SPK_DEV
-        SPKTopicSection(@"Diagnostics",
-                        @[ [SPKHookBisectSettingsProvider rootSetting] ],
-                        @"Skip individual hook installers at launch to isolate a crash or a slowdown to one feature."),
+
+        SPKTopicSection(
+            @"诊断",
+            @[ [SPKHookBisectSettingsProvider rootSetting] ],
+            @"启动时跳过指定功能的 Hook 安装器，用于定位导致崩溃或性能下降的具体功能。"
+        ),
+
 #endif
+
         SPKSettingsLockSection(),
     ]];
 
     // The TestFlight/Beta popup suppression is always active on release builds.
     // On dev builds, we keep a toggle to allow disabling it for testing.
+
     NSMutableArray *instagramCells = [NSMutableArray array];
-#if SPK_DEV
-    [instagramCells addObject:[SPKSetting switchCellWithTitle:@"[DEV] Hide TestFlight Popup"
-                                                  defaultsKey:@"tools_hide_testflight_popup"
-                                              requiresRestart:YES]];
-#endif
-    [instagramCells addObject:[SPKSetting switchCellWithTitle:@"Fix Duplicate Notifications"
-                                                  defaultsKey:@"tools_fix_duplicate_notifications"]];
-    [instagramCells addObject:[SPKSetting switchCellWithTitle:@"Disable Safe Mode"
-                                                  defaultsKey:@"tools_disable_safe_mode"]];
 
 #if SPK_DEV
+
+    [instagramCells addObject:
+        [SPKSetting switchCellWithTitle:@"[开发版] 隐藏 TestFlight 弹窗"
+                            defaultsKey:@"tools_hide_testflight_popup"
+                        requiresRestart:YES]];
+
+#endif
+
+    [instagramCells addObject:
+        [SPKSetting switchCellWithTitle:@"修复重复通知"
+                            defaultsKey:@"tools_fix_duplicate_notifications"]];
+
+    [instagramCells addObject:
+        [SPKSetting switchCellWithTitle:@"禁用安全模式"
+                            defaultsKey:@"tools_disable_safe_mode"]];
+
+
+#if SPK_DEV
+
     NSString *instagramFooter =
-        @"1. Suppresses the Instagram Beta update popup.\n"
-        @"2. Drops the duplicate in-app banner sideloaded Instagram posts while the notification extension is already delivering the same push. Only acts while the app is foregrounded.\n"
-        @"3. Makes Instagram not reset settings after subsequent crashes. Use at your own risk.";
+        @"1. 隐藏 Instagram Beta 更新弹窗。\n"
+        @"2. 当通知扩展已经发送相同推送时，隐藏 Instagram 内重复显示的应用内横幅。仅在 App 处于前台时生效。\n"
+        @"3. 防止 Instagram 在连续崩溃后重置设置。请谨慎使用。";
+
 #else
+
     NSString *instagramFooter =
-        @"1. Drops the duplicate in-app banner sideloaded Instagram posts while the notification extension is already delivering the same push. Only acts while the app is foregrounded.\n"
-        @"2. Makes Instagram not reset settings after subsequent crashes. Use at your own risk.";
+        @"1. 当通知扩展已经发送相同推送时，隐藏 Instagram 内重复显示的应用内横幅。仅在 App 处于前台时生效。\n"
+        @"2. 防止 Instagram 在连续崩溃后重置设置。请谨慎使用。";
+
 #endif
 
-    [sections addObject:SPKTopicSection(@"Instagram", instagramCells, instagramFooter)];
+    [sections addObject:
+        SPKTopicSection(
+            @"Instagram",
+            instagramCells,
+            instagramFooter
+        )
+    ];
 
-    return SPKTopicNavigationSetting(@"Tools", @"toolbox", 24.0, sections);
+    return SPKTopicNavigationSetting(
+        @"工具",
+        @"toolbox",
+        24.0,
+        sections
+    );
 }
 
 @end

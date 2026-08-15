@@ -72,11 +72,11 @@
 
 + (NSDictionary *)surfacesSection {
     return SPKTopicSection(@"Surfaces", @[
-        [self surfaceRowWithTitle:@"Stories"
+        [self surfaceRowWithTitle:@"快拍"
                              icon:@"story"
                           summary:SPKStoryAutoSaveSettingsSummary()
                      surfaceClass:[SPKAutoSaveStoriesSettingsViewController class]],
-        [self surfaceRowWithTitle:@"Messages"
+        [self surfaceRowWithTitle:@"消息"
                              icon:@"messages"
                           summary:SPKDirectAutoSaveSettingsSummary()
                      surfaceClass:[SPKAutoSaveMessagesSettingsViewController class]],

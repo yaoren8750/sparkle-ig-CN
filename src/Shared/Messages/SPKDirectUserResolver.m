@@ -37,7 +37,7 @@ NSString *spkDirectUserResolverUsernameFromUser(id user) {
     if (!user)
         return nil;
     @try {
-        id un = [user valueForKey:@"username"];
+        id un = [user valueForKey:@"用户名"];
         if ([un isKindOfClass:[NSString class]] && [(NSString *)un length] > 0)
             return un;
     } @catch (__unused id e) {

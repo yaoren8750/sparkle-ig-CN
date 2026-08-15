@@ -73,7 +73,7 @@ static NSString *SPKMediaTypeLabel(NSInteger mediaType) {
 }
 
 static NSString *SPKDestinationLabel(SPKDownloadDuplicateDestination destination) {
-    return destination == SPKDownloadDuplicateDestinationPhotos ? @"Photos" : @"Gallery";
+    return destination == SPKDownloadDuplicateDestinationPhotos ? @"Photos" : @"图库";
 }
 
 static SPKGalleryFile *SPKExistingGalleryFile(SPKGallerySaveMetadata *metadata, NSInteger mediaType) {
@@ -190,7 +190,7 @@ static BOOL SPKPresentSingleDuplicateAlert(SPKDownloadDuplicateDestination desti
                                                                                   if (continuation)
                                                                                       continuation(SPKDownloadDuplicateDecisionDeleteExistingAndDownloadAgain);
                                                                               }],
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:^{
                                                                                   if (continuation)
@@ -222,7 +222,7 @@ static BOOL SPKPresentBulkDuplicateAlert(NSUInteger duplicateCount,
                                                                               handler:^{
                                                                                   continuation(SPKDownloadBulkDuplicateDecisionDownloadAllAnyway);
                                                                               }],
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:^{
                                                                                   continuation(SPKDownloadBulkDuplicateDecisionCancel);

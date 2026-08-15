@@ -79,8 +79,8 @@ void SPKStabilityGuardPresentSafeModeAlertIfNeeded(void) {
     SPKLog(@"Stability", @"Presenting safe startup alert (reason: %@)", reason);
 
     [SPKIGAlertPresenter presentAlertFromViewController:nil
-                                                 title:@"Sparkle Safe Mode"
-                                               message:@"Instagram closed before finishing launch several times in a row, so Sparkle turned its features off to get you back into the app.\n\n"
+                                                 title:@"Sparkle 安全模式"
+                                               message:@"Instagram 连续多次未能完成启动，因此 Sparkle 已暂时关闭相关功能，以便让你重新进入应用。\n\n"
                                                         "Every Sparkle feature is disabled right now. Only Sparkle Settings is reachable. Turn Safe Mode off to enable them again."
                                                actions:@[
                                                    [SPKIGAlertAction actionWithTitle:@"Turn Off Safe Mode"

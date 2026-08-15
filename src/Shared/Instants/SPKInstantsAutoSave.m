@@ -28,8 +28,8 @@ SPKAutoSaveFilterConfig *SPKInstantsAutoSaveFilterConfig(void) {
         config.filterModeKey = @"instants_auto_save_filter_mode";
         config.excludedKey = @"instants_auto_save_excluded";
         config.includedKey = @"instants_auto_save_included";
-        config.identityField = @"username";
-        config.sortField = @"username";
+        config.identityField = @"用户名";
+        config.sortField = @"用户名";
         config.subjectPlural = @"Users";
         config.ruleNotificationIdentifier = kSPKNotificationInstantsAutoSaveUserRule;
     });
@@ -156,14 +156,14 @@ void SPKInstantsAutoSaveConsiderSnap(id snap, NSString *username, NSString *snap
 }
 
 - (NSString *)removalDisplayNameForEntry:(NSDictionary *)entry {
-    NSString *username = SPKStringFromValue(entry[@"username"]);
+    NSString *username = SPKStringFromValue(entry[@"用户名"]);
     return username.length > 0 ? [@"@" stringByAppendingString:username] : nil;
 }
 
 - (NSArray<SPKUserListItem *> *)buildItems {
     NSMutableArray<SPKUserListItem *> *items = [NSMutableArray array];
     for (NSDictionary *entry in SPKAutoSaveFilterList(self.config)) {
-        NSString *username = SPKStringFromValue(entry[@"username"]);
+        NSString *username = SPKStringFromValue(entry[@"用户名"]);
         NSString *pk = SPKStringFromValue(entry[@"pk"]);
         NSString *fullName = SPKStringFromValue(entry[@"fullName"]);
         NSString *profilePicUrl = SPKStringFromValue(entry[@"profilePicUrl"]);
@@ -183,7 +183,7 @@ void SPKInstantsAutoSaveConsiderSnap(id snap, NSString *username, NSString *snap
 
 - (void)presentError:(NSString *)message {
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Unable to Add User"
+                                                  title:@"无法添加用户"
                                                 message:message
                                                 actions:@[ [SPKIGAlertAction actionWithTitle:@"OK" style:SPKIGAlertActionStyleCancel handler:nil] ]];
 }
@@ -191,13 +191,13 @@ void SPKInstantsAutoSaveConsiderSnap(id snap, NSString *username, NSString *snap
 - (void)didTapAdd {
     __weak typeof(self) weakSelf = self;
     [SPKIGAlertPresenter presentTextInputAlertFromViewController:self
-                                                           title:@"Add User"
+                                                           title:@"添加用户"
                                                          message:@"Enter the Instagram username whose instants should be auto-saved."
-                                                     placeholder:@"username"
+                                                     placeholder:@"用户名"
                                                      initialText:nil
                                                  autocapitalized:NO
-                                                    confirmTitle:@"Search"
-                                                     cancelTitle:@"Cancel"
+                                                    confirmTitle:@"搜索"
+                                                     cancelTitle:@"取消"
                                                     confirmStyle:SPKIGAlertActionStyleDefault
                                                     confirmBlock:^(NSString *text) {
                                                         [weakSelf lookupUsername:text];
@@ -223,12 +223,12 @@ void SPKInstantsAutoSaveConsiderSnap(id snap, NSString *username, NSString *snap
                                           return;
                                       }
 
-                                      NSString *resolvedUsername = SPKStringFromValue(user[@"username"]) ?: username;
+                                      NSString *resolvedUsername = SPKStringFromValue(user[@"用户名"]) ?: username;
                                       NSString *fullName = SPKStringFromValue(user[@"full_name"] ?: user[@"fullName"]) ?: @"";
                                       NSString *message = fullName.length > 0
                                                               ? [NSString stringWithFormat:@"@%@ (%@)", resolvedUsername, fullName]
                                                               : [@"@" stringByAppendingString:resolvedUsername];
-                                      NSMutableDictionary *entry = [@{@"username" : resolvedUsername, @"fullName" : fullName} mutableCopy];
+                                      NSMutableDictionary *entry = [@{@"用户名" : resolvedUsername, @"fullName" : fullName} mutableCopy];
                                       NSString *pk = SPKStringFromValue(user[@"pk"] ?: user[@"id"]);
                                       if (pk.length > 0)
                                           entry[@"pk"] = pk;
@@ -237,10 +237,10 @@ void SPKInstantsAutoSaveConsiderSnap(id snap, NSString *username, NSString *snap
                                           entry[@"profilePicUrl"] = profilePicUrl;
 
                                       [SPKIGAlertPresenter presentAlertFromViewController:strongSelf
-                                                                                    title:@"Auto-Save Instants?"
+                                                                                    title:@"自动保存快拍？"
                                                                                   message:message
                                                                                   actions:@[
-                                                                                      [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                                                      [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                                                   style:SPKIGAlertActionStyleCancel
                                                                                                                 handler:nil],
                                                                                       [SPKIGAlertAction actionWithTitle:@"Add"

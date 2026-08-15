@@ -35,7 +35,7 @@ static NSString *SPKStorageFeatureDirectory(NSString *featureName) {
 @implementation SPKStoragePaths
 
 + (NSString *)galleryDirectory {
-    return SPKStorageFeatureDirectory(@"Gallery");
+    return SPKStorageFeatureDirectory(@"图库");
 }
 
 + (NSString *)deletedMessagesDirectory {
@@ -51,7 +51,7 @@ static NSString *SPKStorageFeatureDirectory(NSString *featureName) {
 }
 
 + (NSString *)downloadsDirectory {
-    return SPKStorageFeatureDirectory(@"Downloads");
+    return SPKStorageFeatureDirectory(@"下载");
 }
 
 + (NSString *)avatarCacheDirectory {

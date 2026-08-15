@@ -3,7 +3,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /// Posted on the main thread when the active Instagram account changes (login,
-/// logout, or in-app account switch). userInfo carries @"pk"/@"username" of the
+/// logout, or in-app account switch). userInfo carries @"pk"/@"用户名" of the
 /// new account when available.
 FOUNDATION_EXPORT NSNotificationName const SPKAccountDidChangeNotification;
 
@@ -48,7 +48,7 @@ FOUNDATION_EXPORT NSNotificationName const SPKAccountDidChangeNotification;
 - (void)noteSwitchedToAccountPK:(nullable NSString *)pk;
 
 /// Every account Sparkle has seen logged-in, newest-seen first.
-/// Each entry: @{ @"pk": NSString, @"username": NSString (may be empty),
+/// Each entry: @{ @"pk": NSString, @"用户名": NSString (may be empty),
 /// @"lastSeen": NSNumber }.
 + (NSArray<NSDictionary *> *)knownAccounts;
 

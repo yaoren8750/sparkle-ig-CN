@@ -867,7 +867,7 @@ SPKMediaBuildPhotoOptions(id mediaObject, NSURL *fallbackURL,
         NSString *resolution =
             (width > 0 && height > 0)
                 ? [NSString stringWithFormat:@"%ld×%ld", (long)width, (long)height]
-                : (SPKMediaResolutionLabel(width, height) ?: @"Image");
+                : (SPKMediaResolutionLabel(width, height) ?: @"图片");
 
         NSString *tier = nil;
         if (isWeb) {
@@ -909,8 +909,8 @@ SPKMediaBuildPhotoOptions(id mediaObject, NSURL *fallbackURL,
         fallback.kind = SPKMediaOptionKindPhotoProgressive;
         fallback.primaryURL = fallbackURL;
         fallback.codec = SPKMediaPhotoFormatFromURL(fallbackURL);
-        fallback.title = @"Image";
-        fallback.subtitle = @"Fallback source";
+        fallback.title = @"图片";
+        fallback.subtitle = @"备用来源";
         fallback.selectable = YES;
         fallback.qualityInfo = SPKMediaQualityInfoForOption(fallback);
         [options addObject:fallback];
@@ -939,7 +939,7 @@ SPKMediaBuildProgressiveVideoOptions(id mediaObject, NSURL *fallbackURL,
         option.bandwidth = [variant[@"bandwidth"] integerValue];
         option.duration = duration;
         option.title =
-            SPKMediaResolutionLabel(option.width, option.height) ?: @"Video";
+            SPKMediaResolutionLabel(option.width, option.height) ?: @"视频";
         option.subtitle =
             SPKMediaSubtitle(option.width, option.height, option.bandwidth,
                              duration, nil, @"progressive");
@@ -954,8 +954,8 @@ SPKMediaBuildProgressiveVideoOptions(id mediaObject, NSURL *fallbackURL,
         fallback.kind = SPKMediaOptionKindVideoProgressive;
         fallback.primaryURL = fallbackURL;
         fallback.duration = duration;
-        fallback.title = @"Video";
-        fallback.subtitle = @"Fallback progressive";
+        fallback.title = @"视频";
+        fallback.subtitle = @"备用渐进式来源";
         fallback.selectable = YES;
         fallback.qualityInfo = SPKMediaQualityInfoForOption(fallback);
         [options addObject:fallback];
@@ -1049,7 +1049,7 @@ SPKMediaBuildAudioDashOptions(NSArray<SPKDashRepresentation *> *audioReps,
         option.bandwidth = audioRep.bandwidth;
         option.duration = duration;
         option.codec = audioRep.codecs;
-        option.title = @"Audio";
+        option.title = @"音频";
         option.subtitle =
             SPKMediaSubtitle(0, 0, audioRep.bandwidth, duration, nil, nil);
         option.selectable = includeAudio;
@@ -1787,7 +1787,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
 
     if ([SPKUtils getBoolPref:@"downloads_adv_encoding"]) {
         [sections addObject:SPKTopicSection(
-                                @"Video",
+                                @"视频",
                                 @[
                                     [SPKSetting menuCellWithTitle:@"Video Codec"
                                                          subtitle:nil
@@ -1810,12 +1810,12 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
                           @[
                               [SPKSetting
                                   textFieldCellWithTitle:@"CRF"
-                                             placeholder:@"Auto"
+                                             placeholder:@"自动"
                                             keyboardType:UIKeyboardTypeNumberPad
                                              defaultsKey:@"downloads_encoding_crf"],
                               [SPKSetting
                                   textFieldCellWithTitle:@"Video Bitrate"
-                                             placeholder:@"Auto"
+                                             placeholder:@"自动"
                                             keyboardType:UIKeyboardTypeNumberPad
                                              defaultsKey:@"downloads_encoding_"
                                                          @"vid_bitrate_kbps"],
@@ -1827,7 +1827,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
 
         [sections
             addObject:SPKTopicSection(
-                          @"Audio",
+                          @"音频",
                           @[
                               [SPKSetting
                                   textFieldCellWithTitle:@"Audio Bitrate"
@@ -1859,13 +1859,13 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
 
         __weak typeof(self) weakSelf = self;
         SPKSetting *resetEncoding = 
-            [SPKSetting buttonCellWithTitle:@"Reset Encoding Settings"
+            [SPKSetting buttonCellWithTitle:@"重置编码设置"
                                    subtitle:nil
                                        icon:SPKSettingsIcon(@"arrow_ccw")
                                      action:^{
                                         [[SPKSettingsTransferManager sharedManager]
                                             resetConfigurationGroupFromController:weakSelf
-                                                                            title:@"Reset Encoding Settings"
+                                                                            title:@"重置编码设置"
                                                                           message:@"This restores every advanced encoding option to its default value. Advanced Encoding stays on."
                                                                      confirmTitle:@"Reset"
                                                                             keys:@[
@@ -1892,7 +1892,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
 
         SPKSetting *ffmpegInfo = [SPKSetting
             linkCellWithTitle:@"About FFmpeg Encoding"
-                     subtitle:@"Tap to learn more"
+                     subtitle:@"点击了解更多"
                      imageUrl:@"https://ffmpeg.org/favicon.ico"
                           url:@"https://trac.ffmpeg.org/wiki/Encode/H.264"];
         ffmpegInfo.userInfo = @{@"remoteImageCircular" : @NO};
@@ -1901,7 +1901,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
         [sections
             addObject:
                 SPKTopicSection(
-                    @"Video", @[ [SPKSetting menuCellWithTitle:@"Encoding Speed"
+                    @"视频", @[ [SPKSetting menuCellWithTitle:@"Encoding Speed"
                                                       subtitle:nil
                                                           menu:[self speedMenu]] ],
                     @"Controls the libx264 encoding effort. Slower presets take "
@@ -1915,7 +1915,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
 - (NSArray *)searchSections {
     SPKSetting *ffmpegInfo = [SPKSetting
         linkCellWithTitle:@"About FFmpeg Encoding"
-                 subtitle:@"Tap to learn more"
+                 subtitle:@"点击了解更多"
                  imageUrl:@"https://ffmpeg.org/favicon.ico"
                       url:@"https://trac.ffmpeg.org/wiki/Encode/H.264"];
     ffmpegInfo.userInfo = @{@"remoteImageCircular" : @NO};
@@ -1928,7 +1928,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
             @"and audio overrides. In advanced mode, the selected video codec is "
             @"used for DASH merges while audio remains copied."),
         SPKTopicSection(
-            @"Video",
+            @"视频",
             @[
                 [SPKSetting menuCellWithTitle:@"Encoding Speed"
                                      subtitle:nil
@@ -1953,12 +1953,12 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
             @"Quality",
             @[
                 [SPKSetting textFieldCellWithTitle:@"CRF"
-                                       placeholder:@"Auto"
+                                       placeholder:@"自动"
                                       keyboardType:UIKeyboardTypeNumberPad
                                        defaultsKey:@"downloads_encoding_crf"],
                 [SPKSetting
                     textFieldCellWithTitle:@"Video Bitrate"
-                               placeholder:@"Auto"
+                               placeholder:@"自动"
                               keyboardType:UIKeyboardTypeNumberPad
                                defaultsKey:@"downloads_encoding_vid_bitrate_kbps"],
                 [SPKSetting menuCellWithTitle:@"Max Resolution"
@@ -1967,7 +1967,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
             ],
             nil),
         SPKTopicSection(
-            @"Audio",
+            @"音频",
             @[
                 [SPKSetting
                     textFieldCellWithTitle:@"Audio Bitrate"
@@ -2041,7 +2041,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
 - (UIMenu *)levelMenu {
     return [self buildMenuForPref:@"downloads_encoding_h264_level"
                             items:@[
-                                @{@"value" : @"auto", @"label" : @"Auto"},
+                                @{@"value" : @"auto", @"label" : @"自动"},
                                 @{@"value" : @"3.1", @"label" : @"3.1"},
                                 @{@"value" : @"4.0", @"label" : @"4.0"},
                                 @{@"value" : @"4.1", @"label" : @"4.1"},
@@ -2259,7 +2259,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
     if (option.kind == SPKMediaOptionKindAudioDash) {
         SPKMediaItem *item = [SPKMediaItem itemWithFileURL:option.primaryURL];
         item.mediaType = SPKMediaItemTypeAudio;
-        item.title = option.title.length > 0 ? option.title : @"Audio";
+        item.title = option.title.length > 0 ? option.title : @"音频";
         [SPKFullScreenMediaPlayer showMediaItems:@[ item ]
                                  startingAtIndex:0
                                         metadata:nil
@@ -2281,7 +2281,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
     if (option.primaryURL.absoluteString.length > 0) {
         NSString *title =
             option.kind == SPKMediaOptionKindPhotoProgressive ? @"Copy Photo Download URL"
-            : option.kind == SPKMediaOptionKindAudioDash      ? @"Copy Audio Download URL"
+            : option.kind == SPKMediaOptionKindAudioDash      ? @"复制音频下载链接"
                                                               : @"Copy Video Download URL";
         [children
             addObject:[UIAction
@@ -2333,7 +2333,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
     } else if (option.kind == SPKMediaOptionKindAudioDash) {
         [children
             addObject:[UIAction
-                          actionWithTitle:@"Play Audio"
+                          actionWithTitle:@"播放音频"
                                     image:SPKMediaIcon(@"play",
                                                        kSPKMediaOptionIconPointSize)
                                identifier:nil
@@ -2457,10 +2457,10 @@ SPKMediaCopyLocalFileToPasteboard(NSURL *fileURL, NSError **errorOut,
             [[UIPasteboard generalPasteboard] setData:data
                                     forPasteboardType:@"public.audio"];
             if (showToast && identifier.length > 0) {
-                SPKNotify(identifier, @"Copied audio to clipboard", nil,
+                SPKNotify(identifier, @"音频已复制到剪贴板", nil,
                           @"circle_check_filled", SPKNotificationToneSuccess);
             }
-            return @"Copied audio to clipboard";
+            return @"音频已复制到剪贴板";
         }
     } else if ([SPKDownloadDestinationWriter isVideoFileAtURL:fileURL]) {
         NSData *data = [NSData dataWithContentsOfURL:fileURL];
@@ -2468,10 +2468,10 @@ SPKMediaCopyLocalFileToPasteboard(NSURL *fileURL, NSError **errorOut,
             [[UIPasteboard generalPasteboard] setData:data
                                     forPasteboardType:@"public.mpeg-4"];
             if (showToast && identifier.length > 0) {
-                SPKNotify(identifier, @"Copied video to clipboard", nil,
+                SPKNotify(identifier, @"视频已复制到剪贴板", nil,
                           @"circle_check_filled", SPKNotificationToneSuccess);
             }
-            return @"Copied video to clipboard";
+            return @"视频已复制到剪贴板";
         }
     } else {
         NSData *imageData = [NSData dataWithContentsOfURL:fileURL];
@@ -2479,10 +2479,10 @@ SPKMediaCopyLocalFileToPasteboard(NSURL *fileURL, NSError **errorOut,
         if (image) {
             [[UIPasteboard generalPasteboard] setImage:image];
             if (showToast && identifier.length > 0) {
-                SPKNotify(identifier, @"Copied photo to clipboard", nil,
+                SPKNotify(identifier, @"照片已复制到剪贴板", nil,
                           @"circle_check_filled", SPKNotificationToneSuccess);
             }
-            return @"Copied photo to clipboard";
+            return @"照片已复制到剪贴板";
         }
     }
 

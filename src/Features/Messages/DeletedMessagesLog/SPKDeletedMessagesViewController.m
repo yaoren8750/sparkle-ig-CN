@@ -67,7 +67,7 @@ static NSString *SPKDMCurrentUserPK(void) {
 // there's no dedicated "All" chip. Index maps to an explicit kind so chip order
 // is decoupled from the enum's numeric values.
 static NSArray<NSString *> *SPKDMChipTitles(void) {
-    return @[ @"Text", @"Photo", @"Video", @"Voice", @"GIF", @"Sticker", @"Shares", @"Link", @"Reaction" ];
+    return @[ @"Text", @"Photo", @"视频", @"Voice", @"GIF", @"Sticker", @"Shares", @"链接", @"Reaction" ];
 }
 static NSArray<NSString *> *SPKDMChipSymbols(void) {
     return @[ @"message", @"photo", @"video", @"voice", @"gif", @"sticker", @"shares", @"link", @"reactions" ];
@@ -156,10 +156,10 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"Deleted Messages";
+    self.title = @"已删除消息";
     self.view.backgroundColor = [SPKUtils SPKColor_InstagramGroupedBackground];
 
-    UIBarButtonItem *moreItem = SPKMediaChromeTopBarMenuButtonItem(@"more", [self moreMenu], @"More");
+    UIBarButtonItem *moreItem = SPKMediaChromeTopBarMenuButtonItem(@"more", [self moreMenu], @"更多");
     UIBarButtonItem *sortItem = SPKMediaChromeTopBarMenuButtonItem(@"sort", [self sortMenu], @"Sort and Filter");
     // More button is always rightmost (last in trailing-group order), matching
     // the downloads history convention.
@@ -171,7 +171,7 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     self.searchController.searchResultsUpdater = self;
     self.searchController.obscuresBackgroundDuringPresentation = NO;
-    self.searchController.searchBar.placeholder = @"Search Deleted Messages";
+    self.searchController.searchBar.placeholder = @"搜索已删除消息";
     [self.searchController.searchBar setImage:[SPKAssetUtils instagramIconNamed:@"search" pointSize:18.0]
                              forSearchBarIcon:UISearchBarIconSearch
                                         state:UIControlStateNormal];
@@ -485,10 +485,10 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
                                                   title:@"Clear deleted messages?"
                                                 message:@"This removes the log and captured media for the current account."
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
-                                                    [SPKIGAlertAction actionWithTitle:@"Clear"
+                                                    [SPKIGAlertAction actionWithTitle:@"清除"
                                                                                 style:SPKIGAlertActionStyleDestructive
                                                                               handler:^{
                                                                                   [SPKDeletedMessagesStorage resetForOwnerPK:self.ownerPK];
@@ -506,10 +506,10 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
                                                   title:isGroup ? @"Delete group log?" : @"Delete sender log?"
                                                 message:[NSString stringWithFormat:@"This removes all logged messages from %@.", who]
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
-                                                    [SPKIGAlertAction actionWithTitle:@"Delete"
+                                                    [SPKIGAlertAction actionWithTitle:@"删除"
                                                                                 style:SPKIGAlertActionStyleDestructive
                                                                               handler:^{
                                                                                   if (isGroup)
@@ -564,7 +564,7 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
                                                                              }];
     deleteAction.image = [SPKAssetUtils menuIconNamed:@"trash"];
     deleteAction.backgroundColor = [SPKUtils SPKColor_InstagramDestructive];
-    deleteAction.accessibilityLabel = @"Delete";
+    deleteAction.accessibilityLabel = @"删除";
     return [UISwipeActionsConfiguration configurationWithActions:@[ deleteAction, blockAction, pinAction ]];
 }
 

@@ -783,7 +783,7 @@ static BOOL SPKIsValidSettingsTransferBundleRoot(NSString *bundleRoot) {
     if (bundleRoot.length == 0)
         return NO;
     NSString *prefsPath = [bundleRoot stringByAppendingPathComponent:@"Preferences/settings.plist"];
-    NSString *galleryPath = [bundleRoot stringByAppendingPathComponent:@"Gallery"];
+    NSString *galleryPath = [bundleRoot stringByAppendingPathComponent:@"图库"];
     NSString *deletedMessagesPath = [bundleRoot stringByAppendingPathComponent:@"DeletedMessages"];
     NSString *profileAnalyzerPath = [bundleRoot stringByAppendingPathComponent:@"ProfileAnalyzer"];
     return [[NSFileManager defaultManager] fileExistsAtPath:prefsPath] ||
@@ -888,11 +888,11 @@ static NSString *SPKSanitizeFilenameComponent(NSString *component) {
 static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGallery, BOOL includeDeletedMessages, BOOL includeProfileAnalyzer, SPKTransferAccountScope scope, NSString *currentUsername, NSString *currentPK) {
     NSMutableArray<NSString *> *parts = [NSMutableArray array];
     if (includeSettings)
-        [parts addObject:@"Settings"];
+        [parts addObject:@"设置"];
     if (includeGallery)
-        [parts addObject:@"Gallery"];
+        [parts addObject:@"图库"];
     if (includeDeletedMessages)
-        [parts addObject:@"Messages"];
+        [parts addObject:@"消息"];
     if (includeProfileAnalyzer)
         [parts addObject:@"Analyzer"];
     NSString *content = parts.count == 0 ? @"Backup" : (parts.count > 2 ? @"Backup" : [parts componentsJoinedByString:@"+"]);
@@ -949,7 +949,7 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
                                  : @"Per-account settings are on. Back up every account's settings, or only the active account's.";
     __weak typeof(self) weakSelf = self;
     [SPKIGAlertPresenter presentActionSheetFromViewController:controller
-                                                        title:@"Which accounts?"
+                                                        title:@"哪些账户？"
                                                       message:scopeMessage
                                                       actions:@[
                                                           [SPKIGAlertAction actionWithTitle:@"All Accounts"
@@ -962,7 +962,7 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
                                                                                     handler:^{
                                                                                         [weakSelf exportFromController:controller includeSettings:includeSettings includeGallery:includeGallery includeDeletedMessages:includeDeletedMessages includeProfileAnalyzer:includeProfileAnalyzer settingsScope:SPKTransferAccountScopeCurrentAccount];
                                                                                     }],
-                                                          [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                          [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                       style:SPKIGAlertActionStyleCancel
                                                                                     handler:nil],
                                                       ]];
@@ -981,7 +981,7 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
     NSString *root = SPKTemporaryTransferRoot(@"export");
     NSString *bundleRoot = [root stringByAppendingPathComponent:@"SparkleExportBundle"];
     NSString *prefsPath = [bundleRoot stringByAppendingPathComponent:@"Preferences/settings.plist"];
-    NSString *galleryDestination = [bundleRoot stringByAppendingPathComponent:@"Gallery"];
+    NSString *galleryDestination = [bundleRoot stringByAppendingPathComponent:@"图库"];
     NSString *deletedMessagesDestination = [bundleRoot stringByAppendingPathComponent:@"DeletedMessages"];
     NSString *profileAnalyzerDestination = [bundleRoot stringByAppendingPathComponent:@"ProfileAnalyzer"];
     NSString *manifestPath = [bundleRoot stringByAppendingPathComponent:@"manifest.plist"];
@@ -1176,7 +1176,7 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
         NSError *archiveError = nil;
         NSString *bundleRoot = SPKResolvedImportBundleRootForPickedURL(url, &archiveError);
         NSString *prefsPath = [bundleRoot stringByAppendingPathComponent:@"Preferences/settings.plist"];
-        NSString *galleryPath = [bundleRoot stringByAppendingPathComponent:@"Gallery"];
+        NSString *galleryPath = [bundleRoot stringByAppendingPathComponent:@"图库"];
         NSString *deletedMessagesPath = [bundleRoot stringByAppendingPathComponent:@"DeletedMessages"];
         NSString *profileAnalyzerPath = [bundleRoot stringByAppendingPathComponent:@"ProfileAnalyzer"];
         NSString *manifestPath = [bundleRoot stringByAppendingPathComponent:@"manifest.plist"];
@@ -1366,7 +1366,7 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
                                                        (long)conflicts, conflicts == 1 ? @"" : @"s", conflicts == 1 ? @"s" : @"", conflicts == 1 ? @"it" : @"them"];
         dispatch_async(dispatch_get_main_queue(), ^{
             [SPKIGAlertPresenter presentAlertFromViewController:topMostController()
-                                                          title:@"Files from Another Account"
+                                                          title:@"其他账户的文件"
                                                         message:message
                                                         actions:@[
                                                             [SPKIGAlertAction actionWithTitle:@"Claim for This Account"
@@ -1405,8 +1405,8 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
     NSString *thisTitle = username.length ? [NSString stringWithFormat:@"This Account Only (%@)", username] : @"This Account Only";
     __weak typeof(self) weakSelf = self;
     [SPKIGAlertPresenter presentActionSheetFromViewController:controller
-                                                        title:@"Which Accounts?"
-                                                      message:@"Per-account settings are on. Reset every account's settings, or only the active account's."
+                                                        title:@"哪些账户？"
+                                                      message:@"账户独立设置已开启。请选择重置所有账户的设置，还是仅重置当前账户的设置。"
                                                       actions:@[
                                                           [SPKIGAlertAction actionWithTitle:@"All Accounts"
                                                                                       style:SPKIGAlertActionStyleDefault
@@ -1418,7 +1418,7 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
                                                                                     handler:^{
                                                                                         [weakSelf confirmResetFromController:controller scope:SPKTransferAccountScopeCurrentAccount];
                                                                                     }],
-                                                          [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                          [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                       style:SPKIGAlertActionStyleCancel
                                                                                     handler:nil],
                                                       ]];
@@ -1432,10 +1432,10 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
                             : @"This restores every Sparkle preference to its default value. Gallery media is left untouched. This cannot be undone.";
     NSString *currentPK = [SPKAccountManager currentAccountPK];
     [SPKIGAlertPresenter presentAlertFromViewController:controller
-                                                  title:@"Reset All Settings"
+                                                  title:@"重置所有设置"
                                                 message:message
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
                                                     [SPKIGAlertAction actionWithTitle:@"Reset"
@@ -1476,7 +1476,7 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
                                                   title:title
                                                 message:message
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
                                                     [SPKIGAlertAction actionWithTitle:(confirmTitle.length ? confirmTitle : @"Reset")

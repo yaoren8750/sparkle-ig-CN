@@ -279,7 +279,7 @@ static NSDictionary<NSString *, SPKAssetDescriptor *> *SPKAssetOverrides(void) {
             @"user_following" : @{@"candidates" : @[ @"ig_icon_user_following_prism_outline_24", @"ig_icon_user_following_outline_24" ]},
             @"user_request" : @{@"candidates" : @[ @"ig_icon_user_requested_prism_outline_24", @"ig_icon_user_requested_outline_24" ]},
             @"user_unfollow" : @{@"candidates" : @[ @"ig_icon_user_unfollow_prism_outline_24", @"ig_icon_user_unfollow_outline_24" ]},
-            @"username" : @{@"candidates" : @[ @"ig_icon_user_nickname_prism_outline_24", @"ig_icon_user_nickname_outline_24" ]},
+            @"用户名" : @{@"candidates" : @[ @"ig_icon_user_nickname_prism_outline_24", @"ig_icon_user_nickname_outline_24" ]},
             @"users_empty": @{@"candidates" : @[ @"ig_icon_users_prism_outline_96", @"ig_icon_users_outline_96" ]},
             @"users" : @{@"candidates" : @[ @"ig_icon_users_prism_outline_24", @"ig_icon_users_prism_outline_24" ]},
             @"vanish" : @{@"candidates" : @[ @"ig_icon_vanish_mode_outline_24", @"ig_icon_clock_dotted_pano_outline_24", @"ig_icon_clock_dotted_outline_24" ]},

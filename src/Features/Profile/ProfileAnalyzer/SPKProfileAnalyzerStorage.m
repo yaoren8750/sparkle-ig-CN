@@ -368,7 +368,7 @@ static NSInteger spkVisitIndexForPK(NSArray *list, NSString *pk) {
             NSDictionary *prevUser = [d[@"user"] isKindOfClass:[NSDictionary class]] ? d[@"user"] : @{};
             NSMutableDictionary *merged = [prevUser mutableCopy];
             NSDictionary *fresh = [user toJSONDict];
-            for (NSString *k in @[ @"pk", @"username", @"full_name", @"profile_pic_url", @"profile_pic_id" ]) {
+            for (NSString *k in @[ @"pk", @"用户名", @"full_name", @"profile_pic_url", @"profile_pic_id" ]) {
                 id v = fresh[k];
                 if ([v isKindOfClass:[NSString class]] && [(NSString *)v length])
                     merged[k] = v;

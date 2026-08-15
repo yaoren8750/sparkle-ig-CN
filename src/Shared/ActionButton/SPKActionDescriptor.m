@@ -19,118 +19,118 @@
     dispatch_once(&onceToken, ^{
         descriptors = @[
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionDownloadLibrary
-                                                    title:@"Save to Photos"
+                                                    title:@"保存到照片"
                                                  iconName:@"download"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionDownloadShare
-                                                    title:@"Share"
+                                                    title:@"分享"
                                                  iconName:@"share"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionCopyDownloadLink
-                                                    title:@"Copy Download URL"
+                                                    title:@"复制下载链接"
                                                  iconName:@"link"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionCopyMedia
-                                                    title:@"Copy Media"
+                                                    title:@"复制媒体"
                                                  iconName:@"copy"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionDownloadGallery
-                                                    title:@"Save to Gallery"
+                                                    title:@"保存到图库"
                                                  iconName:@"sparkle_gallery"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionTrimSave
-                                                    title:@"Trim & Save"
+                                                    title:@"裁剪并保存"
                                                  iconName:@"trim"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionEditSave
-                                                    title:@"Edit & Save"
+                                                    title:@"编辑并保存"
                                                  iconName:@"crop"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionDownloadAudio
-                                                    title:@"Save Audio to Files"
+                                                    title:@"将音频保存到文件"
                                                  iconName:@"audio_download"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionDownloadAudioShare
-                                                    title:@"Share Audio"
+                                                    title:@"分享音频"
                                                  iconName:@"share"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionDownloadAudioGallery
-                                                    title:@"Save Audio to Gallery"
+                                                    title:@"将音频保存到图库"
                                                  iconName:@"sparkle_gallery"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionPlayAudio
-                                                    title:@"Play Audio"
+                                                    title:@"播放音频"
                                                  iconName:@"play"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionCopyAudioURL
-                                                    title:@"Copy Audio Download URL"
+                                                    title:@"复制音频下载链接"
                                                  iconName:@"link"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionDownloadAllLibrary
-                                                    title:@"Save All to Photos"
+                                                    title:@"全部保存到照片"
                                                  iconName:@"download"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionDownloadAllShare
-                                                    title:@"Share All"
+                                                    title:@"全部分享"
                                                  iconName:@"share"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionDownloadAllGallery
-                                                    title:@"Save All to Gallery"
+                                                    title:@"全部保存到图库"
                                                  iconName:@"sparkle_gallery"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionDownloadAllClipboard
-                                                    title:@"Copy All Media"
+                                                    title:@"复制全部媒体"
                                                  iconName:@"copy"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionDownloadAllLinks
-                                                    title:@"Copy Download URLs"
+                                                    title:@"复制下载链接"
                                                  iconName:@"link"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionDownloadAll
-                                                    title:@"Download All"
+                                                    title:@"全部下载"
                                                  iconName:@"more"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionExpand
-                                                    title:@"Expand"
+                                                    title:@"展开"
                                                  iconName:@"expand"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionViewThumbnail
-                                                    title:@"View Thumbnail"
+                                                    title:@"查看缩略图"
                                                  iconName:@"photo_gallery"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionCopyCaption
-                                                    title:@"Copy Caption"
+                                                    title:@"复制说明"
                                                  iconName:@"caption"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionOpenTopicSettings
-                                                    title:@"Settings"
+                                                    title:@"设置"
                                                  iconName:@"settings"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionDeletedMessagesLog
-                                                    title:@"Deleted Messages"
+                                                    title:@"已删除消息"
                                                  iconName:@"channels"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionRepost
-                                                    title:@"Repost"
+                                                    title:@"转发"
                                                  iconName:@"repost"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionToggleStorySeenUserRule
-                                                    title:@"Toggle Story User Rule"
+                                                    title:@"切换快拍用户规则"
                                                  iconName:@"eye"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionToggleStoryAutoSaveUserRule
-                                                    title:@"Toggle Story Auto-Save"
+                                                    title:@"切换快拍自动保存"
                                                  iconName:@"download"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionToggleDirectAutoSaveThreadRule
-                                                    title:@"Toggle Chat Auto-Save"
+                                                    title:@"切换聊天自动保存"
                                                  iconName:@"download"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionToggleProfileStorySeenUserRule
-                                                    title:@"Toggle Story Seen"
+                                                    title:@"切换快拍已读状态"
                                                  iconName:@"eye"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionToggleProfileMessagesSeenUserRule
-                                                    title:@"Toggle Messages Seen"
+                                                    title:@"切换消息已读状态"
                                                  iconName:@"eye"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionStoryMentionsSheet
-                                                    title:@"Story Mentions"
+                                                    title:@"快拍提及"
                                                  iconName:@"mention"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionProfileCopyInfo
-                                                    title:@"Copy Info"
+                                                    title:@"复制信息"
                                                  iconName:@"info"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionProfileCopyID
-                                                    title:@"Copy ID"
+                                                    title:@"复制 ID"
                                                  iconName:@"key"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionProfileCopyUsername
-                                                    title:@"Copy Username"
-                                                 iconName:@"username"],
+                                                    title:@"复制用户名"
+                                                 iconName:@"用户名"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionProfileCopyName
-                                                    title:@"Copy Name"
+                                                    title:@"复制名称"
                                                  iconName:@"text"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionProfileCopyBio
-                                                    title:@"Copy Bio"
+                                                    title:@"复制简介"
                                                  iconName:@"caption"],
             [SPKActionDescriptor descriptorWithIdentifier:kSPKActionProfileCopyLink
-                                                    title:@"Copy Profile URL"
+                                                    title:@"复制个人资料链接"
                                                  iconName:@"link"],
             [SPKActionDescriptor descriptorWithIdentifier:@"more"
-                                                    title:@"More"
+                                                    title:@"更多"
                                                  iconName:@"more"],
             [SPKActionDescriptor descriptorWithIdentifier:@"action"
-                                                    title:@"Actions"
+                                                    title:@"操作"
                                                  iconName:@"action"]
         ];
     });
@@ -149,61 +149,61 @@
 + (NSArray<SPKActionDescriptor *> *)availableSectionIconDescriptors {
     return @[
         [SPKActionDescriptor descriptorWithIdentifier:@"action"
-                                                title:@"Actions"
+                                                title:@"操作"
                                              iconName:@"action"],
         [SPKActionDescriptor descriptorWithIdentifier:@"copy"
-                                                title:@"Copy"
+                                                title:@"复制"
                                              iconName:@"copy"],
         [SPKActionDescriptor descriptorWithIdentifier:@"key"
-                                                title:@"Key"
+                                                title:@"键"
                                              iconName:@"key"],
         [SPKActionDescriptor descriptorWithIdentifier:@"caption"
-                                                title:@"Caption"
+                                                title:@"说明"
                                              iconName:@"caption"],
         [SPKActionDescriptor descriptorWithIdentifier:@"download"
-                                                title:@"Download"
+                                                title:@"下载"
                                              iconName:@"download"],
         [SPKActionDescriptor descriptorWithIdentifier:@"share"
-                                                title:@"Share"
+                                                title:@"分享"
                                              iconName:@"share"],
         [SPKActionDescriptor descriptorWithIdentifier:@"link"
-                                                title:@"Link"
+                                                title:@"链接"
                                              iconName:@"link"],
         [SPKActionDescriptor descriptorWithIdentifier:@"media"
-                                                title:@"Gallery"
+                                                title:@"图库"
                                              iconName:@"sparkle_gallery"],
         [SPKActionDescriptor descriptorWithIdentifier:@"expand"
-                                                title:@"Expand"
+                                                title:@"展开"
                                              iconName:@"expand"],
         [SPKActionDescriptor descriptorWithIdentifier:@"photo_gallery"
-                                                title:@"Thumbnail"
+                                                title:@"缩略图"
                                              iconName:@"photo_gallery"],
         [SPKActionDescriptor descriptorWithIdentifier:@"repost"
-                                                title:@"Repost"
+                                                title:@"转发"
                                              iconName:@"repost"],
         [SPKActionDescriptor descriptorWithIdentifier:@"mention"
-                                                title:@"Mentions"
+                                                title:@"提及"
                                              iconName:@"mention"],
         [SPKActionDescriptor descriptorWithIdentifier:@"feed"
-                                                title:@"Feed"
+                                                title:@"动态"
                                              iconName:@"feed"],
         [SPKActionDescriptor descriptorWithIdentifier:@"reels"
                                                 title:@"Reels"
                                              iconName:@"reels"],
         [SPKActionDescriptor descriptorWithIdentifier:@"story"
-                                                title:@"Stories"
+                                                title:@"快拍"
                                              iconName:@"story"],
         [SPKActionDescriptor descriptorWithIdentifier:@"messages"
-                                                title:@"Messages"
+                                                title:@"消息"
                                              iconName:@"messages"],
         [SPKActionDescriptor descriptorWithIdentifier:@"profile"
-                                                title:@"Profile"
+                                                title:@"个人资料"
                                              iconName:@"user_circle"],
         [SPKActionDescriptor descriptorWithIdentifier:@"settings"
-                                                title:@"Settings"
+                                                title:@"设置"
                                              iconName:@"settings"],
         [SPKActionDescriptor descriptorWithIdentifier:@"more"
-                                                title:@"More"
+                                                title:@"更多"
                                              iconName:@"more"]
     ];
 }

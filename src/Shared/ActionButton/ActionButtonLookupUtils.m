@@ -251,9 +251,9 @@ static NSString *SPKUsernameFromUserObject(id user) {
     if (!user)
         return nil;
 
-    id username = SPKObjectForSelector(user, @"username");
+    id username = SPKObjectForSelector(user, @"用户名");
     if (!username) {
-        username = SPKKVCObject(user, @"username");
+        username = SPKKVCObject(user, @"用户名");
     }
     if (!username) {
         username = SPKObjectForSelector(user, @"authorUsername");
@@ -336,7 +336,7 @@ static NSString *SPKShallowUsernameFromObject(id object) {
         return nil;
 
     for (NSString *stringSelector in @[
-             @"username",
+             @"用户名",
              @"sourceUsername",
              @"authorUsername",
              @"senderUsername",

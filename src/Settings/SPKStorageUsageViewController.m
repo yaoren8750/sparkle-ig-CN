@@ -47,16 +47,16 @@
                                         @"On-device storage used by all Sparkle data. Instagram's own cache is not included.")];
 
     [sections addObject:SPKTopicSection(@"Breakdown", @[
-                  [SPKSetting valueCellWithTitle:@"Gallery"
+                  [SPKSetting valueCellWithTitle:@"图库"
                                         subtitle:[self formattedKey:@"gallery"]
                                             icon:SPKSettingsIcon(@"sparkle_gallery")],
-                  [SPKSetting valueCellWithTitle:@"Downloads"
+                  [SPKSetting valueCellWithTitle:@"下载"
                                         subtitle:[self formattedKey:@"downloads"]
                                             icon:SPKSettingsIcon(@"download")],
-                  [SPKSetting valueCellWithTitle:@"Deleted Messages"
+                  [SPKSetting valueCellWithTitle:@"已删除消息"
                                         subtitle:[self formattedKey:@"deletedMessages"]
                                             icon:SPKSettingsIcon(@"channels")],
-                  [SPKSetting valueCellWithTitle:@"Profile Analyzer"
+                  [SPKSetting valueCellWithTitle:@"个人资料分析"
                                         subtitle:[self formattedKey:@"profileAnalyzer"]
                                             icon:SPKSettingsIcon(@"profile_analyzer")],
                   [SPKSetting valueCellWithTitle:@"Profile Pictures"
@@ -82,13 +82,13 @@
 
 - (void)confirmClearAvatars {
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Clear cached profile pictures?"
-                                                message:@"This removes all on-device profile pictures. They will re-download when next shown."
+                                                  title:@"清除缓存的头像？"
+                                                message:@"这将删除设备上的所有头像缓存。下次显示时会重新下载。"
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
-                                                    [SPKIGAlertAction actionWithTitle:@"Clear"
+                                                    [SPKIGAlertAction actionWithTitle:@"清除"
                                                                                 style:SPKIGAlertActionStyleDestructive
                                                                               handler:^{
                                                                                   [[SPKAvatarCache shared] purge];

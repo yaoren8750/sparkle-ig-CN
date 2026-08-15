@@ -98,13 +98,15 @@ static NSArray *SPKFilterFriendsMapObjectsForDataSource(id dataSource, id adapte
 
 %hook IGDirectNotesTrayRowCell
 - (id)listAdapterObjects {
-    return SPKFilterFriendsMapObjects(%orig());
+    id originalObjects = %orig;
+    return SPKFilterFriendsMapObjects(originalObjects);
 }
 %end
 
 %hook _TtC24IGDirectNotesTrayUISwift42IGDirectNotesTrayCellListAdapterDataSource
 - (id)objectsForListAdapter:(id)adapter {
-    return SPKFilterFriendsMapObjectsForDataSource(self, adapter, %orig());
+    id originalObjects = %orig(adapter);
+    return SPKFilterFriendsMapObjectsForDataSource(self, adapter, originalObjects);
 }
 %end
 

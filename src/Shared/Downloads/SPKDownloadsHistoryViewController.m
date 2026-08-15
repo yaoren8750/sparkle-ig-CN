@@ -357,7 +357,7 @@ typedef NS_ENUM(NSUInteger, SPKDownloadsHistoryRowKind) {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"Downloads";
+    self.title = @"下载";
     self.view.backgroundColor = [SPKUtils SPKColor_InstagramGroupedBackground];
     self.expandedJobIDs = [NSMutableSet set];
 
@@ -496,7 +496,7 @@ typedef NS_ENUM(NSUInteger, SPKDownloadsHistoryRowKind) {
     self.hasSetInitialTopBarStates = YES;
 
     UIMenu *menu = [self moreMenu];
-    UIBarButtonItem *moreItem = SPKMediaChromeTopBarMenuButtonItem(@"more", menu, @"More");
+    UIBarButtonItem *moreItem = SPKMediaChromeTopBarMenuButtonItem(@"more", menu, @"更多");
     UIBarButtonItem *settingsItem = SPKMediaChromeTopBarButtonItem(@"settings", self, @selector(pushSettings));
     if (hasHiddenPill) {
         UIBarButtonItem *showProgressItem = SPKMediaChromeTopBarButtonItem(@"play_filled", self, @selector(showProgressTapped));
@@ -629,13 +629,13 @@ typedef NS_ENUM(NSUInteger, SPKDownloadsHistoryRowKind) {
 
 - (void)clearFinished {
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Clear Finished Downloads"
+                                                  title:@"清除已完成的下载"
                                                 message:@"Removes finished entries and their staged preview copies. Active and queued downloads are kept; media saved to Photos or the Gallery is not affected."
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
-                                                    [SPKIGAlertAction actionWithTitle:@"Clear"
+                                                    [SPKIGAlertAction actionWithTitle:@"清除"
                                                                                 style:SPKIGAlertActionStyleDestructive
                                                                               handler:^{
                                                                                   [[SPKDownloadService shared] clearFinishedHistory];
@@ -839,7 +839,7 @@ static void SPKApplyStatusBadge(SPKDownloadHistoryCell *cell, SPKDownloadState s
     cell.representedID = job.jobID;
 
     // Title
-    cell.titleLabel.text = job.title ?: @"Download";
+    cell.titleLabel.text = job.title ?: @"下载";
 
     // Thumbnail: destination action icon, no tint bleed
     NSString *actionIcon = SPKActionIconForJob(job);
@@ -975,10 +975,10 @@ static void SPKApplyStatusBadge(SPKDownloadHistoryCell *cell, SPKDownloadState s
     }
     switch (item.mediaKind) {
     case SPKDownloadMediaKindVideo:
-        [parts addObject:@"Video"];
+        [parts addObject:@"视频"];
         break;
     case SPKDownloadMediaKindAudio:
-        [parts addObject:@"Audio"];
+        [parts addObject:@"音频"];
         break;
     case SPKDownloadMediaKindImage:
         [parts addObject:@"Photo"];
@@ -1059,7 +1059,7 @@ static void SPKApplyStatusBadge(SPKDownloadHistoryCell *cell, SPKDownloadState s
                                                         [SPKIGAlertAction actionWithTitle:@"Dismiss"
                                                                                     style:SPKIGAlertActionStyleCancel
                                                                                   handler:nil],
-                                                        [SPKIGAlertAction actionWithTitle:@"Retry"
+                                                        [SPKIGAlertAction actionWithTitle:@"重试"
                                                                                     style:SPKIGAlertActionStyleDefault
                                                                                   handler:^{
                                                                                       if (isChild)
@@ -1148,7 +1148,7 @@ static void SPKApplyStatusBadge(SPKDownloadHistoryCell *cell, SPKDownloadState s
                                                                           }];
         retry.image = [SPKAssetUtils menuIconNamed:@"arrow_cw"];
         retry.backgroundColor = [SPKUtils SPKColor_InstagramBlue];
-        retry.accessibilityLabel = @"Retry";
+        retry.accessibilityLabel = @"重试";
         [actions addObject:retry];
     }
 
@@ -1167,7 +1167,7 @@ static void SPKApplyStatusBadge(SPKDownloadHistoryCell *cell, SPKDownloadState s
                                                                            }];
         cancel.image = [SPKAssetUtils menuIconNamed:@"xmark"];
         cancel.backgroundColor = [SPKUtils SPKColor_InstagramDestructive];
-        cancel.accessibilityLabel = @"Cancel";
+        cancel.accessibilityLabel = @"取消";
         [actions addObject:cancel];
     }
 
@@ -1182,7 +1182,7 @@ static void SPKApplyStatusBadge(SPKDownloadHistoryCell *cell, SPKDownloadState s
                                                                        }];
     remove.image = [SPKAssetUtils menuIconNamed:@"trash"];
     remove.backgroundColor = [SPKUtils SPKColor_InstagramDestructive];
-    remove.accessibilityLabel = @"Remove";
+    remove.accessibilityLabel = @"移除";
     [actions addObject:remove];
 
     // Copy link
@@ -1198,7 +1198,7 @@ static void SPKApplyStatusBadge(SPKDownloadHistoryCell *cell, SPKDownloadState s
                                                                          }];
         copy.image = [SPKAssetUtils menuIconNamed:@"copy"];
         copy.backgroundColor = [SPKUtils SPKColor_InstagramSecondaryText];
-        copy.accessibilityLabel = @"Copy Link";
+        copy.accessibilityLabel = @"复制链接";
         [actions addObject:copy];
     }
 

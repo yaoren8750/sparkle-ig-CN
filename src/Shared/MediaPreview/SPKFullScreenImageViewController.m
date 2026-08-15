@@ -160,7 +160,7 @@ static CGFloat const kZoomEpsilon = 0.02;
 
     _retryButton = [UIButton buttonWithType:UIButtonTypeSystem];
     _retryButton.translatesAutoresizingMaskIntoConstraints = NO;
-    [_retryButton setTitle:@"Retry" forState:UIControlStateNormal];
+    [_retryButton setTitle:@"重试" forState:UIControlStateNormal];
     [_retryButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     _retryButton.titleLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightSemibold];
     _retryButton.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.15];

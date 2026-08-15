@@ -111,7 +111,7 @@ static UIColor *SPKImportAmberColor(void) {
         _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
         _titleLabel.font = [UIFont systemFontOfSize:16.0 weight:UIFontWeightSemibold];
         _titleLabel.textColor = [SPKUtils SPKColor_InstagramPrimaryText];
-        _titleLabel.text = @"Shared Details";
+        _titleLabel.text = @"共享详细信息";
         [self.contentView addSubview:_titleLabel];
 
         _subtitleLabel = [[UILabel alloc] init];
@@ -336,10 +336,10 @@ static UIColor *SPKImportAmberColor(void) {
     if (!identity.length) {
         switch (item.mediaType) {
         case SPKGalleryMediaTypeVideo:
-            identity = @"Video";
+            identity = @"视频";
             break;
         case SPKGalleryMediaTypeAudio:
-            identity = @"Audio";
+            identity = @"音频";
             break;
         default:
             identity = @"Photo";
@@ -528,7 +528,7 @@ static UIColor *SPKImportAmberColor(void) {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"Import Media";
+    self.title = @"导入媒体";
     self.view.backgroundColor = [SPKUtils SPKColor_InstagramBackground];
     self.tableView.backgroundColor = [SPKUtils SPKColor_InstagramBackground];
     self.tableView.separatorColor = [SPKUtils SPKColor_InstagramSeparator];
@@ -545,7 +545,7 @@ static UIColor *SPKImportAmberColor(void) {
 
     self.overflowBarButtonItem = SPKMediaChromeTopBarMenuButtonItemWithTint(@"more", [self buildOverflowMenu],
                                                                             [SPKUtils SPKColor_InstagramPrimaryText],
-                                                                            @"More");
+                                                                            @"更多");
     [self restoreQueue];
     [self installEmptyState];
     [self installFooterCTA];
@@ -964,7 +964,7 @@ static UIColor *SPKImportAmberColor(void) {
                                                                              }];
     deleteAction.image = [SPKAssetUtils instagramIconNamed:@"trash" pointSize:22.0 renderingMode:UIImageRenderingModeAlwaysTemplate];
     deleteAction.backgroundColor = [SPKUtils SPKColor_InstagramDestructive];
-    deleteAction.accessibilityLabel = @"Remove";
+    deleteAction.accessibilityLabel = @"移除";
     return [UISwipeActionsConfiguration configurationWithActions:@[ deleteAction ]];
 }
 
@@ -986,7 +986,7 @@ static UIColor *SPKImportAmberColor(void) {
 - (void)pushSharedEditor {
     SPKGalleryImportMetadataFormViewController *form = [[SPKGalleryImportMetadataFormViewController alloc] init];
     form.metadata = self.sharedDefaults;
-    form.title = @"Shared Details";
+    form.title = @"共享详细信息";
     self.activeForm = form;
     self.activeFormItem = nil;
     self.activeFormIsShared = YES;
@@ -1004,8 +1004,8 @@ static UIColor *SPKImportAmberColor(void) {
     form.previewFileURL = item.tempFileURL;
     form.previewMediaType = item.mediaType;
     form.previewFilename = item.fileLabel;
-    NSString *typeName = item.mediaType == SPKGalleryMediaTypeVideo ? @"Video"
-                                                                    : (item.mediaType == SPKGalleryMediaTypeAudio ? @"Audio" : @"Photo");
+    NSString *typeName = item.mediaType == SPKGalleryMediaTypeVideo ? @"视频"
+                                                                    : (item.mediaType == SPKGalleryMediaTypeAudio ? @"音频" : @"Photo");
     NSString *sizeText = item.fileSize > 0 ? [NSByteCountFormatter stringFromByteCount:item.fileSize countStyle:NSByteCountFormatterCountStyleFile] : nil;
     form.previewSubtitle = sizeText ? [NSString stringWithFormat:@"%@ · %@", typeName, sizeText] : typeName;
     self.activeForm = form;

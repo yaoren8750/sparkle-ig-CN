@@ -11,8 +11,6 @@
 
 // Screenshot handlers
 
-#define VOID_HANDLESCREENSHOT(orig) [SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"] ? nil : orig;
-#define NONVOID_HANDLESCREENSHOT(orig) return VOID_HANDLESCREENSHOT(orig)
 
 ///////////////////////////////////////////////////////////
 
@@ -201,22 +199,28 @@ static const void *kSPKFlexThreeFingerGestureKey = &kSPKFlexThreeFingerGestureKe
 
 %hook IGDSLauncherConfig
 - (_Bool)isLiquidGlassInAppNotificationEnabled {
-    return [SPKUtils spk_liquidGlassLauncherPrefKey:@"interface_liquid_glass" orig:%orig];
+    BOOL original = %orig;
+    return [SPKUtils spk_liquidGlassLauncherPrefKey:@"interface_liquid_glass" orig:original];
 }
 - (_Bool)isLiquidGlassContextMenuEnabled {
-    return [SPKUtils spk_liquidGlassLauncherPrefKey:@"interface_liquid_glass" orig:%orig];
+    BOOL original = %orig;
+    return [SPKUtils spk_liquidGlassLauncherPrefKey:@"interface_liquid_glass" orig:original];
 }
 - (_Bool)isLiquidGlassToastEnabled {
-    return [SPKUtils spk_liquidGlassLauncherPrefKey:@"interface_liquid_glass" orig:%orig];
+    BOOL original = %orig;
+    return [SPKUtils spk_liquidGlassLauncherPrefKey:@"interface_liquid_glass" orig:original];
 }
 - (_Bool)isLiquidGlassToastPeekEnabled {
-    return [SPKUtils spk_liquidGlassLauncherPrefKey:@"interface_liquid_glass" orig:%orig];
+    BOOL original = %orig;
+    return [SPKUtils spk_liquidGlassLauncherPrefKey:@"interface_liquid_glass" orig:original];
 }
 - (_Bool)isLiquidGlassAlertDialogEnabled {
-    return [SPKUtils spk_liquidGlassLauncherPrefKey:@"interface_liquid_glass" orig:%orig];
+    BOOL original = %orig;
+    return [SPKUtils spk_liquidGlassLauncherPrefKey:@"interface_liquid_glass" orig:original];
 }
 - (_Bool)isLiquidGlassIconBarButtonEnabled {
-    return [SPKUtils spk_liquidGlassLauncherPrefKey:@"interface_liquid_glass" orig:%orig];
+    BOOL original = %orig;
+    return [SPKUtils spk_liquidGlassLauncherPrefKey:@"interface_liquid_glass" orig:original];
 }
 %end
 
@@ -249,26 +253,38 @@ static const void *kSPKFlexThreeFingerGestureKey = &kSPKFlexThreeFingerGestureKe
 // Disable anti-screenshot feature on visual messages
 %hook IGStoryViewerContainerView
 - (void)setShouldBlockScreenshot:(BOOL)arg1 viewModel:(id)arg2 {
-    VOID_HANDLESCREENSHOT(%orig);
+    if ([SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"]) {
+        return;
+    }
+    %orig;
 }
 %end
 
 // Disable screenshot logging/detection
 %hook IGDirectVisualMessageViewerSession
 - (id)visualMessageViewerController:(id)arg1 didDetectScreenshotForVisualMessage:(id)arg2 atIndex:(NSInteger)arg3 {
-    NONVOID_HANDLESCREENSHOT(%orig);
+    if ([SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"]) {
+        return nil;
+    }
+    return %orig;
 }
 %end
 
 %hook IGDirectVisualMessageReplayService
 - (id)visualMessageViewerController:(id)arg1 didDetectScreenshotForVisualMessage:(id)arg2 atIndex:(NSInteger)arg3 {
-    NONVOID_HANDLESCREENSHOT(%orig);
+    if ([SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"]) {
+        return nil;
+    }
+    return %orig;
 }
 %end
 
 %hook IGDirectVisualMessageReportService
 - (id)visualMessageViewerController:(id)arg1 didDetectScreenshotForVisualMessage:(id)arg2 atIndex:(NSInteger)arg3 {
-    NONVOID_HANDLESCREENSHOT(%orig);
+    if ([SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"]) {
+        return nil;
+    }
+    return %orig;
 }
 %end
 
@@ -285,52 +301,85 @@ static const void *kSPKFlexThreeFingerGestureKey = &kSPKFlexThreeFingerGestureKe
 
 %hook IGScreenshotObserver
 - (id)initForController:(id)arg1 {
-    NONVOID_HANDLESCREENSHOT(%orig);
+    if ([SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"]) {
+        return nil;
+    }
+    return %orig;
 }
 %end
 
 %hook IGScreenshotObserverDelegate
 - (void)screenshotObserverDidSeeScreenshotTaken:(id)arg1 {
-    VOID_HANDLESCREENSHOT(%orig);
+    if ([SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"]) {
+        return;
+    }
+    %orig;
 }
 - (void)screenshotObserverDidSeeActiveScreenCapture:(id)arg1 event:(NSInteger)arg2 {
-    VOID_HANDLESCREENSHOT(%orig);
+    if ([SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"]) {
+        return;
+    }
+    %orig;
 }
 %end
 
 %hook IGDirectMediaViewerViewController
 - (void)screenshotObserverDidSeeScreenshotTaken:(id)arg1 {
-    VOID_HANDLESCREENSHOT(%orig);
+    if ([SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"]) {
+        return;
+    }
+    %orig;
 }
 - (void)screenshotObserverDidSeeActiveScreenCapture:(id)arg1 event:(NSInteger)arg2 {
-    VOID_HANDLESCREENSHOT(%orig);
+    if ([SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"]) {
+        return;
+    }
+    %orig;
 }
 %end
 
 %hook IGStoryViewerViewController
 - (void)screenshotObserverDidSeeScreenshotTaken:(id)arg1 {
-    VOID_HANDLESCREENSHOT(%orig);
+    if ([SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"]) {
+        return;
+    }
+    %orig;
 }
 - (void)screenshotObserverDidSeeActiveScreenCapture:(id)arg1 event:(NSInteger)arg2 {
-    VOID_HANDLESCREENSHOT(%orig);
+    if ([SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"]) {
+        return;
+    }
+    %orig;
 }
 %end
 
 %hook IGSundialFeedViewController
 - (void)screenshotObserverDidSeeScreenshotTaken:(id)arg1 {
-    VOID_HANDLESCREENSHOT(%orig);
+    if ([SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"]) {
+        return;
+    }
+    %orig;
 }
 - (void)screenshotObserverDidSeeActiveScreenCapture:(id)arg1 event:(NSInteger)arg2 {
-    VOID_HANDLESCREENSHOT(%orig);
+    if ([SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"]) {
+        return;
+    }
+    %orig;
 }
 %end
 
 %hook IGDirectVisualMessageViewerController
 - (void)screenshotObserverDidSeeScreenshotTaken:(id)arg1 {
-    VOID_HANDLESCREENSHOT(%orig);
+    if ([SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"]) {
+        return;
+    }
+    %orig;
 }
 - (void)screenshotObserverDidSeeActiveScreenCapture:(id)arg1 event:(NSInteger)arg2 {
-    VOID_HANDLESCREENSHOT(%orig);
+    if ([SPKUtils getBoolPref:@"msgs_disable_screenshot_detection"]) {
+        return;
+    }
+    %orig;
 }
 %end
 
@@ -499,14 +548,14 @@ BOOL showSearchSectionLabelForTag(NSInteger tag) {
 // Direct suggested chats (inbox view)
 %hook IGDirectInboxListAdapterDataSource
 - (id)objectsForListAdapter:(id)arg1 {
-    return SPKFilterDirectInboxObjects(%orig());
+    return SPKFilterDirectInboxObjects(%orig(arg1));
 }
 %end
 
 // Direct suggested chats (inbox view, latest Swift data source)
 %hook _TtC34IGDirectInboxListAdapterDataSource34IGDirectInboxListAdapterDataSource
 - (id)objectsForListAdapter:(id)arg1 {
-    return SPKFilterDirectInboxObjects(%orig());
+    return SPKFilterDirectInboxObjects(%orig(arg1));
 }
 %end
 

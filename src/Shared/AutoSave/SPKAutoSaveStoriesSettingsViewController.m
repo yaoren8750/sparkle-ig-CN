@@ -13,7 +13,7 @@
     dispatch_once(&onceToken, ^{
         descriptor = [SPKAutoSaveSurfaceDescriptor new];
         descriptor.filter = SPKStoryAutoSaveFilterConfig();
-        descriptor.title = @"Stories";
+        descriptor.title = @"快拍";
         descriptor.masterTitle = @"Auto-Save Stories";
         descriptor.listIcon = @"users";
         descriptor.listProvider = ^UIViewController * {
@@ -43,7 +43,7 @@
     dispatch_once(&onceToken, ^{
         descriptor = [SPKAutoSaveSurfaceDescriptor new];
         descriptor.filter = SPKDirectAutoSaveFilterConfig();
-        descriptor.title = @"Messages";
+        descriptor.title = @"消息";
         descriptor.masterTitle = @"Auto-Save View-Once Media";
         descriptor.listIcon = @"messages";
         descriptor.listProvider = ^UIViewController * {

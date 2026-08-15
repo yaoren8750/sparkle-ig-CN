@@ -81,7 +81,7 @@ static NSArray<NSURL *> *SPKDownloadSucceededFileURLsForJob(SPKDownloadJob *job)
         if ([item.detail containsString:@"Merging"] || [item.detail containsString:@"Re-encoding"])
             return item.detail;
         if ([item.detail containsString:@"Converting"])
-            return @"Converting audio";
+            return @"正在转换音频";
         if ([item.detail containsString:@"Downloading video"])
             return @"Downloading video";
         if ([item.detail containsString:@"Downloading audio"])
@@ -308,15 +308,15 @@ static NSArray<NSURL *> *SPKDownloadSucceededFileURLsForJob(SPKDownloadJob *job)
     }
 
     if (job.state == SPKDownloadStateFailed || job.state == SPKDownloadStatePartial) {
-        NSString *message = job.items.firstObject.error.localizedDescription ?: @"Download failed";
-        [self.activePill showErrorWithTitle:job.state == SPKDownloadStatePartial ? @"Some downloads failed" : @"Download failed"
+        NSString *message = job.items.firstObject.error.localizedDescription ?: @"下载失败";
+        [self.activePill showErrorWithTitle:job.state == SPKDownloadStatePartial ? @"Some downloads failed" : @"下载失败"
                                    subtitle:message
                                        icon:nil];
         self.activePill.onTapWhenCompleted = openHistory;
         return;
     }
     if (job.state == SPKDownloadStateCancelled) {
-        [self.activePill showInfoWithTitle:@"Download cancelled" subtitle:@"Tap to open Downloads" icon:nil];
+        [self.activePill showInfoWithTitle:@"下载已取消" subtitle:@"点击打开下载" icon:nil];
         self.activePill.onTapWhenCompleted = openHistory;
         return;
     }
@@ -324,15 +324,15 @@ static NSArray<NSURL *> *SPKDownloadSucceededFileURLsForJob(SPKDownloadJob *job)
     // Determine terminal title/subtitle/action based on destination
     switch (job.request.destination) {
     case SPKDownloadDestinationPhotos:
-        title = @"Saved to Photos";
-        subtitle = @"Tap to open Photos";
+        title = @"已保存到照片";
+        subtitle = @"点击打开照片";
         self.activePill.onTapWhenCompleted = ^{
             [SPKUtils openPhotosApp];
         };
         break;
     case SPKDownloadDestinationGallery:
-        title = @"Saved to Gallery";
-        subtitle = @"Tap to open Gallery";
+        title = @"已保存到图库";
+        subtitle = @"点击打开图库";
         self.activePill.onTapWhenCompleted = ^{
             [SPKGalleryViewController presentGallery];
         };
@@ -343,10 +343,10 @@ static NSArray<NSURL *> *SPKDownloadSucceededFileURLsForJob(SPKDownloadJob *job)
             title = count > 1
                         ? [NSString stringWithFormat:@"Shared %lu items", (unsigned long)count]
                         : @"Shared";
-            subtitle = @"Tap to open Downloads";
+            subtitle = @"点击打开下载";
             self.activePill.onTapWhenCompleted = openHistory;
         } else {
-            title = @"Ready to share";
+            title = @"可以分享";
             subtitle = nil;
             self.activePill.onTapWhenCompleted = nil;
         }
@@ -356,21 +356,21 @@ static NSArray<NSURL *> *SPKDownloadSucceededFileURLsForJob(SPKDownloadJob *job)
             NSUInteger count = [self completedItemCount:job];
             title = count > 1
                         ? [NSString stringWithFormat:@"Copied %lu items to clipboard", (unsigned long)count]
-                        : @"Copied to clipboard";
+                        : @"已复制到剪贴板";
         } else {
             SPKDownloadItem *first = job.items.firstObject;
             switch (first.mediaKind) {
             case SPKDownloadMediaKindVideo:
-                title = @"Copied video to clipboard";
+                title = @"视频已复制到剪贴板";
                 break;
             case SPKDownloadMediaKindAudio:
-                title = @"Copied audio to clipboard";
+                title = @"音频已复制到剪贴板";
                 break;
             case SPKDownloadMediaKindImage:
-                title = @"Copied photo to clipboard";
+                title = @"照片已复制到剪贴板";
                 break;
             default:
-                title = @"Copied to clipboard";
+                title = @"已复制到剪贴板";
                 break;
             }
         }
@@ -382,11 +382,11 @@ static NSArray<NSURL *> *SPKDownloadSucceededFileURLsForJob(SPKDownloadJob *job)
         if (job.items.count > 1) {
             NSUInteger count = [self completedItemCount:job];
             title = [NSString stringWithFormat:@"%lu items saved", (unsigned long)count];
-            subtitle = @"Tap to open Downloads";
+            subtitle = @"点击打开下载";
             self.activePill.onTapWhenCompleted = openHistory;
         } else {
-            title = @"Download complete";
-            subtitle = @"Tap to open Downloads";
+            title = @"下载完成";
+            subtitle = @"点击打开下载";
             self.activePill.onTapWhenCompleted = openHistory;
         }
         break;

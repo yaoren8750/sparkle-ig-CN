@@ -1161,13 +1161,13 @@ NSString *SPKFileNameForMedia(NSURL *fileURL,
 + (NSString *)labelForSource:(SPKGallerySource)source {
     switch (source) {
     case SPKGallerySourceFeed:
-        return @"Feed";
+        return @"动态";
     case SPKGallerySourceStories:
-        return @"Stories";
+        return @"快拍";
     case SPKGallerySourceReels:
         return @"Reels";
     case SPKGallerySourceProfile:
-        return @"Profile";
+        return @"个人资料";
     case SPKGallerySourceDMs:
         return @"DMs";
     case SPKGallerySourceThumbnail:
@@ -1187,13 +1187,13 @@ NSString *SPKFileNameForMedia(NSURL *fileURL,
 + (NSString *)shortLabelForSource:(SPKGallerySource)source {
     switch (source) {
     case SPKGallerySourceFeed:
-        return @"Feed";
+        return @"动态";
     case SPKGallerySourceStories:
         return @"Story";
     case SPKGallerySourceReels:
         return @"Reel";
     case SPKGallerySourceProfile:
-        return @"Profile";
+        return @"个人资料";
     case SPKGallerySourceDMs:
         return @"DMs";
     case SPKGallerySourceThumbnail:

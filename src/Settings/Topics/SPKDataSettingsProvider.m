@@ -53,7 +53,7 @@
 }
 
 - (void)rebuildSections {
-    SPKSetting *settingsRow = [SPKSetting buttonCellWithTitle:@"Settings"
+    SPKSetting *settingsRow = [SPKSetting buttonCellWithTitle:@"设置"
                                                      subtitle:@""
                                                          icon:SPKSettingsIcon(@"settings")
                                                        action:^{
@@ -63,7 +63,7 @@
                                                        }];
     settingsRow.userInfo = @{@"checkmarked" : @(self.includeSettings)};
 
-    SPKSetting *galleryRow = [SPKSetting buttonCellWithTitle:@"Gallery"
+    SPKSetting *galleryRow = [SPKSetting buttonCellWithTitle:@"图库"
                                                     subtitle:@""
                                                         icon:SPKSettingsIcon(@"sparkle_gallery")
                                                       action:^{
@@ -73,7 +73,7 @@
                                                       }];
     galleryRow.userInfo = @{@"checkmarked" : @(self.includeGallery)};
 
-    SPKSetting *deletedMessagesRow = [SPKSetting buttonCellWithTitle:@"Deleted Messages"
+    SPKSetting *deletedMessagesRow = [SPKSetting buttonCellWithTitle:@"已删除消息"
                                                             subtitle:@""
                                                                 icon:SPKSettingsIcon(@"channels")
                                                               action:^{
@@ -83,7 +83,7 @@
                                                               }];
     deletedMessagesRow.userInfo = @{@"checkmarked" : @(self.includeDeletedMessages)};
 
-    SPKSetting *profileAnalyzerRow = [SPKSetting buttonCellWithTitle:@"Profile Analyzer"
+    SPKSetting *profileAnalyzerRow = [SPKSetting buttonCellWithTitle:@"个人资料分析"
                                                             subtitle:@""
                                                                 icon:SPKSettingsIcon(@"profile_analyzer")
                                                               action:^{
@@ -141,7 +141,7 @@
 @implementation SPKDataSettingsProvider
 
 + (SPKSetting *)rootSetting {
-    SPKSetting *resetAllSettings = [SPKSetting buttonCellWithTitle:@"Reset All Settings"
+    SPKSetting *resetAllSettings = [SPKSetting buttonCellWithTitle:@"重置所有设置"
                                                           subtitle:@""
                                                               icon:SPKSettingsIcon(@"arrow_ccw")
                                                             action:^(void) {

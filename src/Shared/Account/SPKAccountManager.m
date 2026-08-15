@@ -54,7 +54,7 @@ static NSString *SPKAccountUsernameFromSession(id session) {
         id user = [session valueForKey:@"user"];
         if (!user)
             return nil;
-        id username = [user respondsToSelector:@selector(username)] ? [user valueForKey:@"username"] : nil;
+        id username = [user respondsToSelector:@selector(username)] ? [user valueForKey:@"用户名"] : nil;
         return [username isKindOfClass:[NSString class]] && [(NSString *)username length] > 0 ? username : nil;
     } @catch (__unused NSException *exception) {
         return nil;
@@ -101,7 +101,7 @@ static BOOL SPKStringsEqual(NSString *a, NSString *b) {
     if (self.cachedPK.length > 0)
         info[@"pk"] = self.cachedPK;
     if (self.cachedUsername.length > 0)
-        info[@"username"] = self.cachedUsername;
+        info[@"用户名"] = self.cachedUsername;
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:SPKAccountDidChangeNotification
                                                             object:[self class]
@@ -187,14 +187,14 @@ static BOOL SPKStringsEqual(NSString *a, NSString *b) {
     NSMutableDictionary *roster = [stored isKindOfClass:[NSDictionary class]] ? [stored mutableCopy] : [NSMutableDictionary dictionary];
 
     NSDictionary *existing = [roster[pk] isKindOfClass:[NSDictionary class]] ? roster[pk] : nil;
-    NSString *resolvedUsername = username.length > 0 ? username : (existing[@"username"] ?: @"");
+    NSString *resolvedUsername = username.length > 0 ? username : (existing[@"用户名"] ?: @"");
     NSDictionary *entry = @{
-        @"username" : resolvedUsername,
+        @"用户名" : resolvedUsername,
         @"lastSeen" : @([[NSDate date] timeIntervalSince1970])
     };
     // Skip the write when nothing meaningful changed (avoids churn on every
     // foreground/refresh).
-    if (existing && [existing[@"username"] isEqualToString:resolvedUsername])
+    if (existing && [existing[@"用户名"] isEqualToString:resolvedUsername])
         return;
 
     roster[pk] = entry;
@@ -212,7 +212,7 @@ static BOOL SPKStringsEqual(NSString *a, NSString *b) {
             return;
         [accounts addObject:@{
             @"pk" : pk,
-            @"username" : value[@"username"] ?: @"",
+            @"用户名" : value[@"用户名"] ?: @"",
             @"lastSeen" : value[@"lastSeen"] ?: @0
         }];
     }];
@@ -227,7 +227,7 @@ static BOOL SPKStringsEqual(NSString *a, NSString *b) {
         return nil;
     NSDictionary *stored = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kSPKAccountRosterDefaultsKey];
     NSDictionary *entry = [stored isKindOfClass:[NSDictionary class]] ? stored[pk] : nil;
-    NSString *username = [entry isKindOfClass:[NSDictionary class]] ? entry[@"username"] : nil;
+    NSString *username = [entry isKindOfClass:[NSDictionary class]] ? entry[@"用户名"] : nil;
     return username.length > 0 ? username : nil;
 }
 

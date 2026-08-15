@@ -42,12 +42,12 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
 - (void)buildControls {
     _nameField = [self editableField];
     _nameField.text = self.file.customName;
-    _nameField.placeholder = @"Display name";
+    _nameField.placeholder = @"显示名称";
     _nameField.autocapitalizationType = UITextAutocapitalizationTypeNone;
 
     _usernameField = [self editableField];
     _usernameField.text = self.file.sourceUsername;
-    _usernameField.placeholder = @"Username";
+    _usernameField.placeholder = @"用户名";
     _usernameField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     _usernameField.autocorrectionType = UITextAutocorrectionTypeNo;
 
@@ -72,9 +72,9 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
     NSMutableArray<NSArray<NSString *> *> *rows = [NSMutableArray array];
     NSString *typeName = @"Photo";
     if (self.file.mediaType == SPKGalleryMediaTypeVideo)
-        typeName = @"Video";
+        typeName = @"视频";
     else if (self.file.mediaType == SPKGalleryMediaTypeAudio)
-        typeName = @"Audio";
+        typeName = @"音频";
     [rows addObject:@[ @"Type", typeName ]];
     if (self.file.pixelWidth > 0 && self.file.pixelHeight > 0) {
         [rows addObject:@[ @"Dimensions", [NSString stringWithFormat:@"%d × %d", self.file.pixelWidth, self.file.pixelHeight] ]];
@@ -86,7 +86,7 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
     if (self.file.fileSize > 0) {
         [rows addObject:@[ @"Size", [NSByteCountFormatter stringFromByteCount:self.file.fileSize countStyle:NSByteCountFormatterCountStyleFile] ]];
     }
-    NSString *folder = self.file.folderPath.length > 0 ? [self.file.folderPath lastPathComponent] : @"Gallery";
+    NSString *folder = self.file.folderPath.length > 0 ? [self.file.folderPath lastPathComponent] : @"图库";
     [rows addObject:@[ @"Folder", folder ]];
     if (self.file.sourceMediaCode.length > 0) {
         [rows addObject:@[ @"Media code", self.file.sourceMediaCode ]];
@@ -96,11 +96,11 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"Edit Details";
+    self.title = @"编辑详细信息";
     self.view.backgroundColor = [SPKUtils SPKColor_InstagramBackground];
 
     UIBarButtonItem *cancelItem = SPKMediaChromeTopBarButtonItem(@"xmark", self, @selector(cancel));
-    cancelItem.accessibilityLabel = @"Cancel";
+    cancelItem.accessibilityLabel = @"取消";
     UIBarButtonItem *saveItem = SPKMediaChromeTopBarButtonItemWithStyle(@"check", self, @selector(save), UIBarButtonItemStyleDone, [SPKUtils SPKColor_InstagramBlue], @"Save");
     SPKMediaChromeSetLeadingTopBarItems(self.navigationItem, @[ cancelItem ]);
     SPKMediaChromeSetTrailingTopBarItems(self.navigationItem, @[ saveItem ]);
@@ -154,7 +154,7 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
             [self embedAccessory:self.nameField inCell:cell];
             break;
         case SPKDetailsEditRowUsername:
-            cell.textLabel.text = @"Username";
+            cell.textLabel.text = @"用户名";
             [self embedAccessory:self.usernameField inCell:cell];
             break;
         case SPKDetailsEditRowAccount: {
@@ -204,7 +204,7 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
         }
     }
     if (self.selectedOwnerPK.length > 0 && !hasSelected) {
-        [accounts addObject:@{@"pk" : self.selectedOwnerPK, @"username" : self.selectedOwnerUsername ?: @""}];
+        [accounts addObject:@{@"pk" : self.selectedOwnerPK, @"用户名" : self.selectedOwnerUsername ?: @""}];
     }
     return accounts;
 }
@@ -214,7 +214,7 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
     NSMutableArray<SPKIGAlertAction *> *actions = [NSMutableArray array];
     for (NSDictionary *account in [self pickerAccounts]) {
         NSString *pk = account[@"pk"];
-        NSString *username = account[@"username"];
+        NSString *username = account[@"用户名"];
         if (![pk isKindOfClass:[NSString class]] || pk.length == 0)
             continue;
         NSString *title = username.length > 0 ? [@"@" stringByAppendingString:username] : pk;
@@ -233,7 +233,7 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
                                                      weakSelf.selectedOwnerUsername = nil;
                                                      [weakSelf.tableView reloadData];
                                                  }]];
-    [actions addObject:[SPKIGAlertAction actionWithTitle:@"Cancel" style:SPKIGAlertActionStyleCancel handler:nil]];
+    [actions addObject:[SPKIGAlertAction actionWithTitle:@"取消" style:SPKIGAlertActionStyleCancel handler:nil]];
 
     [SPKIGAlertPresenter presentActionSheetFromViewController:self
                                                         title:@"Change File Owner"

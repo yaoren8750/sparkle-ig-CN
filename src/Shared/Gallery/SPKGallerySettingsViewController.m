@@ -92,7 +92,7 @@ static NSString *const kGalleryQuickAccessDisabledValue = @"none";
             [SPKSetting valueCellWithTitle:@"Videos"
                                   subtitle:@"Saved video count"
                                       icon:SPKSettingsIcon(@"video")],
-            [SPKSetting valueCellWithTitle:@"Audio"
+            [SPKSetting valueCellWithTitle:@"音频"
                                   subtitle:@"Saved audio count"
                                       icon:SPKSettingsIcon(@"audio")]
         ],
@@ -138,14 +138,14 @@ static NSString *const kGalleryQuickAccessDisabledValue = @"none";
             // button row's action is what search runs on tap — an empty one silently does nothing.
             // The framework pushes navViewController itself, so the result is actually reachable.
             // No folder context from search, so it imports to the gallery root (nil).
-            [SPKSetting navigationCellWithTitle:@"Import Media"
+            [SPKSetting navigationCellWithTitle:@"导入媒体"
                                        subtitle:nil
                                            icon:SPKSettingsIcon(@"media")
                                  viewController:[[SPKGalleryImportViewController alloc] initWithDestinationFolderPath:nil]]
         ],
                         @"Import media from the Files app with full editable metadata.\n"
                         @"Coming from Regram? Pick your exported folder or MediaVault.zip here to bring your whole Media Vault over."),
-        SPKTopicSection(@"Delete", @[
+        SPKTopicSection(@"删除", @[
             [SPKSetting buttonCellWithTitle:@"Delete Files"
                                    subtitle:nil
                                        icon:SPKSettingsIcon(@"trash")
@@ -209,7 +209,7 @@ static NSString *const kGalleryQuickAccessDisabledValue = @"none";
                   [SPKSetting valueCellWithTitle:@"Videos"
                                         subtitle:[NSString stringWithFormat:@"%ld", (long)self.stats.videoCount]
                                             icon:SPKSettingsIcon(@"video")],
-                  [SPKSetting valueCellWithTitle:@"Audio"
+                  [SPKSetting valueCellWithTitle:@"音频"
                                         subtitle:[NSString stringWithFormat:@"%ld", (long)self.stats.audioCount]
                                             icon:SPKSettingsIcon(@"audio")]
               ],
@@ -321,7 +321,7 @@ static NSString *const kGalleryQuickAccessDisabledValue = @"none";
 
     [sections addObject:SPKTopicSection(@"Lock", lockRows, @"Lock the Gallery with a passcode or biometrics.")];
 
-    SPKSetting *importRow = [SPKSetting buttonCellWithTitle:@"Import Media"
+    SPKSetting *importRow = [SPKSetting buttonCellWithTitle:@"导入媒体"
                                                    subtitle:nil
                                                        icon:SPKSettingsIcon(@"media")
                                                      action:^{
@@ -348,7 +348,7 @@ static NSString *const kGalleryQuickAccessDisabledValue = @"none";
     deleteRow.tintColor = [SPKUtils SPKColor_InstagramDestructive];
     deleteRow.iconTintColor = [SPKUtils SPKColor_InstagramDestructive];
 
-    [sections addObject:SPKTopicSection(@"Delete", @[ deleteRow ], nil)];
+    [sections addObject:SPKTopicSection(@"删除", @[ deleteRow ], nil)];
 
     [self replaceSections:sections];
 }
@@ -412,7 +412,7 @@ static NSString *const kGalleryQuickAccessDisabledValue = @"none";
                                                   title:@"Disable Passcode"
                                                 message:@"The gallery will no longer require authentication to open."
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                    [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:^{
                                                                                   [self rebuildSections];

@@ -38,7 +38,7 @@ static const CGFloat kSPKVideoCropControlsRow = 56.0;
                       from:(UIViewController *)presenter
                 completion:(void (^)(SPKTrimCrop *_Nullable))completion {
     if (!videoURL || !presenter) {
-        SPKLog(@"Crop", @"[Sparkle] crop editor not presented (url=%d presenter=%d)", videoURL != nil, presenter != nil);
+        SPKLog(@"裁剪", @"[Sparkle] crop editor not presented (url=%d presenter=%d)", videoURL != nil, presenter != nil);
         if (completion)
             completion(nil);
         return;
@@ -54,7 +54,7 @@ static const CGFloat kSPKVideoCropControlsRow = 56.0;
     editor.lockedAspectRatio = lockedAspectRatio;
     editor.initialCrop = initialCrop;
     editor.completion = completion;
-    editor.title = title.length > 0 ? title : @"Crop";
+    editor.title = title.length > 0 ? title : @"裁剪";
     // Same chrome as the trim and photo editors: native bars (Liquid Glass on
     // iOS 26), always dark so the black canvas and light controls read correctly.
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:editor];
@@ -93,11 +93,11 @@ static const CGFloat kSPKVideoCropControlsRow = 56.0;
 
 - (void)setupChrome {
     UIBarButtonItem *cancelItem = SPKMediaChromeTopBarButtonItem(@"close", self, @selector(cancelTapped));
-    cancelItem.accessibilityLabel = @"Cancel";
+    cancelItem.accessibilityLabel = @"取消";
     // Plain and untinted: confirming here returns the framing to the trim
     // editor, whose own Done is the one that commits the edit.
     UIBarButtonItem *doneItem = SPKMediaChromeTopBarButtonItem(@"check", self, @selector(confirmTapped));
-    doneItem.accessibilityLabel = @"Done";
+    doneItem.accessibilityLabel = @"完成";
     SPKMediaChromeSetLeadingTopBarItems(self.navigationItem, @[ cancelItem ]);
     SPKMediaChromeSetTrailingTopBarItems(self.navigationItem, @[ doneItem ]);
 }
@@ -172,7 +172,7 @@ static const CGFloat kSPKVideoCropControlsRow = 56.0;
     AVKeyValueStatus status = [self.asset statusOfValueForKey:@"tracks" error:&error];
     AVAssetTrack *videoTrack = [self.asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
     if (!videoTrack) {
-        SPKLog(@"Crop", @"[Sparkle] crop editor closing: no video track (status=%ld err=%@ url=%@)", (long)status,
+        SPKLog(@"裁剪", @"[Sparkle] crop editor closing: no video track (status=%ld err=%@ url=%@)", (long)status,
                error.localizedDescription, self.videoURL.lastPathComponent);
         [self cancelTapped];
         return;
@@ -180,7 +180,7 @@ static const CGFloat kSPKVideoCropControlsRow = 56.0;
     CGSize rendered = CGSizeApplyAffineTransform(videoTrack.naturalSize, videoTrack.preferredTransform);
     _orientedSize = CGSizeMake(fabs(rendered.width), fabs(rendered.height));
     if (_orientedSize.width <= 0.0 || _orientedSize.height <= 0.0) {
-        SPKLog(@"Crop", @"[Sparkle] crop editor closing: bad oriented size %@ (natural %@)",
+        SPKLog(@"裁剪", @"[Sparkle] crop editor closing: bad oriented size %@ (natural %@)",
                NSStringFromCGSize(_orientedSize), NSStringFromCGSize(videoTrack.naturalSize));
         [self cancelTapped];
         return;

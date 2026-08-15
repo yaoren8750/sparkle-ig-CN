@@ -206,7 +206,7 @@
                                                          }]];
         } else {
             // Cancel, red not bold
-            [actions addObject:[SPKIGAlertAction actionWithTitle:@"Cancel"
+            [actions addObject:[SPKIGAlertAction actionWithTitle:@"取消"
                                                            style:SPKIGAlertActionStyleDestructive
                                                          handler:^{
                                                              [self cancelJobID:jobID];

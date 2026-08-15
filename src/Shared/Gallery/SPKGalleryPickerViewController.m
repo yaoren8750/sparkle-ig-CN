@@ -214,7 +214,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryPickerViewMode) {
         if (_folderPath.length > 0) {
             [_folderTrail addObject:_folderPath];
         }
-        _pickerTitle = [title.length > 0 ? title : @"Gallery" copy];
+        _pickerTitle = [title.length > 0 ? title : @"图库" copy];
         _allowedMediaTypes = [allowedMediaTypes copy];
         _allowsMultipleSelection = allowsMultipleSelection;
         _completion = [completion copy];
@@ -277,7 +277,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryPickerViewMode) {
     self.searchController.searchResultsUpdater = self;
     self.searchController.obscuresBackgroundDuringPresentation = NO;
     self.searchController.hidesNavigationBarDuringPresentation = NO;
-    self.searchController.searchBar.placeholder = @"Search Gallery";
+    self.searchController.searchBar.placeholder = @"搜索图库";
     self.searchController.searchBar.delegate = self;
     [self.searchController.searchBar setImage:[SPKAssetUtils instagramIconNamed:@"search" pointSize:18.0]
                              forSearchBarIcon:UISearchBarIconSearch
@@ -529,7 +529,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryPickerViewMode) {
         }
     }
     if (!searchItem) {
-        searchItem = [self pickerBottomBarItemWithResource:@"search" accessibility:@"Search" action:@selector(activateSearch)];
+        searchItem = [self pickerBottomBarItemWithResource:@"search" accessibility:@"搜索" action:@selector(activateSearch)];
     }
     return searchItem;
 }
@@ -551,7 +551,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryPickerViewMode) {
     UIBarButtonItem *toggleItem = [self pickerBottomBarItemWithResource:toggleResource accessibility:toggleAX action:@selector(togglePickerViewMode)];
 
     UIBarButtonItem *sortItem = [self pickerBottomBarItemWithResource:@"sort" accessibility:@"Sort" action:@selector(presentSort)];
-    UIBarButtonItem *filterItem = [self pickerBottomBarItemWithResource:@"filter" accessibility:@"Filter" action:@selector(presentFilter)];
+    UIBarButtonItem *filterItem = [self pickerBottomBarItemWithResource:@"filter" accessibility:@"筛选" action:@selector(presentFilter)];
 
     NSArray<UIBarButtonItem *> *primary = @[ toggleItem, sortItem, filterItem ];
     self.toolbarItems = SPKMediaChromeBottomToolbarItemsWithTrailingGroup(primary, @[ [self bottomToolbarSearchItem] ]);
@@ -801,19 +801,19 @@ typedef NS_ENUM(NSInteger, SPKGalleryPickerViewMode) {
     NSString *title;
     NSString *subtitle;
     if (query.length > 0) {
-        title = @"No results";
+        title = @"没有结果";
         // Point at the scope toggle: the match may simply live in another folder.
         subtitle = (!self.searchAllFolders && folderName.length > 0)
                        ? @"Nothing in this folder matches your search. Try All Folders."
                        : @"No media matches your search.";
     } else if (hasFilters) {
-        title = @"No matching files";
-        subtitle = @"Try adjusting your filters.";
+        title = @"没有匹配的文件";
+        subtitle = @"请尝试调整筛选条件。";
     } else if (folderName.length > 0) {
-        title = @"This folder is empty";
-        subtitle = @"Nothing here can be selected.";
+        title = @"此文件夹为空";
+        subtitle = @"这里没有可选择的内容。";
     } else {
-        title = @"Nothing to select";
+        title = @"没有可选择的内容";
         subtitle = @"There is no Gallery media of this kind yet.";
     }
     self.emptyStateLabel.text = title;
@@ -1033,7 +1033,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryPickerViewMode) {
         leadingItem.accessibilityLabel = @"Back";
     } else {
         leadingItem = SPKMediaChromeTopBarButtonItem(@"xmark", self, @selector(cancelTapped));
-        leadingItem.accessibilityLabel = @"Cancel";
+        leadingItem.accessibilityLabel = @"取消";
     }
     SPKMediaChromeSetLeadingTopBarItems(self.navigationItem, @[ leadingItem ]);
 }

@@ -24,7 +24,7 @@
         _allowsAudioOnly = YES;
         _allowsCrop = YES;
         _minimumDuration = 0.3;
-        _title = @"Trim";
+        _title = @"裁剪";
     }
     return self;
 }
@@ -42,7 +42,7 @@
     config.mediaKind = SPKTrimMediaKindAudio;
     config.allowsFrameOnly = NO;
     config.allowsCrop = NO;
-    config.title = @"Trim Audio";
+    config.title = @"裁剪音频";
     return config;
 }
 

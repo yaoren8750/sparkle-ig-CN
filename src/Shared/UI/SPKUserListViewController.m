@@ -157,7 +157,7 @@ typedef NS_ENUM(NSInteger, SPKUserListSortMode) {
         self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
         self.searchController.searchResultsUpdater = self;
         self.searchController.obscuresBackgroundDuringPresentation = NO;
-        self.searchController.searchBar.placeholder = @"Search";
+        self.searchController.searchBar.placeholder = @"搜索";
         [self.searchController.searchBar setImage:[SPKAssetUtils instagramIconNamed:@"search" pointSize:18.0]
                                  forSearchBarIcon:UISearchBarIconSearch
                                             state:UIControlStateNormal];
@@ -184,7 +184,7 @@ typedef NS_ENUM(NSInteger, SPKUserListSortMode) {
         BOOL sortOnly = (self.enablesSort && self.infoText.length == 0);
         [items addObject:SPKMediaChromeTopBarMenuButtonItem(sortOnly ? @"sort" : @"more",
                                                             [self moreMenu],
-                                                            sortOnly ? @"Sort" : @"More")];
+                                                            sortOnly ? @"Sort" : @"更多")];
     }
     if (items.count)
         SPKMediaChromeSetTrailingTopBarItems(self.navigationItem, items);
@@ -304,7 +304,7 @@ typedef NS_ENUM(NSInteger, SPKUserListSortMode) {
         return;
     if (self.searchText.length) {
         self.emptyStateTitle.text = @"No matches";
-        self.emptyStateSubtitle.text = self.emptySearchSubtitle.length ? self.emptySearchSubtitle : @"No accounts match your search.";
+        self.emptyStateSubtitle.text = self.emptySearchSubtitle.length ? self.emptySearchSubtitle : @"没有符合搜索条件的账户。";
     } else {
         self.emptyStateTitle.text = self.emptyTitle;
         self.emptyStateSubtitle.text = self.emptySubtitle;
@@ -400,7 +400,7 @@ typedef NS_ENUM(NSInteger, SPKUserListSortMode) {
                                                                     }];
     del.image = [SPKAssetUtils menuIconNamed:@"trash"];
     del.backgroundColor = [SPKUtils SPKColor_InstagramDestructive];
-    del.accessibilityLabel = @"Remove";
+    del.accessibilityLabel = @"移除";
     UISwipeActionsConfiguration *config = [UISwipeActionsConfiguration configurationWithActions:@[ del ]];
     config.performsFirstActionWithFullSwipe = YES;
     return config;

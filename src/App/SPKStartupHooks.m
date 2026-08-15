@@ -160,7 +160,7 @@ void SPKInstallFeedSurfaceHooksIfNeeded(void) {
         SPKInstallEssentialAccessHooks();
         return;
     }
-    SPKHookBisectSetCurrentSurface(@"Feed");
+    SPKHookBisectSetCurrentSurface(@"动态");
     SPK_INSTALL(SPKInstallTweakFeedHooksIfNeeded);
     SPK_INSTALL(SPKInstallFeedFilteringFeedHooksIfEnabled);
     SPK_INSTALL(SPKInstallFeedActionButtonHooksIfEnabled);
@@ -187,7 +187,7 @@ void SPKInstallStorySurfaceHooksIfNeeded(void) {
         SPKInstallEssentialAccessHooks();
         return;
     }
-    SPKHookBisectSetCurrentSurface(@"Stories");
+    SPKHookBisectSetCurrentSurface(@"快拍");
     SPK_INSTALL(SPKInstallTweakStoryHooksIfNeeded);
     SPK_INSTALL(SPKInstallFeedFilteringHooksIfEnabled);
     SPK_INSTALL(SPKInstallStoriesActionButtonHooksIfEnabled);
@@ -227,7 +227,7 @@ void SPKInstallMessagesSurfaceHooksIfNeeded(void) {
         SPKInstallEssentialAccessHooks();
         return;
     }
-    SPKHookBisectSetCurrentSurface(@"Messages");
+    SPKHookBisectSetCurrentSurface(@"消息");
     SPK_INSTALL(SPKInstallTweakMessagesHooksIfNeeded);
     SPK_INSTALL(SPKInstallDirectAutoSaveHooksIfEnabled);
     SPK_INSTALL(SPKInstallMessagesActionButtonHooksIfEnabled);
@@ -271,7 +271,7 @@ void SPKInstallProfileSurfaceHooksIfNeeded(void) {
         SPKInstallEssentialAccessHooks();
         return;
     }
-    SPKHookBisectSetCurrentSurface(@"Profile");
+    SPKHookBisectSetCurrentSurface(@"个人资料");
     SPK_INSTALL(SPKInstallProfileActionButtonHooksIfEnabled);
     SPK_INSTALL(SPKInstallProfilePhotoZoomHooksIfEnabled);
     SPK_INSTALL(SPKInstallFollowConfirmHooksIfNeeded);

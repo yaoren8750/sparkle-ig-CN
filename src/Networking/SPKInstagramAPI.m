@@ -380,26 +380,26 @@ static NSString *spkNormalizePK(NSString *pk) {
             }
 
 #ifdef SPK_DEV
-            SPKLog(@"Downloads", @"[4K Debug] Cookies merged count: %lu", (unsigned long)cookieDict.count);
+            SPKLog(@"下载", @"[4K Debug] Cookies merged count: %lu", (unsigned long)cookieDict.count);
             for (NSString *name in cookieDict) {
-                SPKLog(@"Downloads", @"[4K Debug] Merged Cookie: %@ = %@", name, cookieDict[name]);
+                SPKLog(@"下载", @"[4K Debug] Merged Cookie: %@ = %@", name, cookieDict[name]);
             }
-            SPKLog(@"Downloads", @"[4K Debug] Request headers: %@", request.allHTTPHeaderFields);
+            SPKLog(@"下载", @"[4K Debug] Request headers: %@", request.allHTTPHeaderFields);
 #else
-            SPKLog(@"Downloads", @"[4K] Merged cookies count: %lu", (unsigned long)cookieDict.count);
+            SPKLog(@"下载", @"[4K] Merged cookies count: %lu", (unsigned long)cookieDict.count);
 #endif
 
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request
                                                                          completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                                                                              NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
                                                                              NSInteger statusCode = httpResponse.statusCode;
-                                                                             SPKLog(@"Downloads", @"[4K] fetchWebMediaInfoForPK request finished. Status: %ld", (long)statusCode);
+                                                                             SPKLog(@"下载", @"[4K] fetchWebMediaInfoForPK request finished. Status: %ld", (long)statusCode);
 #ifdef SPK_DEV
                                                                              if (error) {
-                                                                                 SPKLog(@"Downloads", @"[4K Debug] Request error: %@", error);
+                                                                                 SPKLog(@"下载", @"[4K Debug] Request error: %@", error);
                                                                              }
                                                                              if (httpResponse) {
-                                                                                 SPKLog(@"Downloads", @"[4K Debug] Response headers: %@", httpResponse.allHeaderFields);
+                                                                                 SPKLog(@"下载", @"[4K Debug] Response headers: %@", httpResponse.allHeaderFields);
                                                                              }
 #endif
 
@@ -412,20 +412,20 @@ static NSString *spkNormalizePK(NSString *pk) {
                                                                                      } else {
 #ifdef SPK_DEV
                                                                                          NSString *rawString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-                                                                                         SPKLog(@"Downloads", @"[4K Debug] Response data is not a dictionary. Raw data snippet: %@", 
+                                                                                         SPKLog(@"下载", @"[4K Debug] Response data is not a dictionary. Raw data snippet: %@", 
                                                                                                 (rawString.length > 1000 ? [rawString substringToIndex:1000] : rawString));
 #endif
                                                                                      }
                                                                                  } @catch (__unused NSException *exception) {
 #ifdef SPK_DEV
                                                                                      NSString *rawString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-                                                                                     SPKLog(@"Downloads", @"[4K Debug] JSON parsing exception. Raw data snippet: %@", 
+                                                                                     SPKLog(@"下载", @"[4K Debug] JSON parsing exception. Raw data snippet: %@", 
                                                                                             (rawString.length > 1000 ? [rawString substringToIndex:1000] : rawString));
 #endif
                                                                                  }
                                                                              } else {
 #ifdef SPK_DEV
-                                                                                 SPKLog(@"Downloads", @"[4K Debug] Response data is empty");
+                                                                                 SPKLog(@"下载", @"[4K Debug] Response data is empty");
 #endif
                                                                              }
                                                                              
@@ -475,7 +475,7 @@ static NSString *spkNormalizePK(NSString *pk) {
             if (cachedUser) {
                 NSString *pk = [SPKUtils pkFromIGUser:cachedUser];
                 if (pk.length > 0) {
-                    NSString *un = [SPKUtils sanitizedInstagramUsername:[cachedUser valueForKey:@"username"]] ?: cleanUsername;
+                    NSString *un = [SPKUtils sanitizedInstagramUsername:[cachedUser valueForKey:@"用户名"]] ?: cleanUsername;
                     NSString *fullName = nil;
                     @try {
                         fullName = [cachedUser valueForKey:@"fullName"] ?: [cachedUser valueForKey:@"full_name"];
@@ -489,7 +489,7 @@ static NSString *spkNormalizePK(NSString *pk) {
                     if (completion) {
                         completion(@{
                             @"pk": pk,
-                            @"username": un,
+                            @"用户名": un,
                             @"full_name": fullName ?: @"",
                             @"profile_pic_url": pic ?: @""
                         }, nil);
@@ -520,7 +520,7 @@ static NSString *spkNormalizePK(NSString *pk) {
                              NSArray *users = [searchResp[@"users"] isKindOfClass:[NSArray class]] ? searchResp[@"users"] : nil;
                              for (NSDictionary *u in users) {
                                  if ([u isKindOfClass:[NSDictionary class]]) {
-                                     NSString *uName = [u[@"username"] description].lowercaseString;
+                                     NSString *uName = [u[@"用户名"] description].lowercaseString;
                                      if ([uName isEqualToString:cleanUsername]) {
                                          NSMutableDictionary *mUser = [u mutableCopy];
                                          if (!mUser[@"pk"] && mUser[@"id"]) mUser[@"pk"] = [mUser[@"id"] description];

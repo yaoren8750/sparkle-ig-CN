@@ -29,7 +29,7 @@ static NSString *const kSPKHeaderPickerCellIdentifier = @"SPKHeaderDefaultPicker
 
     SPKHeaderPickerRow *menuRow = [SPKHeaderPickerRow new];
     menuRow.identifier = @"menu";
-    menuRow.title = @"Open Menu";
+    menuRow.title = @"打开操作菜单";
     menuRow.iconName = @"action";
     [rows addObject:menuRow];
 
@@ -51,7 +51,7 @@ static NSString *const kSPKHeaderPickerCellIdentifier = @"SPKHeaderDefaultPicker
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"Default Tap Action";
+    self.title = @"默认点击操作";
     self.navigationController.navigationBar.prefersLargeTitles = NO;
     self.view.backgroundColor = [SPKUtils SPKColor_InstagramGroupedBackground];
     self.rows = [self buildRows];
@@ -80,7 +80,7 @@ static NSString *const kSPKHeaderPickerCellIdentifier = @"SPKHeaderDefaultPicker
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
-    return @"Choose what a single tap does. Long press always opens the menu of enabled destinations.";
+    return @"选择单击按钮时执行的操作。长按始终打开已启用操作的菜单。";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

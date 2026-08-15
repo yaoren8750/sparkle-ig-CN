@@ -62,7 +62,7 @@ static size_t const kPBKDF2KeyLength = 32;
 }
 
 - (NSString *)protectedContentName {
-    return @"Gallery";
+    return @"图库";
 }
 
 - (void)lockContent {

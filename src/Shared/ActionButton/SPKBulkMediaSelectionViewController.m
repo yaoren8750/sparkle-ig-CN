@@ -213,9 +213,9 @@ static NSCache<NSURL *, UIImage *> *SPKBulkSelectionThumbnailCache(void) {
                                         @[ SPKMediaChromeTopBarButtonItem(@"xmark", self, @selector(cancel)) ]);
 
     self.selectAllItem = SPKMediaChromeTopBarButtonItem(@"circle", self, @selector(toggleSelectAll));
-    self.selectAllItem.accessibilityLabel = @"Select all";
+    self.selectAllItem.accessibilityLabel = @"全选";
     SPKMediaChromeSetTrailingTopBarItems(self.navigationItem, @[ self.selectAllItem ]);
-    self.navigationItem.title = @"Select Media";
+    self.navigationItem.title = @"选择媒体";
 
     // Bottom toolbar: one button per bulk destination, native chrome icons.
     NSMutableArray<UIBarButtonItem *> *destinationItems = [NSMutableArray array];
@@ -246,7 +246,7 @@ static NSCache<NSURL *, UIImage *> *SPKBulkSelectionThumbnailCache(void) {
     NSUInteger total = self.items.count;
 
     self.navigationItem.title = count == 0
-                                    ? @"Select Media"
+                                    ? @"选择媒体"
                                     : [NSString stringWithFormat:@"%lu of %lu", (unsigned long)count, (unsigned long)total];
 
     BOOL enabled = (count > 0);
@@ -263,7 +263,7 @@ static NSCache<NSURL *, UIImage *> *SPKBulkSelectionThumbnailCache(void) {
         resource = @"circle_check";
     }
     self.selectAllItem.image = SPKMediaChromeTopBarIcon(resource);
-    self.selectAllItem.accessibilityLabel = (count == total) ? @"Deselect all" : @"Select all";
+    self.selectAllItem.accessibilityLabel = (count == total) ? @"取消全选" : @"全选";
 }
 
 #pragma mark - Actions

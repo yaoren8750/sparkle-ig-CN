@@ -66,7 +66,7 @@ static char kSPKSectionEditSwitchAssocKey;
         _configuration = configuration;
         _sectionIdentifier = [sectionIdentifier copy];
         _onChange = [onChange copy];
-        self.title = @"Edit Section";
+        self.title = @"编辑分组";
     }
     return self;
 }
@@ -113,7 +113,7 @@ static char kSPKSectionEditSwitchAssocKey;
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     if (section == 0)
-        return @"Section";
+        return @"分组";
     if (section == 1)
         return @"Actions in This Section";
     return @"Available Actions";
@@ -146,7 +146,7 @@ static char kSPKSectionEditSwitchAssocKey;
             config.text = @"Title";
             UITextField *field = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 180, 30)];
             field.textAlignment = NSTextAlignmentRight;
-            field.placeholder = @"Section";
+            field.placeholder = @"分组";
             field.text = section.title;
             field.returnKeyType = UIReturnKeyDone;
             field.delegate = self;
@@ -307,7 +307,7 @@ static char kSPKSectionEditSwitchAssocKey;
 
 - (void)titleFieldChanged:(UITextField *)sender {
     SPKActionMenuSection *section = [self currentSection];
-    section.title = sender.text.length > 0 ? sender.text : @"Section";
+    section.title = sender.text.length > 0 ? sender.text : @"分组";
     [self.configuration save];
     if (self.onChange)
         self.onChange();

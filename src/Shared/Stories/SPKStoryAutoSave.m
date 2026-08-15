@@ -33,7 +33,7 @@ SPKAutoSaveFilterConfig *SPKStoryAutoSaveFilterConfig(void) {
         config.excludedKey = @"stories_auto_save_excluded";
         config.includedKey = @"stories_auto_save_included";
         config.identityField = @"pk";
-        config.sortField = @"username";
+        config.sortField = @"用户名";
         config.subjectPlural = @"Users";
         config.ruleNotificationIdentifier = kSPKNotificationStoryAutoSaveUserRule;
     });
@@ -67,7 +67,7 @@ void SPKStoryToggleAutoSaveForPK(NSString *pk, NSString *username, NSString *ful
     entry[@"pk"] = pk;
     NSString *normalized = SPKAutoSaveFilterNormalizedUsername(username);
     if (normalized.length > 0)
-        entry[@"username"] = normalized;
+        entry[@"用户名"] = normalized;
     entry[@"fullName"] = fullName ?: @"";
     if (profilePicUrl.length > 0)
         entry[@"profilePicUrl"] = profilePicUrl;
@@ -126,7 +126,7 @@ void SPKStoryAutoSaveConsiderOverlay(UIView *overlayView) {
     SPKGallerySaveMetadata *metadata = nil;
     if (!SPKResolveGalleryDownloadForMedia(context.media, SPKActionButtonSourceStories, username,
                                            NULL, &videoURL, &metadata)) {
-        SPKLog(@"Stories", @"[Sparkle AutoSave] No downloadable media for story mediaID=%@ user=@%@", mediaID, username);
+        SPKLog(@"快拍", @"[Sparkle AutoSave] No downloadable media for story mediaID=%@ user=@%@", mediaID, username);
         return;
     }
     BOOL isVideo = (videoURL != nil);
@@ -137,16 +137,16 @@ void SPKStoryAutoSaveConsiderOverlay(UIView *overlayView) {
     if ([SPKDownloadDuplicatePolicy destinationContainsMediaForMetadata:metadata
                                                               mediaType:mediaType
                                                             destination:destination]) {
-        SPKLog(@"Stories", @"[Sparkle AutoSave] Already in %@, skipping mediaID=%@ user=@%@",
+        SPKLog(@"快拍", @"[Sparkle AutoSave] Already in %@, skipping mediaID=%@ user=@%@",
                SPKDownloadDestinationDisplayName(destination), mediaID, username);
         return;
     }
 
-    SPKLog(@"Stories", @"[Sparkle AutoSave] Saving story mediaID=%@ user=@%@ video=%d", mediaID, username, isVideo);
+    SPKLog(@"快拍", @"[Sparkle AutoSave] Saving story mediaID=%@ user=@%@ video=%d", mediaID, username, isVideo);
     if (!SPKAutoSaveSubmitMedia(context.media, SPKActionButtonSourceStories, username, kSPKNotificationStoryAutoSave)) {
         // Nothing was queued, so let the item be retried next time it's displayed.
         [sessionKeys removeObject:mediaID];
-        SPKLog(@"Stories", @"[Sparkle AutoSave] Failed to submit mediaID=%@ user=@%@", mediaID, username);
+        SPKLog(@"快拍", @"[Sparkle AutoSave] Failed to submit mediaID=%@ user=@%@", mediaID, username);
     }
 }
 
@@ -255,14 +255,14 @@ BOOL SPKStoryToggleAutoSaveCurrentUser(SPKStoryContext *context, NSString **noti
 }
 
 - (NSString *)removalDisplayNameForEntry:(NSDictionary *)entry {
-    NSString *username = SPKStringFromValue(entry[@"username"]);
+    NSString *username = SPKStringFromValue(entry[@"用户名"]);
     return username.length > 0 ? [@"@" stringByAppendingString:username] : nil;
 }
 
 - (NSArray<SPKUserListItem *> *)buildItems {
     NSMutableArray<SPKUserListItem *> *items = [NSMutableArray array];
     for (NSDictionary *entry in SPKStoryAutoSaveUserList()) {
-        NSString *username = entry[@"username"];
+        NSString *username = entry[@"用户名"];
         NSString *pk = [entry[@"pk"] isKindOfClass:[NSString class]] ? entry[@"pk"] : nil;
         NSString *fullName = entry[@"fullName"];
         NSString *profilePicUrl = entry[@"profilePicUrl"];
@@ -282,7 +282,7 @@ BOOL SPKStoryToggleAutoSaveCurrentUser(SPKStoryContext *context, NSString **noti
 
 - (void)presentError:(NSString *)message {
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Unable to Add User"
+                                                  title:@"无法添加用户"
                                                 message:message
                                                 actions:@[ [SPKIGAlertAction actionWithTitle:@"OK" style:SPKIGAlertActionStyleCancel handler:nil] ]];
 }
@@ -290,13 +290,13 @@ BOOL SPKStoryToggleAutoSaveCurrentUser(SPKStoryContext *context, NSString **noti
 - (void)didTapAdd {
     __weak typeof(self) weakSelf = self;
     [SPKIGAlertPresenter presentTextInputAlertFromViewController:self
-                                                           title:@"Add User"
+                                                           title:@"添加用户"
                                                          message:@"Enter the Instagram username whose stories should be auto-saved."
-                                                     placeholder:@"username"
+                                                     placeholder:@"用户名"
                                                      initialText:nil
                                                  autocapitalized:NO
-                                                    confirmTitle:@"Search"
-                                                     cancelTitle:@"Cancel"
+                                                    confirmTitle:@"搜索"
+                                                     cancelTitle:@"取消"
                                                     confirmStyle:SPKIGAlertActionStyleDefault
                                                     confirmBlock:^(NSString *text) {
                                                         [weakSelf lookupUsername:text];
@@ -325,7 +325,7 @@ BOOL SPKStoryToggleAutoSaveCurrentUser(SPKStoryContext *context, NSString **noti
                                           [strongSelf presentError:@"Could not resolve this user's Instagram ID."];
                                           return;
                                       }
-                                      NSString *resolvedUsername = SPKStringFromValue(user[@"username"]) ?: username;
+                                      NSString *resolvedUsername = SPKStringFromValue(user[@"用户名"]) ?: username;
                                       NSString *fullName = SPKStringFromValue(user[@"full_name"] ?: user[@"fullName"]) ?: @"";
                                       NSString *profilePicUrl = SPKStringFromValue(user[@"profile_pic_url"] ?: user[@"profile_pic_url_hd"]);
 
@@ -334,10 +334,10 @@ BOOL SPKStoryToggleAutoSaveCurrentUser(SPKStoryContext *context, NSString **noti
                                                               : [@"@" stringByAppendingString:resolvedUsername];
 
                                       [SPKIGAlertPresenter presentAlertFromViewController:strongSelf
-                                                                                    title:@"Auto-Save Stories?"
+                                                                                    title:@"自动保存快拍？"
                                                                                   message:message
                                                                                   actions:@[
-                                                                                      [SPKIGAlertAction actionWithTitle:@"Cancel"
+                                                                                      [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                                                   style:SPKIGAlertActionStyleCancel
                                                                                                                 handler:nil],
                                                                                       [SPKIGAlertAction actionWithTitle:@"Add"

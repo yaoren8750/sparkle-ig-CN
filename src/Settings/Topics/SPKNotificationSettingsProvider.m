@@ -35,7 +35,7 @@
 
     NSArray<NSDictionary *> *configs = @[
         @{
-            @"title" : @"Saved to Gallery",
+            @"title" : @"已保存到图库",
             @"subtitle" : @"Notification preview: success tone.",
             @"iconResource" : @"circle_check_filled",
             @"tone" : @(SPKNotificationToneSuccess)

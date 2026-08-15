@@ -43,7 +43,7 @@ static NSString *spkStringFromValue(id value) {
 
     SPKProfileAnalyzerUser *u = [self new];
     u.pk = pk;
-    u.username = [d[@"username"] isKindOfClass:[NSString class]] ? d[@"username"] : @"";
+    u.username = [d[@"用户名"] isKindOfClass:[NSString class]] ? d[@"用户名"] : @"";
     u.fullName = [d[@"full_name"] isKindOfClass:[NSString class]] ? d[@"full_name"] : nil;
     u.profilePicURL = [d[@"profile_pic_url"] isKindOfClass:[NSString class]] ? d[@"profile_pic_url"] : nil;
     u.profilePicID = spkStringFromValue(d[@"profile_pic_id"]);
@@ -64,7 +64,7 @@ static NSString *spkStringFromValue(id value) {
 
     SPKProfileAnalyzerUser *u = [self new];
     u.pk = pk;
-    id un = spkFieldCacheValue(igUser, @"username");
+    id un = spkFieldCacheValue(igUser, @"用户名");
     u.username = [un isKindOfClass:[NSString class]] ? un : @"";
     id fn = spkFieldCacheValue(igUser, @"full_name");
     if ([fn isKindOfClass:[NSString class]])
@@ -83,7 +83,7 @@ static NSString *spkStringFromValue(id value) {
         return nil;
     SPKProfileAnalyzerUser *u = [self new];
     u.pk = d[@"pk"];
-    u.username = [d[@"username"] isKindOfClass:[NSString class]] ? d[@"username"] : @"";
+    u.username = [d[@"用户名"] isKindOfClass:[NSString class]] ? d[@"用户名"] : @"";
     u.fullName = [d[@"full_name"] isKindOfClass:[NSString class]] ? d[@"full_name"] : nil;
     u.profilePicURL = [d[@"profile_pic_url"] isKindOfClass:[NSString class]] ? d[@"profile_pic_url"] : nil;
     u.profilePicID = [d[@"profile_pic_id"] isKindOfClass:[NSString class]] ? d[@"profile_pic_id"] : nil;
@@ -95,7 +95,7 @@ static NSString *spkStringFromValue(id value) {
 - (NSDictionary *)toJSONDict {
     NSMutableDictionary *d = [NSMutableDictionary dictionary];
     d[@"pk"] = self.pk ?: @"";
-    d[@"username"] = self.username ?: @"";
+    d[@"用户名"] = self.username ?: @"";
     if (self.fullName)
         d[@"full_name"] = self.fullName;
     if (self.profilePicURL)

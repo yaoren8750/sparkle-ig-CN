@@ -173,7 +173,7 @@ static NSArray *removeItemsInList(NSArray *list, SPKFeedFilterSurface surface) {
 // Suggested posts/reels
 %hook IGMainFeedListAdapterDataSource
 - (NSArray *)objectsForListAdapter:(id)arg1 {
-    NSArray *filteredObjs = removeItemsInList(%orig(arg1), SPKFeedFilterSurfaceFeed);
+    NSArray *filteredObjs = removeItemsInList(%orig, SPKFeedFilterSurfaceFeed);
 
     // Remove loading spinner at end of feed (if 5 or less items in feed)
     NSUInteger arrayLength = [filteredObjs count];
@@ -206,21 +206,21 @@ static NSArray *spkSundialFilterAndLimit(NSArray *list) {
 
 %hook IGSundialFeedDataSource
 - (NSArray *)objectsForListAdapter:(id)arg1 {
-    return spkSundialFilterAndLimit(%orig(arg1));
+    return spkSundialFilterAndLimit(%orig);
 }
 %end
 
 // Demangled name: IGSundialFeed.IGSundialFeedDataSource (IG <= 433)
 %hook _TtC13IGSundialFeed23IGSundialFeedDataSource
 - (NSArray *)objectsForListAdapter:(id)arg1 {
-    return spkSundialFilterAndLimit(%orig(arg1));
+    return spkSundialFilterAndLimit(%orig);
 }
 %end
 
 // Demangled name: IGSundialFeedDataSource.IGSundialFeedDataSource (IG 434+, class moved module)
 %hook _TtC23IGSundialFeedDataSource23IGSundialFeedDataSource
 - (NSArray *)objectsForListAdapter:(id)arg1 {
-    return spkSundialFilterAndLimit(%orig(arg1));
+    return spkSundialFilterAndLimit(%orig);
 }
 %end
 
@@ -231,7 +231,7 @@ static NSArray *spkSundialFilterAndLimit(NSArray *list) {
 %hook IGContextualFeedViewController
 - (NSArray *)objectsForListAdapter:(id)arg1 {
     if ([SPKUtils getBoolPref:@"general_hide_ads_feed"]) {
-        return removeItemsInList(%orig(arg1), SPKFeedFilterSurfaceOther);
+        return removeItemsInList(%orig, SPKFeedFilterSurfaceOther);
     }
 
     return %orig;
@@ -240,7 +240,7 @@ static NSArray *spkSundialFilterAndLimit(NSArray *list) {
 %hook IGVideoFeedViewController
 - (NSArray *)objectsForListAdapter:(id)arg1 {
     if ([SPKUtils getBoolPref:@"general_hide_ads_feed"]) {
-        return removeItemsInList(%orig(arg1), SPKFeedFilterSurfaceOther);
+        return removeItemsInList(%orig, SPKFeedFilterSurfaceOther);
     }
 
     return %orig;
@@ -249,7 +249,7 @@ static NSArray *spkSundialFilterAndLimit(NSArray *list) {
 %hook IGChainingFeedViewController
 - (NSArray *)objectsForListAdapter:(id)arg1 {
     if ([SPKUtils getBoolPref:@"general_hide_ads_feed"]) {
-        return removeItemsInList(%orig(arg1), SPKFeedFilterSurfaceOther);
+        return removeItemsInList(%orig, SPKFeedFilterSurfaceOther);
     }
 
     return %orig;
@@ -279,7 +279,7 @@ static NSArray *spkSundialFilterAndLimit(NSArray *list) {
 %hook IGExploreListKitDataSource
 - (NSArray *)objectsForListAdapter:(id)arg1 {
     if ([SPKUtils getBoolPref:@"general_hide_ads_explore"]) {
-        return removeItemsInList(%orig(arg1), SPKFeedFilterSurfaceExplore);
+        return removeItemsInList(%orig, SPKFeedFilterSurfaceExplore);
     }
 
     return %orig;
@@ -289,7 +289,7 @@ static NSArray *spkSundialFilterAndLimit(NSArray *list) {
 %hook _TtC28IGExploreViewControllerSwift26IGExploreListKitDataSource
 - (NSArray *)objectsForListAdapter:(id)arg1 {
     if ([SPKUtils getBoolPref:@"general_hide_ads_explore"]) {
-        return removeItemsInList(%orig(arg1), SPKFeedFilterSurfaceExplore);
+        return removeItemsInList(%orig, SPKFeedFilterSurfaceExplore);
     }
 
     return %orig;

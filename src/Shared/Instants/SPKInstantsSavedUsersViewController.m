@@ -131,11 +131,11 @@ static NSArray<SPKInstantsSavedUser *> *SPKInstantsSavedUsers(void) {
 
 - (instancetype)init {
     if ((self = [super init])) {
-        self.title = @"Saved Instants";
+        self.title = @"已保存快拍";
         self.allowsDelete = NO;
         self.emptyTitle = @"No saved instants";
-        self.emptySubtitle = @"Instants you save or auto-save show up here, grouped by who sent them.";
-        self.emptySearchSubtitle = @"No accounts match your search.";
+        self.emptySubtitle = @"你保存或自动保存的快拍会显示在这里，并按发送者分类。";
+        self.emptySearchSubtitle = @"没有符合搜索条件的账户。";
     }
     return self;
 }
