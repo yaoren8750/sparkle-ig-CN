@@ -151,11 +151,11 @@ static NSString *SPKGetShareTypeFromController(UIViewController *vc) {
     NSString *title = nil;
     NSString *message = nil;
     if (contentType) {
-        title = [NSString stringWithFormat:@"Confirm Sending %@", [contentType capitalizedString]];
-        message = [NSString stringWithFormat:@"Are you sure you want to send this %@?", contentType];
+        title = [NSString stringWithFormat:@"确认发送 %@", [contentType capitalizedString]];
+        message = [NSString stringWithFormat:@"确定要发送这个%@吗？", contentType];
     } else {
-        title = @"Confirm Send";
-        message = @"Are you sure you want to send this?";
+        title = @"确认发送";
+        message = @"确定要发送这个内容吗？?";
     }
 
     [SPKUtils

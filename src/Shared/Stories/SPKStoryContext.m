@@ -415,7 +415,7 @@ static void SPKStoryResolveAndRememberManualSeenUserName(NSString *username, voi
                                     if (![user isKindOfClass:[NSDictionary class]])
                                         user = response[@"user"];
                                     if ([user isKindOfClass:[NSDictionary class]] && !error) {
-                                        NSString *resolvedUsername = SPKStringFromValue(user[@"用户名"]) ?: normalized;
+                                        NSString *resolvedUsername = SPKStringFromValue(user[@"username"]) ?: normalized;
                                         NSString *fullName = SPKStringFromValue(user[@"full_name"] ?: user[@"fullName"]);
                                         SPKStoryRememberManualSeenUserName(resolvedUsername, fullName);
                                     } else {
@@ -510,7 +510,7 @@ static NSArray<NSDictionary *> *SPKStoryManualSeenUserListFromRawValue(id rawSto
         if ([value isKindOfClass:[NSDictionary class]]) {
             NSDictionary *dict = (NSDictionary *)value;
             NSString *pk = SPKStringFromValue(dict[@"pk"]);
-            NSString *username = SPKStoryNormalizeUsername(dict[@"用户名"]);
+            NSString *username = SPKStoryNormalizeUsername(dict[@"username"]);
 
             if (pk.length > 0) {
                 if ([seenPks containsObject:pk])
@@ -522,7 +522,7 @@ static NSArray<NSDictionary *> *SPKStoryManualSeenUserListFromRawValue(id rawSto
 
             NSMutableDictionary *entry = [dict mutableCopy];
             if (username.length > 0)
-                entry[@"用户名"] = username;
+                entry[@"username"] = username;
             if (!entry[@"fullName"])
                 entry[@"fullName"] = @"";
             [users addObject:entry.copy];
@@ -565,7 +565,7 @@ BOOL SPKStoryManualSeenAppliesToContext(SPKStoryContext *context) {
 
 static void SPKStoryEnrichManualSeenUserEntryIfNeeded(NSDictionary *entry, BOOL manualSeenEnabled) {
     NSString *pk = SPKStringFromValue(entry[@"pk"]);
-    NSString *username = SPKStringFromValue(entry[@"用户名"]);
+    NSString *username = SPKStringFromValue(entry[@"username"]);
     NSString *profilePicUrl = SPKStringFromValue(entry[@"profilePicUrl"]);
     if (pk.length == 0 || username.length == 0)
         return;
@@ -587,7 +587,7 @@ static void SPKStoryEnrichManualSeenUserEntryIfNeeded(NSDictionary *entry, BOOL 
                                         return;
                                     }
 
-                                    NSString *resolvedUsername = SPKStringFromValue(resolvedUser[@"用户名"]) ?: username;
+                                    NSString *resolvedUsername = SPKStringFromValue(resolvedUser[@"username"]) ?: username;
                                     NSString *fullName = SPKStoryCleanDisplayName(SPKStringFromValue(resolvedUser[@"full_name"] ?: resolvedUser[@"fullName"]), resolvedUsername) ?: SPKStringFromValue(entry[@"fullName"]) ?
                                                                                                                                                                                                                            : @"";
                                     NSString *profilePic = SPKStringFromValue(resolvedUser[@"profile_pic_url"] ?: resolvedUser[@"profile_pic_url_hd"]);
@@ -601,7 +601,7 @@ static void SPKStoryEnrichManualSeenUserEntryIfNeeded(NSDictionary *entry, BOOL 
                                             NSDictionary *u = newUsers[i];
                                             if ([u[@"pk"] isEqualToString:pk]) {
                                                 NSMutableDictionary *mutU = [u mutableCopy];
-                                                mutU[@"用户名"] = resolvedUsername;
+                                                mutU[@"username"] = resolvedUsername;
                                                 mutU[@"fullName"] = fullName;
                                                 mutU[@"profilePicUrl"] = profilePic;
                                                 newUsers[i] = mutU.copy;
@@ -638,15 +638,15 @@ void SPKStoryToggleUserForCurrentManualSeenMode(NSString *pk, NSString *username
         NSMutableDictionary *entry = [NSMutableDictionary dictionary];
         entry[@"pk"] = pk;
         if (username.length > 0)
-            entry[@"用户名"] = normalized;
+            entry[@"username"] = normalized;
         entry[@"fullName"] = fullName ?: @"";
         if (profilePicUrl.length > 0)
             entry[@"profilePicUrl"] = profilePicUrl;
         entry[@"addedAt"] = @([[NSDate date] timeIntervalSince1970]);
         [newUsers addObject:entry.copy];
         [newUsers sortUsingComparator:^NSComparisonResult(NSDictionary *a, NSDictionary *b) {
-            NSString *aName = a[@"用户名"] ?: @"";
-            NSString *bName = b[@"用户名"] ?: @"";
+            NSString *aName = a[@"username"] ?: @"";
+            NSString *bName = b[@"username"] ?: @"";
             return [aName localizedCaseInsensitiveCompare:bName];
         }];
         SPKStoryEnrichManualSeenUserEntryIfNeeded(entry.copy, manualSeenEnabled);
@@ -655,17 +655,17 @@ void SPKStoryToggleUserForCurrentManualSeenMode(NSString *pk, NSString *username
 }
 
 NSString *SPKStoryManualSeenListTitle(BOOL manualSeenEnabled) {
-    return manualSeenEnabled ? @"Excluded Users" : @"Included Users";
+    return manualSeenEnabled ? @"排除用户" : @"包含用户";
 }
 
 static NSString *SPKStoryManualSeenListModeTitle(BOOL manualSeenEnabled) {
-    return manualSeenEnabled ? @"Excluded" : @"Included";
+    return manualSeenEnabled ? @"排除" : @"包含";
 }
 
 static NSString *SPKStoryManualSeenListHelpText(BOOL manualSeenEnabled) {
     return manualSeenEnabled
-               ? @"When Manually Mark Seen is enabled, users in this list use Instagram's default seen behavior and do not need the eye button."
-               : @"When Manually Mark Seen is disabled, only users in this list require the eye button or story like/reply to mark seen.";
+               ? @"启用“手动标记已看”后，此列表中的用户将使用 Instagram 默认的已看行为，无需点击眼睛按钮。"
+               : @"停用“手动标记已看”后，只有此列表中的用户需要点击眼睛按钮，或点赞/回复快拍来标记为已看。";
 }
 
 #pragma mark - Manual-seen users list
@@ -682,10 +682,10 @@ static NSString *SPKStoryManualSeenListHelpText(BOOL manualSeenEnabled) {
         self.title = SPKStoryManualSeenListTitle(_manualSeenEnabled);
         self.showsAddButton = YES;
         self.infoText = SPKStoryManualSeenListHelpText(_manualSeenEnabled);
-        self.emptyTitle = @"No users yet";
+        self.emptyTitle = @"暂无用户";
         self.emptySubtitle = _manualSeenEnabled
-                                 ? @"Add users whose stories should keep Instagram's normal seen behavior."
-                                 : @"Add users whose stories require the eye button to mark seen.";
+                                 ? @"添加希望保持 Instagram 正常已看行为的用户。"
+                                 : @"添加需要点击眼睛按钮才能标记为已看的用户。";
     }
     return self;
 }
@@ -694,7 +694,7 @@ static NSString *SPKStoryManualSeenListHelpText(BOOL manualSeenEnabled) {
     NSArray<NSDictionary *> *users = SPKStoryManualSeenUserList(self.manualSeenEnabled);
     NSMutableArray<SPKUserListItem *> *items = [NSMutableArray array];
     for (NSDictionary *entry in users) {
-        NSString *username = entry[@"用户名"];
+        NSString *username = entry[@"username"];
         NSString *fullName = entry[@"fullName"];
         if (fullName.length == 0)
             fullName = SPKStoryCachedManualSeenUserName(username);
@@ -706,7 +706,7 @@ static NSString *SPKStoryManualSeenListHelpText(BOOL manualSeenEnabled) {
 
         SPKUserListItem *item = [SPKUserListItem new];
         item.pk = pk;
-        item.title = username.length ? [@"@" stringByAppendingString:username] : @"Unknown user";
+        item.title = username.length ? [@"@" stringByAppendingString:username] : @"未知用户";
         item.subtitle = fullName.length ? fullName : nil;
         item.avatarURLString = profilePicUrl;
         item.representedObject = entry;
@@ -724,7 +724,7 @@ static NSString *SPKStoryManualSeenListHelpText(BOOL manualSeenEnabled) {
     NSString *pk = [entry[@"pk"] isKindOfClass:[NSString class]] ? entry[@"pk"] : nil;
     if (pk.length == 0)
         return;
-    NSString *username = entry[@"用户名"];
+    NSString *username = entry[@"username"];
 
     NSMutableArray<NSDictionary *> *users = [SPKStoryManualSeenUserList(self.manualSeenEnabled) mutableCopy];
     for (NSUInteger idx = 0; idx < users.count; idx++) {
@@ -735,7 +735,7 @@ static NSString *SPKStoryManualSeenListHelpText(BOOL manualSeenEnabled) {
     }
     SPKStorySetManualSeenUserList(users, self.manualSeenEnabled);
     SPKNotify(kSPKNotificationStorySeenUserRule,
-              [NSString stringWithFormat:@"Removed @%@", username],
+              [NSString stringWithFormat:@"已移除 @%@", username],
               SPKStoryManualSeenListTitle(self.manualSeenEnabled),
               @"circle_check_filled",
               SPKNotificationToneSuccess);
@@ -746,14 +746,14 @@ static NSString *SPKStoryManualSeenListHelpText(BOOL manualSeenEnabled) {
     [SPKIGAlertPresenter presentAlertFromViewController:self
                                                   title:@"无法添加用户"
                                                 message:message
-                                                actions:@[ [SPKIGAlertAction actionWithTitle:@"OK" style:SPKIGAlertActionStyleCancel handler:nil] ]];
+                                                actions:@[ [SPKIGAlertAction actionWithTitle:@"好的" style:SPKIGAlertActionStyleCancel handler:nil] ]];
 }
 
 - (void)didTapAdd {
     __weak typeof(self) weakSelf = self;
     [SPKIGAlertPresenter presentTextInputAlertFromViewController:self
                                                            title:@"添加用户"
-                                                         message:@"输入要添加的 Instagram 用户名。"
+                                                         message:@"输入要添加的 Instagram username。"
                                                      placeholder:@"用户名"
                                                      initialText:nil
                                                  autocapitalized:NO
@@ -777,59 +777,64 @@ static NSString *SPKStoryManualSeenListHelpText(BOOL manualSeenEnabled) {
                                       __strong typeof(weakSelf) strongSelf = weakSelf;
                                       if (!strongSelf)
                                           return;
-                                      if (![user isKindOfClass:[NSDictionary class]] || error) {
-                                          [strongSelf presentError:[NSString stringWithFormat:@"User '%@' was not found.", username]];
-                                          return;
-                                      }
-                                      NSString *pk = SPKStringFromValue(user[@"pk"] ?: user[@"id"]);
-                                      NSString *resolvedUsername = SPKStringFromValue(user[@"用户名"]) ?: username;
-                                      NSString *fullName = SPKStringFromValue(user[@"full_name"] ?: user[@"fullName"]) ?: @"";
-                                      NSString *profilePicUrl = SPKStringFromValue(user[@"profile_pic_url"] ?: user[@"profile_pic_url_hd"]);
-                                      if (pk.length == 0) {
-                                          [strongSelf presentError:@"Could not resolve this user's Instagram ID."];
-                                          return;
-                                      }
+        if (![user isKindOfClass:[NSDictionary class]] || error) {
+            [strongSelf presentError:[NSString stringWithFormat:@"未找到用户“%@”。", username]];
+            return;
+        }
 
-                                      NSString *message = fullName.length > 0
-                                                              ? [NSString stringWithFormat:@"@%@ (%@)", resolvedUsername, fullName]
-                                                              : [@"@" stringByAppendingString:resolvedUsername];
+        NSString *pk = SPKStringFromValue(user[@"pk"] ?: user[@"id"]);
+        NSString *resolvedUsername = SPKStringFromValue(user[@"username"]) ?: username;
+        NSString *fullName = SPKStringFromValue(user[@"full_name"] ?: user[@"fullName"]) ?: @"";
+        NSString *profilePicUrl = SPKStringFromValue(user[@"profile_pic_url"] ?: user[@"profile_pic_url_hd"]);
 
-                                      [SPKIGAlertPresenter presentAlertFromViewController:strongSelf
-                                                                                    title:@"添加到列表？"
-                                                                                  message:message
-                                                                                  actions:@[
-                                                                                      [SPKIGAlertAction actionWithTitle:@"取消"
-                                                                                                                  style:SPKIGAlertActionStyleCancel
-                                                                                                                handler:nil],
-                                                                                      [SPKIGAlertAction actionWithTitle:@"Add"
-                                                                                                                  style:SPKIGAlertActionStyleDefault
-                                                                                                                handler:^{
-                                                                                                                    [strongSelf addResolvedUserPK:pk username:resolvedUsername fullName:fullName profilePicUrl:profilePicUrl];
-                                                                                                                }],
-                                                                                  ]];
-                                  }];
+        if (pk.length == 0) {
+            [strongSelf presentError:@"无法获取该用户的 Instagram ID。"];
+            return;
+        }
+
+        NSString *message = fullName.length > 0
+                                ? [NSString stringWithFormat:@"@%@ (%@)", resolvedUsername, fullName]
+                                : [@"@" stringByAppendingString:resolvedUsername];
+
+        [SPKIGAlertPresenter presentAlertFromViewController:strongSelf
+                                                      title:@"添加到列表？"
+                                                    message:message
+                                                    actions:@[
+                                                        [SPKIGAlertAction actionWithTitle:@"取消"
+                                                                                    style:SPKIGAlertActionStyleCancel
+                                                                                  handler:nil],
+                                                        [SPKIGAlertAction actionWithTitle:@"添加"
+                                                                                    style:SPKIGAlertActionStyleDefault
+                                                                                  handler:^{
+                                                                                      [strongSelf addResolvedUserPK:pk
+                                                                                                          username:resolvedUsername
+                                                                                                          fullName:fullName
+                                                                                                     profilePicUrl:profilePicUrl];
+                                                                                  }],
+                                                    ]];
+        }];
 }
 
 - (void)addResolvedUserPK:(NSString *)pk username:(NSString *)username fullName:(NSString *)fullName profilePicUrl:(NSString *)profilePicUrl {
     NSMutableArray<NSDictionary *> *users = [SPKStoryManualSeenUserList(self.manualSeenEnabled) mutableCopy];
     for (NSDictionary *u in users) {
-        if ([u[@"pk"] isEqualToString:pk] || [u[@"用户名"] isEqualToString:username])
+        if ([u[@"pk"] isEqualToString:pk] || [u[@"username"] isEqualToString:username])
             return; // already listed
     }
     NSMutableDictionary *entry = [NSMutableDictionary dictionary];
     entry[@"pk"] = pk;
-    entry[@"用户名"] = username;
+    entry[@"username"] = username;
     entry[@"fullName"] = fullName ?: @"";
     if (profilePicUrl.length > 0)
         entry[@"profilePicUrl"] = profilePicUrl;
     entry[@"addedAt"] = @([[NSDate date] timeIntervalSince1970]);
     [users addObject:entry.copy];
     [users sortUsingComparator:^NSComparisonResult(NSDictionary *a, NSDictionary *b) {
-        return [(a[@"用户名"] ?: @"") localizedCaseInsensitiveCompare:(b[@"用户名"] ?: @"")];
+        return [(a[@"username"] ?: @"") localizedCaseInsensitiveCompare:(b[@"username"] ?: @"")];
     }];
     SPKStorySetManualSeenUserList(users, self.manualSeenEnabled);
     SPKNotify(kSPKNotificationStorySeenUserRule,
-              [NSString stringWithFormat:@"Added @%@", username],
+              [NSString stringWithFormat:@"已添加 @%@", username],
               SPKStoryManualSeenListTitle(self.manualSeenEnabled),
               @"circle_check_filled",
               SPKNotificationToneSuccess);
@@ -867,26 +872,29 @@ NSString *SPKStoryCurrentUserRuleActionTitle(SPKStoryContext *context) {
     NSString *username = nil;
     if (!SPKStoryCurrentUserRuleState(context, &username, NULL, NULL, NULL))
         return nil;
+
     BOOL applies = SPKStoryManualSeenAppliesToContext(context);
-    return applies ? @"Start Marking Stories as Seen" : @"Stop Marking Stories as Seen";
+    return applies ? @"开始将快拍标记为已看" : @"停止将快拍标记为已看";
 }
 
 NSString *SPKStoryCurrentUserRuleConfirmationTitle(SPKStoryContext *context) {
     NSString *username = nil;
     if (!SPKStoryCurrentUserRuleState(context, &username, NULL, NULL, NULL))
         return nil;
+
     BOOL applies = SPKStoryManualSeenAppliesToContext(context);
-    return applies ? @"Start Marking Stories as Seen" : @"Stop Marking Stories as Seen";
+    return applies ? @"开始将快拍标记为已看" : @"停止将快拍标记为已看";
 }
 
 NSString *SPKStoryCurrentUserRuleConfirmationMessage(SPKStoryContext *context) {
     NSString *username = nil;
     if (!SPKStoryCurrentUserRuleState(context, &username, NULL, NULL, NULL))
         return nil;
+
     BOOL applies = SPKStoryManualSeenAppliesToContext(context);
     return applies
-               ? [NSString stringWithFormat:@"Do you want to start marking stories from @%@ as seen?", username]
-               : [NSString stringWithFormat:@"Do you want to stop marking stories from @%@ as seen?", username];
+               ? [NSString stringWithFormat:@"确定要开始将 @%@ 的快拍标记为已看吗？", username]
+               : [NSString stringWithFormat:@"确定要停止将 @%@ 的快拍标记为已看吗？", username];
 }
 
 void SPKStoryToggleUserRuleForPK(NSString *pk, NSString *username, NSString *fullName, NSString *profilePicUrl) {
@@ -931,8 +939,8 @@ BOOL SPKStoryToggleCurrentUserRule(SPKStoryContext *context, NSString **notifica
 
     if (notificationTitle) {
         *notificationTitle = applies
-                                 ? [NSString stringWithFormat:@"Stories seen on for @%@", username]
-                                 : [NSString stringWithFormat:@"Stories seen off for @%@", username];
+                                 ? [NSString stringWithFormat:@"已为 @%@ 开启快拍标记已看", username]
+                                 : [NSString stringWithFormat:@"已为 @%@ 关闭快拍标记已看", username];
     }
     if (notificationSubtitle)
         *notificationSubtitle = listTitle;

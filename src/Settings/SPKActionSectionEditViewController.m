@@ -115,18 +115,18 @@ static char kSPKSectionEditSwitchAssocKey;
     if (section == 0)
         return @"分组";
     if (section == 1)
-        return @"Actions in This Section";
-    return @"Available Actions";
+        return @"此分组中的操作";
+    return @"可用操作";
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
     if ([self isBulkSection]) {
-        return section == 0 ? @"Bulk shows Download All / Copy All / Select Media on carousels. Its actions and order are derived from your single-item Download and Copy actions.\nReorder or rename this section to control where Bulk appears in the menu." : nil;
+        return section == 0 ? @"批量操作会在轮播图中显示「全部下载」「全部复制」和「选择媒体」。操作内容和顺序取决于单项「下载」和「复制」操作。\n重新排序或重命名此分组，可调整批量操作在菜单中的位置。" : nil;
     }
     if (section == 1)
-        return @"Drag to reorder actions in this section. Remove an action to send it to the unassigned bucket.";
+        return @"拖动即可调整此分组中的操作顺序。移除操作后，该操作会移至未分配区域。";
     if (section == 2)
-        return @"Tap an action to assign it here. If it is already in another section, it will move.";
+        return @"点击操作即可将其添加到此分组。如果该操作已位于其他分组中，则会自动移动到这里。";
     return nil;
 }
 
@@ -143,7 +143,7 @@ static char kSPKSectionEditSwitchAssocKey;
 
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
-            config.text = @"Title";
+            config.text = @"标题";
             UITextField *field = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 180, 30)];
             field.textAlignment = NSTextAlignmentRight;
             field.placeholder = @"分组";
@@ -155,7 +155,7 @@ static char kSPKSectionEditSwitchAssocKey;
             cell.accessoryView = field;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         } else if (indexPath.row == 1) {
-            config.text = @"Choose Icon";
+            config.text = @"选择图标";
             config.secondaryText = nil;
             config.image = nil;
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -167,7 +167,7 @@ static char kSPKSectionEditSwitchAssocKey;
 
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         } else if (indexPath.row == 2) {
-            config.text = @"Collapsible";
+            config.text = @"可折叠";
             SPKSwitch *toggle = [[SPKSwitch alloc] init];
             toggle.on = section.collapsible;
             objc_setAssociatedObject(toggle, &kSPKSectionEditSwitchAssocKey, self, OBJC_ASSOCIATION_ASSIGN);
@@ -201,7 +201,7 @@ static char kSPKSectionEditSwitchAssocKey;
                 SPKActionMenuSection *ownerSection = [self.configuration sectionWithIdentifier:owner];
                 config.secondaryText = ownerSection.title;
             } else {
-                config.secondaryText = @"Unassigned";
+                config.secondaryText = @"未分配";
             }
         }
     }

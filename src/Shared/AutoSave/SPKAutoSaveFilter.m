@@ -28,7 +28,7 @@ BOOL SPKAutoSaveFilterAllMode(SPKAutoSaveFilterConfig *config) {
 
 NSString *SPKAutoSaveFilterListTitle(SPKAutoSaveFilterConfig *config) {
     return [NSString stringWithFormat:@"%@ %@",
-                                      SPKAutoSaveFilterAllMode(config) ? @"Excluded" : @"Selected",
+                                      SPKAutoSaveFilterAllMode(config) ? @"排除" : @"已选择",
                                       config.subjectPlural];
 }
 
@@ -149,13 +149,13 @@ void SPKAutoSaveFilterRemoveIdentity(SPKAutoSaveFilterConfig *config, NSString *
 
 NSString *SPKAutoSaveFilterSummary(SPKAutoSaveFilterConfig *config) {
     if (!SPKAutoSaveFilterEnabled(config))
-        return @"Off";
+        return @"关闭";
     NSUInteger count = SPKAutoSaveFilterList(config).count;
     if (SPKAutoSaveFilterAllMode(config)) {
-        return count == 0 ? [NSString stringWithFormat:@"All %@", config.subjectPlural]
-                          : [NSString stringWithFormat:@"All · %lu excluded", (unsigned long)count];
+        return count == 0 ? [NSString stringWithFormat:@"全部%@", config.subjectPlural]
+                          : [NSString stringWithFormat:@"全部 · 已排除 %lu 个", (unsigned long)count];
     }
-    return count == 0 ? @"None Selected" : [NSString stringWithFormat:@"%lu Selected", (unsigned long)count];
+    return count == 0 ? @"未选择" : [NSString stringWithFormat:@"已选择 %lu 个", (unsigned long)count];
 }
 
 #pragma mark - List screen
@@ -191,7 +191,7 @@ BOOL SPKAutoSaveFilterListUIVisible(void) {
 }
 
 - (void)listDidUpdateItemCount:(NSUInteger)count {
-    NSString *modeTitle = SPKAutoSaveFilterAllMode(self.config) ? @"Excluded" : @"Selected";
+    NSString *modeTitle = SPKAutoSaveFilterAllMode(self.config) ? @"已排除" : @"已选择";
     self.title = count > 0 ? [NSString stringWithFormat:@"%lu %@", (unsigned long)count, modeTitle]
                            : SPKAutoSaveFilterListTitle(self.config);
 }
@@ -208,7 +208,7 @@ BOOL SPKAutoSaveFilterListUIVisible(void) {
 
     NSString *name = [self removalDisplayNameForEntry:entry];
     SPKNotify(self.config.ruleNotificationIdentifier,
-              name.length > 0 ? [NSString stringWithFormat:@"Removed %@", name] : @"Removed entry",
+              name.length > 0 ? [NSString stringWithFormat:@"已移除 %@", name] : @"已移除项目",
               SPKAutoSaveFilterListTitle(self.config),
               @"circle_check_filled",
               SPKNotificationToneSuccess);

@@ -52,7 +52,7 @@ static NSString *SPKDMStorageOwnerPK(void) {
 }
 
 - (instancetype)init {
-    return [super initWithTitle:@"Storage" sections:@[] reduceMargin:NO];
+    return [super initWithTitle:@"存储" sections:@[] reduceMargin:NO];
 }
 
 - (void)viewDidLoad {
@@ -121,40 +121,40 @@ static NSString *SPKDMStorageOwnerPK(void) {
     NSMutableArray *sections = [NSMutableArray array];
 
     unsigned long long totalDisk = self.mediaBytes + self.stagedMediaBytes;
-    NSString *overviewSubtitle = [NSString stringWithFormat:@"%lu message%@ • %lu sender%@ • %@",
-                                                            (unsigned long)self.messageCount, self.messageCount == 1 ? @"" : @"s",
-                                                            (unsigned long)self.senderCount, self.senderCount == 1 ? @"" : @"s",
-                                                            [self formattedSize:totalDisk]];
+    NSString *overviewSubtitle = [NSString stringWithFormat:@"%lu 条消息 • %lu 位用户 • %@",
+                                  (unsigned long)self.messageCount,
+                                  (unsigned long)self.senderCount,
+                                  [self formattedSize:totalDisk]];
 
-    [sections addObject:SPKTopicSection(@"Overview", @[
-                  [SPKSetting valueCellWithTitle:@"Logged"
+    [sections addObject:SPKTopicSection(@"概览", @[
+                  [SPKSetting valueCellWithTitle:@"已记录"
                                         subtitle:overviewSubtitle
                                             icon:SPKSettingsIcon(@"history")],
               ],
                                         nil)];
 
     NSMutableArray *breakdown = [NSMutableArray array];
-    [breakdown addObject:[SPKSetting valueCellWithTitle:@"Text" subtitle:[NSString stringWithFormat:@"%lu", (unsigned long)self.textCount] icon:SPKSettingsIcon(@"message")]];
-    [breakdown addObject:[SPKSetting valueCellWithTitle:@"Photos & Videos" subtitle:[NSString stringWithFormat:@"%lu", (unsigned long)self.mediaCount] icon:SPKSettingsIcon(@"photo")]];
-    [breakdown addObject:[SPKSetting valueCellWithTitle:@"Voice & Audio" subtitle:[NSString stringWithFormat:@"%lu", (unsigned long)self.voiceCount] icon:SPKSettingsIcon(@"microphone")]];
+    [breakdown addObject:[SPKSetting valueCellWithTitle:@"文字" subtitle:[NSString stringWithFormat:@"%lu", (unsigned long)self.textCount] icon:SPKSettingsIcon(@"message")]];
+    [breakdown addObject:[SPKSetting valueCellWithTitle:@"照片和视频" subtitle:[NSString stringWithFormat:@"%lu", (unsigned long)self.mediaCount] icon:SPKSettingsIcon(@"photo")]];
+    [breakdown addObject:[SPKSetting valueCellWithTitle:@"语音和音频" subtitle:[NSString stringWithFormat:@"%lu", (unsigned long)self.voiceCount] icon:SPKSettingsIcon(@"microphone")]];
     if (self.otherCount > 0) {
-        [breakdown addObject:[SPKSetting valueCellWithTitle:@"Other" subtitle:[NSString stringWithFormat:@"%lu", (unsigned long)self.otherCount] icon:SPKSettingsIcon(@"messages")]];
+        [breakdown addObject:[SPKSetting valueCellWithTitle:@"其他" subtitle:[NSString stringWithFormat:@"%lu", (unsigned long)self.otherCount] icon:SPKSettingsIcon(@"messages")]];
     }
     [sections addObject:SPKTopicSection(@"消息", breakdown, nil)];
 
-    [sections addObject:SPKTopicSection(@"Disk Usage", @[
-                  [SPKSetting valueCellWithTitle:@"Captured Media"
+    [sections addObject:SPKTopicSection(@"磁盘占用", @[
+                  [SPKSetting valueCellWithTitle:@"已捕获媒体"
                                         subtitle:[self formattedSize:self.mediaBytes]
                                             icon:SPKSettingsIcon(@"media")],
-                  [SPKSetting valueCellWithTitle:@"Media Recovery Cache"
+                  [SPKSetting valueCellWithTitle:@"媒体恢复缓存"
                                         subtitle:[self formattedSize:self.stagedMediaBytes]
                                             icon:SPKSettingsIcon(@"clock")],
               ],
-                                        @"View-once, view-twice, GIF, and sticker media is cached on-device before an unsend so it remains recoverable. It is excluded from deleted-message exports until the message is unsent. Cached profile pictures are shared across Sparkle — manage them in Data & Settings › Storage.")];
+                                        @"阅后即焚、查看两次、GIF 和贴纸媒体会在撤回前缓存到设备上，以便之后恢复。这些媒体在消息撤回前不会包含在已删除消息导出中。缓存的头像由 Sparkle 共享管理，请前往“数据与设置 › 存储”进行管理。")];
 
     __weak typeof(self) weakSelf = self;
 
-    SPKSetting *clearMedia = [SPKSetting buttonCellWithTitle:@"Clear Captured Media"
+    SPKSetting *clearMedia = [SPKSetting buttonCellWithTitle:@"清除已捕获媒体"
                                                     subtitle:nil
                                                         icon:SPKSettingsIcon(@"media")
                                                       action:^{
@@ -163,7 +163,7 @@ static NSString *SPKDMStorageOwnerPK(void) {
     clearMedia.tintColor = [SPKUtils SPKColor_InstagramDestructive];
     clearMedia.iconTintColor = [SPKUtils SPKColor_InstagramDestructive];
 
-    SPKSetting *clearStaged = [SPKSetting buttonCellWithTitle:@"Clear Media Recovery Cache"
+    SPKSetting *clearStaged = [SPKSetting buttonCellWithTitle:@"清除媒体恢复缓存"
                                                      subtitle:nil
                                                          icon:SPKSettingsIcon(@"clock")
                                                        action:^{
@@ -172,7 +172,7 @@ static NSString *SPKDMStorageOwnerPK(void) {
     clearStaged.tintColor = [SPKUtils SPKColor_InstagramDestructive];
     clearStaged.iconTintColor = [SPKUtils SPKColor_InstagramDestructive];
 
-    SPKSetting *clearLog = [SPKSetting buttonCellWithTitle:@"Clear Entire Log"
+    SPKSetting *clearLog = [SPKSetting buttonCellWithTitle:@"清除全部记录"
                                                   subtitle:nil
                                                       icon:SPKSettingsIcon(@"trash")
                                                     action:^{
@@ -181,8 +181,8 @@ static NSString *SPKDMStorageOwnerPK(void) {
     clearLog.tintColor = [SPKUtils SPKColor_InstagramDestructive];
     clearLog.iconTintColor = [SPKUtils SPKColor_InstagramDestructive];
 
-    [sections addObject:SPKTopicSection(@"Maintenance", @[ clearMedia, clearStaged, clearLog ],
-                                        @"Clearing the media recovery cache keeps lightweight message metadata for best-effort fallback after a future unsend. Clearing the log does not clear the recovery cache.")];
+    [sections addObject:SPKTopicSection(@"维护", @[ clearMedia, clearStaged, clearLog ],
+                                        @"清除媒体恢复缓存后，会保留轻量级消息元数据，以便未来撤回消息时尝试恢复媒体。清除全部记录不会清除恢复缓存。")];
 
     [self replaceSections:sections];
 }
@@ -197,7 +197,7 @@ static NSString *SPKDMStorageOwnerPK(void) {
                                                     [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
-                                                    [SPKIGAlertAction actionWithTitle:@"Clear Media"
+                                                    [SPKIGAlertAction actionWithTitle:@"清除媒体"
                                                                                 style:SPKIGAlertActionStyleDestructive
                                                                               handler:^{
                                                                                   for (SPKDeletedMessage *message in [SPKDeletedMessagesStorage allMessagesForOwnerPK:self.ownerPK]) {
@@ -236,12 +236,12 @@ static NSString *SPKDMStorageOwnerPK(void) {
 - (void)confirmClearStagedMedia {
     [SPKIGAlertPresenter presentAlertFromViewController:self
                                                   title:@"清除媒体恢复缓存？"
-                                                message:@"This removes pre-cached view-once, view-twice, GIF, and sticker media. Lightweight metadata remains so Sparkle can still attempt a best-effort download after a future unsend."
+                                                message:@"这将删除预缓存的阅后即焚、查看两次、GIF 和贴纸媒体。轻量级元数据会保留，以便未来消息撤回后 Sparkle 仍可尝试恢复媒体。"
                                                 actions:@[
                                                     [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
-                                                    [SPKIGAlertAction actionWithTitle:@"Clear Media"
+                                                    [SPKIGAlertAction actionWithTitle:@"清除媒体"
                                                                                 style:SPKIGAlertActionStyleDestructive
                                                                               handler:^{
                                                                                   [SPKDeletedMessagesStorage clearStagedMediaForOwnerPK:self.ownerPK];

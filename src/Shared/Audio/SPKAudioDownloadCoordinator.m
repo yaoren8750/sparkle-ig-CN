@@ -251,7 +251,7 @@ static BOOL SPKAudioObjectLooksAudioLike(id object) {
     if (!object)
         return NO;
     NSString *className = NSStringFromClass([object class]);
-    return [className containsString:@"音频"] ||
+    return [className containsString:@"Audio"] ||
            [className containsString:@"Music"] ||
            [className containsString:@"Sound"] ||
            [className containsString:@"Track"];
@@ -701,7 +701,7 @@ SPKAudioMetadataFromItem(SPKAudioItem *item, SPKGallerySaveMetadata *metadata) {
         metadata ?: [[SPKGallerySaveMetadata alloc] init];
     resolved.source = (int16_t)[item gallerySource];
     if (!resolved.sourceUsername.length) {
-        resolved.sourceUsername = item.artist.length > 0 ? item.artist : @"audio";
+        resolved.sourceUsername = item.artist.length > 0 ? item.artist : @"音频";
     }
     if (!resolved.sourceMediaPK.length) {
         resolved.sourceMediaPK = item.mediaIdentifier;
@@ -765,17 +765,17 @@ static void SPKAudioConvertToM4A(NSURL *sourceURL, NSString *basename,
                 completion(
                     nil,
                     avError
-                        ?: [SPKUtils errorWithDescription:@"Audio conversion failed"]);
+                        ?: [SPKUtils errorWithDescription:@"音频转换失败"]);
             return;
         }
         if (progress)
-            progress(0.1f, @"Finalizing audio");
+            progress(0.1f, @"正在完成音频处理");
         [SPKMediaFFmpeg extractAudioFileURL:sourceURL
             preferredBasename:safeBase
             progress:^(double ffmpegProgress, NSString *stage) {
                 if (progress)
                     progress(0.1f + (float)(ffmpegProgress * 0.85),
-                             stage.length > 0 ? stage : @"Finalizing audio");
+                             stage.length > 0 ? stage : @"正在完成音频处理");
             }
             completion:^(NSURL *_Nullable ffmpegURL,
                          NSError *_Nullable ffmpegError) {
@@ -786,7 +786,7 @@ static void SPKAudioConvertToM4A(NSURL *sourceURL, NSString *basename,
                 }
                 if (completion)
                     completion(nil, ffmpegError ?: avError ?
-                                                           : [SPKUtils errorWithDescription:@"Audio conversion failed"]);
+                                                           : [SPKUtils errorWithDescription:@"音频转换失败"]);
             }
             cancelOut:nil];
     };
@@ -798,7 +798,7 @@ static void SPKAudioConvertToM4A(NSURL *sourceURL, NSString *basename,
     if (!export) {
         runFFmpegFallback(
             [SPKUtils errorWithDescription:
-                          @"Audio conversion is not available for this file"]);
+                          @"此文件无法进行音频转换"]);
         return;
     }
     export.outputURL = outputURL;
@@ -816,7 +816,7 @@ static void SPKAudioConvertToM4A(NSURL *sourceURL, NSString *basename,
             }
             NSError *error =
                 export.error
-                    ?: [SPKUtils errorWithDescription:@"Audio conversion failed"];
+                    ?: [SPKUtils errorWithDescription:@"音频转换失败"];
             runFFmpegFallback(error);
         });
     }];
@@ -846,7 +846,7 @@ static void SPKAudioPresentSaveToFiles(NSURL *fileURL,
         return;
     UIViewController *controller = presenter ?: topMostController();
     if (!controller) {
-        SPKNotify(identifier, @"Could not open Files", nil, @"error_filled",
+        SPKNotify(identifier, @"无法打开“文件", nil, @"error_filled",
                   SPKNotificationToneError);
         return;
     }
@@ -868,7 +868,7 @@ static void SPKAudioDownloadForSaveToFiles(SPKAudioItem *item, BOOL convert,
                                            NSString *identifier) {
     BOOL showProgress = SPKNotificationIsEnabled(identifier);
     __block SPKNotificationPillView *pill =
-        showProgress ? SPKNotifyProgress(identifier, @"Downloading audio", nil)
+        showProgress ? SPKNotifyProgress(identifier, @"正在下载音频", nil)
                      : nil;
 
     void (^finishWithError)(NSString *, NSString *) =
@@ -908,9 +908,9 @@ static void SPKAudioDownloadForSaveToFiles(SPKAudioItem *item, BOOL convert,
                     if (outputURL)
                         presentFile(outputURL);
                     else
-                        finishWithError(@"Audio conversion failed",
+                        finishWithError(@"音频转换失败",
                                         convertError.localizedDescription
-                                            ?: @"Unable to convert audio");
+                                            ?: @"无法转换音频");
                 });
             return;
         }
@@ -954,8 +954,8 @@ static void SPKAudioDownloadForSaveToFiles(SPKAudioItem *item, BOOL convert,
               }
               dispatch_async(dispatch_get_main_queue(), ^{
                   if (error || !movedTempURL) {
-                      finishWithError(@"Audio download failed", error.localizedDescription ?: moveError.localizedDescription ?
-                                                                                                                             : @"Refresh the source and try again if the URL expired.");
+                      finishWithError(@"音频下载失败", error.localizedDescription ?: moveError.localizedDescription ?
+                                                                                                                             : @"请刷新来源后重试，链接可能已过期。");
                       return;
                   }
                   if (pill)
@@ -1055,7 +1055,7 @@ static void SPKAudioDownloadForSaveToFiles(SPKAudioItem *item, BOOL convert,
             resumePlayback:(SPKMediaPreviewPlaybackBlock)resumePlayback {
     if (!item.url) {
         SPKNotify(SPKAudioNotificationIdentifier(notificationIdentifier, action),
-                  @"Could not find audio URL", nil, @"error_filled",
+                  @"未找到音频链接", nil, @"error_filled",
                   SPKNotificationToneError);
         return;
     }
@@ -1064,7 +1064,7 @@ static void SPKAudioDownloadForSaveToFiles(SPKAudioItem *item, BOOL convert,
         SPKAudioNotificationIdentifier(notificationIdentifier, action);
     if (action == SPKAudioActionCopyURL) {
         UIPasteboard.generalPasteboard.string = item.url.absoluteString;
-        SPKNotify(identifier, @"Copied audio URL", nil, @"copy_filled",
+        SPKNotify(identifier, @"音频链接已复制", nil, @"copy_filled",
                   SPKNotificationToneSuccess);
         return;
     }
@@ -1099,8 +1099,8 @@ static void SPKAudioDownloadForSaveToFiles(SPKAudioItem *item, BOOL convert,
 
     NSString *scheme = item.url.scheme.lowercaseString;
     if (!item.url.isFileURL && ![@[ @"http", @"https" ] containsObject:scheme]) {
-        SPKNotify(identifier, @"Audio download failed",
-                  @"Instagram exposed an unsupported audio URL. Refresh the thread "
+        SPKNotify(identifier, @"音频下载失败",
+                  @"Instagram 提供了不受支持的音频链接。请刷新当前内容后重试。 "
                   @"and try again.",
                   @"error_filled", SPKNotificationToneError);
         return;
@@ -1138,7 +1138,7 @@ static void SPKAudioDownloadForSaveToFiles(SPKAudioItem *item, BOOL convert,
         request.anchorView = sourceView;
         request.sourceSurface = SPKDownloadSourceSurfaceAudioPage;
         request.titleOverride =
-            item.title.length > 0 ? item.title : @"Audio download";
+            item.title.length > 0 ? item.title : @"音频下载";
         request.presentationMode = SPKNotificationIsEnabled(identifier)
                                        ? SPKDownloadPresentationModeQueuePill
                                        : SPKDownloadPresentationModeQuiet;
@@ -1163,7 +1163,7 @@ static void SPKAudioDownloadForSaveToFiles(SPKAudioItem *item, BOOL convert,
     request.anchorView = sourceView;
     request.sourceSurface = SPKDownloadSourceSurfaceAudioPage;
     request.titleOverride =
-        item.title.length > 0 ? item.title : @"Audio download";
+        item.title.length > 0 ? item.title : @"音频下载";
     request.presentationMode = SPKNotificationIsEnabled(identifier)
                                    ? SPKDownloadPresentationModeQueuePill
                                    : SPKDownloadPresentationModeQuiet;

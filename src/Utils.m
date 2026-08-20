@@ -2615,8 +2615,8 @@ static void SPKSetResolvedPKForUsername(NSString *username, NSString *pk) {
 };
 + (BOOL)showConfirmation:(void (^)(void))okHandler cancelHandler:(void (^)(void))cancelHandler title:(NSString *)title message:(NSString *)message {
     [SPKIGAlertPresenter presentAlertFromViewController:topMostController()
-                                                  title:title ?: @"Confirm Action"
-                                                message:message ?: @"Are you sure you want to continue?"
+                                                  title:title ?: @"确认操作"
+                                                message:message ?: @"确定要继续吗？"
                                                 actions:@[
                                                     [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
@@ -2624,7 +2624,7 @@ static void SPKSetResolvedPKForUsername(NSString *username, NSString *pk) {
                                                                                   if (cancelHandler)
                                                                                       cancelHandler();
                                                                               }],
-                                                    [SPKIGAlertAction actionWithTitle:@"Confirm"
+                                                    [SPKIGAlertAction actionWithTitle:@"确认"
                                                                                 style:SPKIGAlertActionStyleDefault
                                                                               handler:^{
                                                                                   if (okHandler)
@@ -2644,10 +2644,10 @@ static void SPKSetResolvedPKForUsername(NSString *username, NSString *pk) {
                                                   title:@"需要重新启动"
                                                 message:@"必须重新启动应用才能应用此更改"
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Later"
+                                                    [SPKIGAlertAction actionWithTitle:@"稍后"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
-                                                    [SPKIGAlertAction actionWithTitle:@"Restart"
+                                                    [SPKIGAlertAction actionWithTitle:@"重新启动"
                                                                                 style:SPKIGAlertActionStyleDefault
                                                                               handler:^{
                                                                                   exit(0);

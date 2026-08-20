@@ -9,7 +9,7 @@
 @implementation SPKGallerySettingsProvider
 
 + (SPKSetting *)rootSetting {
-    SPKSetting *gallerySettings = [SPKSetting navigationCellWithTitle:@"Gallery Settings"
+    SPKSetting *gallerySettings = [SPKSetting navigationCellWithTitle:@"图库设置"
                                                              subtitle:nil
                                                                  icon:SPKSettingsIcon(@"settings")
                                                        viewController:[[SPKGallerySettingsViewController alloc] init]];
@@ -18,20 +18,20 @@
     };
 
     return SPKTopicNavigationSetting(@"图库", @"sparkle_gallery", 24.0, @[
-        SPKTopicSection(@"Access", @[
-            [SPKSetting buttonCellWithTitle:@"Open Gallery"
+        SPKTopicSection(@"访问", @[
+            [SPKSetting buttonCellWithTitle:@"打开图库"
                                    subtitle:@""
                                        icon:SPKSettingsIcon(@"sparkle_gallery")
                                      action:^(void) {
                                          [SPKGalleryViewController presentGallery];
                                      }],
-            SPKSettingApplySelectedMenuIcon([SPKSetting menuCellWithTitle:@"Quick Gallery Access" icon:SPKSettingsIcon(@"circle_off") menu:SPKGalleryShortcutTargetMenu()], SPKSettingsIcon(@"circle_off"))
+            SPKSettingApplySelectedMenuIcon([SPKSetting menuCellWithTitle:@"快速访问图库" icon:SPKSettingsIcon(@"circle_off") menu:SPKGalleryShortcutTargetMenu()], SPKSettingsIcon(@"circle_off"))
         ],
-                        @"Choose the tab that opens Gallery on long press. None disables the action."),
+                        @"选择长按时打开图库的标签页。选择“无”可禁用此操作。"),
         SPKTopicSection(@"设置", @[
             gallerySettings
         ],
-                        @"The same screen you reach from inside Gallery.")
+                        @"与从图库内部进入的界面相同。")
     ]);
 }
 

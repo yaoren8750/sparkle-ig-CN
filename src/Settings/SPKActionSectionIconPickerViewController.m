@@ -42,7 +42,7 @@
     return SPKIconPickerCellStyleGlyph;
 }
 - (NSString *)searchPlaceholder {
-    return @"Search Icons";
+    return @"搜索图标";
 }
 
 - (NSArray<SPKIconPickerSection *> *)buildSections {

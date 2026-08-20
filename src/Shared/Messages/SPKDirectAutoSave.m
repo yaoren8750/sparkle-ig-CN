@@ -31,7 +31,7 @@ SPKAutoSaveFilterConfig *SPKDirectAutoSaveFilterConfig(void) {
         config.includedKey = @"msgs_auto_save_included";
         config.identityField = @"threadId";
         config.sortField = @"threadName";
-        config.subjectPlural = @"Chats";
+        config.subjectPlural = @"聊天";
         config.ruleNotificationIdentifier = kSPKNotificationDirectAutoSaveThreadRule;
     });
     return config;
@@ -140,7 +140,7 @@ static NSString *SPKDirectAutoSaveThreadDisplayName(SPKDirectThreadContext *cont
     NSString *name = SPKDirectDisplayNameForThreadContext(context);
     if (name.length > 0)
         return name;
-    return context.isGroup ? @"this group" : @"this chat";
+    return context.isGroup ? @"此群组" : @"此聊天";
 }
 
 BOOL SPKDirectAutoSaveAppliesToCurrentThread(SPKDirectThreadContext *context) {
@@ -157,7 +157,7 @@ NSString *SPKDirectAutoSaveCurrentThreadActionTitle(SPKDirectThreadContext *cont
     NSString *threadId = SPKStringFromValue(context.threadId);
     if (threadId.length == 0)
         return nil;
-    return SPKDirectAutoSaveAppliesToCurrentThread(context) ? @"Stop Auto-Saving This Chat" : @"Auto-Save This Chat";
+    return SPKDirectAutoSaveAppliesToCurrentThread(context) ? @"停止自动保存此聊天" : @"自动保存此聊天";
 }
 
 NSString *SPKDirectAutoSaveCurrentThreadConfirmationTitle(SPKDirectThreadContext *context) {
@@ -170,8 +170,8 @@ NSString *SPKDirectAutoSaveCurrentThreadConfirmationMessage(SPKDirectThreadConte
         return nil;
     NSString *name = SPKDirectAutoSaveThreadDisplayName(context);
     return SPKDirectAutoSaveAppliesToThread(threadId)
-               ? [NSString stringWithFormat:@"Do you want to stop auto-saving view-once media from %@?", name]
-               : [NSString stringWithFormat:@"Do you want to auto-save every view-once photo and video from %@?", name];
+               ? [NSString stringWithFormat:@"确定要停止自动保存 %@ 的阅后即焚媒体吗？", name]
+               : [NSString stringWithFormat:@"确定要自动保存 %@ 的所有阅后即焚照片和视频吗？", name];
 }
 
 BOOL SPKDirectToggleAutoSaveCurrentThread(SPKDirectThreadContext *context,
@@ -187,8 +187,8 @@ BOOL SPKDirectToggleAutoSaveCurrentThread(SPKDirectThreadContext *context,
 
     NSString *name = SPKDirectAutoSaveThreadDisplayName(context);
     if (notificationTitle) {
-        *notificationTitle = appliedBefore ? [NSString stringWithFormat:@"Auto-save off for %@", name]
-                                           : [NSString stringWithFormat:@"Auto-save on for %@", name];
+        *notificationTitle = appliedBefore ? [NSString stringWithFormat:@"已关闭 %@ 的自动保存", name]
+                                           : [NSString stringWithFormat:@"已开启 %@ 的自动保存", name];
     }
     if (notificationSubtitle)
         *notificationSubtitle = SPKDirectAutoSaveListTitle();
@@ -199,7 +199,7 @@ void SPKDirectPresentAutoSaveThreadRuleToggle(SPKDirectThreadContext *context) {
     NSString *title = SPKDirectAutoSaveCurrentThreadConfirmationTitle(context);
     NSString *message = SPKDirectAutoSaveCurrentThreadConfirmationMessage(context);
     if (title.length == 0 || message.length == 0) {
-        SPKNotify(kSPKNotificationDirectAutoSaveThreadRule, @"Chat not found", nil, @"error_filled", SPKNotificationToneError);
+        SPKNotify(kSPKNotificationDirectAutoSaveThreadRule, @"找不到聊天", nil, @"error_filled", SPKNotificationToneError);
         return;
     }
 
@@ -208,7 +208,7 @@ void SPKDirectPresentAutoSaveThreadRuleToggle(SPKDirectThreadContext *context) {
             NSString *notificationTitle = nil;
             NSString *notificationSubtitle = nil;
             if (!SPKDirectToggleAutoSaveCurrentThread(context, &notificationTitle, &notificationSubtitle)) {
-                SPKNotify(kSPKNotificationDirectAutoSaveThreadRule, @"Chat not found", nil, @"error_filled", SPKNotificationToneError);
+                SPKNotify(kSPKNotificationDirectAutoSaveThreadRule, @"找不到聊天", nil, @"error_filled", SPKNotificationToneError);
                 return;
             }
             SPKNotify(kSPKNotificationDirectAutoSaveThreadRule, notificationTitle, notificationSubtitle, @"circle_check_filled",
@@ -232,20 +232,19 @@ void SPKDirectPresentAutoSaveThreadRuleToggle(SPKDirectThreadContext *context) {
         BOOL allChats = SPKDirectAutoSaveAllChatsMode();
         self.showsAddButton = YES;
         self.infoText = allChats
-                            ? @"Filter Mode is All Chats, so every view-once photo and video you open is saved except in "
-                              @"chats in this list. Media you already have is skipped."
-                            : @"Filter Mode is Selected Chats, so only view-once media in chats in this list is saved. "
-                              @"Media you already have is skipped.";
-        self.emptyTitle = @"No chats yet";
+                            ? @"当前筛选模式为“所有聊天”，因此你打开的所有阅后即焚照片和视频都会被保存，但此列表中的聊天除外。已有的媒体将跳过保存。"
+        : @"当前筛选模式为“指定聊天”，因此只有此列表中的聊天里的阅后即焚媒体会被保存。已有的媒体将跳过保存。";
+                            
+        self.emptyTitle = @"暂无聊天";
         self.emptySubtitle = allChats
-                                 ? @"Add chats whose view-once media should never be auto-saved."
-                                 : @"Add chats whose view-once media should be saved automatically as you open it.";
+                                         ? @"添加不应自动保存阅后即焚媒体的聊天。"
+                                         : @"添加需要在打开阅后即焚媒体时自动保存的聊天。";
     }
     return self;
 }
 
 - (NSString *)displayNameForEntry:(NSDictionary *)entry {
-    return SPKDirectDisplayNameForThreadEntry(entry) ?: @"Unknown Chat";
+    return SPKDirectDisplayNameForThreadEntry(entry) ?: @"未知聊天";
 }
 
 - (NSString *)removalDisplayNameForEntry:(NSDictionary *)entry {
@@ -307,7 +306,7 @@ void SPKDirectPresentAutoSaveThreadRuleToggle(SPKDirectThreadContext *context) {
     __weak typeof(self) weakSelf = self;
     [SPKIGAlertPresenter presentTextInputAlertFromViewController:self
                                                            title:@"添加聊天"
-                                                         message:@"Enter the Instagram username for a 1:1 DM thread. Group chats can be added from the viewer's action menu."
+                                                         message:@"请输入一对一私信聊天的 Instagram 用户名。群聊可以从查看器的操作菜单中添加。"
                                                      placeholder:@"用户名"
                                                      initialText:nil
                                                  autocapitalized:NO
@@ -332,12 +331,12 @@ void SPKDirectPresentAutoSaveThreadRuleToggle(SPKDirectThreadContext *context) {
                                       if (!strongSelf)
                                           return;
                                       if (![user isKindOfClass:[NSDictionary class]] || error) {
-                                          [strongSelf presentError:[NSString stringWithFormat:@"User '%@' was not found.", username]];
+                                          [strongSelf presentError:[NSString stringWithFormat:@"未找到用户“%@。", username]];
                                           return;
                                       }
                                       NSString *pk = SPKStringFromValue(user[@"pk"] ?: user[@"id"]);
                                       if (pk.length == 0) {
-                                          [strongSelf presentError:@"Could not resolve this user's Instagram ID."];
+                                          [strongSelf presentError:@"无法获取此用户的 Instagram ID。"];
                                           return;
                                       }
                                       [strongSelf resolveThreadForPK:pk
@@ -364,7 +363,7 @@ void SPKDirectPresentAutoSaveThreadRuleToggle(SPKDirectThreadContext *context) {
                                                              ? SPKStringFromValue(thread[@"thread_id"] ?: thread[@"threadId"])
                                                              : nil;
                                     if (threadId.length == 0 || threadError) {
-                                        [strongSelf presentError:[NSString stringWithFormat:@"No 1:1 DM thread was found with @%@.", username]];
+                                        [strongSelf presentError:[NSString stringWithFormat:@"未找到与 @%@ 的一对一私信聊天。", username]];
                                         return;
                                     }
 
@@ -387,7 +386,7 @@ void SPKDirectPresentAutoSaveThreadRuleToggle(SPKDirectThreadContext *context) {
                                                                                     [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                                                 style:SPKIGAlertActionStyleCancel
                                                                                                               handler:nil],
-                                                                                    [SPKIGAlertAction actionWithTitle:@"Add"
+                                                                                    [SPKIGAlertAction actionWithTitle:@"添加"
                                                                                                                 style:SPKIGAlertActionStyleDefault
                                                                                                               handler:^{
                                                                                                                   [strongSelf addResolvedEntry:entry username:username];
@@ -401,7 +400,7 @@ void SPKDirectPresentAutoSaveThreadRuleToggle(SPKDirectThreadContext *context) {
         return;
     SPKAutoSaveFilterToggleEntry(self.config, entry);
     SPKNotify(kSPKNotificationDirectAutoSaveThreadRule,
-              [NSString stringWithFormat:@"Added @%@", username],
+              [NSString stringWithFormat:@"已添加 @%@", username],
               SPKDirectAutoSaveListTitle(),
               @"circle_check_filled",
               SPKNotificationToneSuccess);

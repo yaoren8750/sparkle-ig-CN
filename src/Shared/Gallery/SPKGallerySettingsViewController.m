@@ -19,7 +19,7 @@
 @implementation SPKGalleryHiddenSourcesViewController
 
 - (instancetype)init {
-    return [super initWithTitle:@"Hidden Sources" sections:@[] reduceMargin:NO];
+    return [super initWithTitle:@"隐藏来源" sections:@[] reduceMargin:NO];
 }
 
 - (void)viewDidLoad {
@@ -54,7 +54,7 @@
         };
         [rows addObject:row];
     }
-    [self replaceSections:@[ SPKTopicSection(@"Sources", rows, @"Hidden sources stay stored in Gallery and remain available to maintenance, export, and duplicate detection.") ]];
+    [self replaceSections:@[ SPKTopicSection(@"来源", rows, @"隐藏的来源仍会保存在图库中，并继续用于维护、导出和重复内容检测。") ]];
 }
 
 @end
@@ -82,71 +82,74 @@ static NSString *const kGalleryQuickAccessDisabledValue = @"none";
 
 + (NSArray *)searchSections {
     return @[
-        SPKTopicSection(@"Storage", @[
-            [SPKSetting valueCellWithTitle:@"Total"
-                                  subtitle:@"Gallery storage and file count"
+        SPKTopicSection(@"存储", @[
+            [SPKSetting valueCellWithTitle:@"总计"
+                                  subtitle:@"图库存储空间和文件数量"
                                       icon:SPKSettingsIcon(@"info")],
-            [SPKSetting valueCellWithTitle:@"Images"
-                                  subtitle:@"Saved image count"
+            [SPKSetting valueCellWithTitle:@"图片"
+                                  subtitle:@"已保存的图片数量"
                                       icon:SPKSettingsIcon(@"photo")],
-            [SPKSetting valueCellWithTitle:@"Videos"
-                                  subtitle:@"Saved video count"
+            [SPKSetting valueCellWithTitle:@"视频"
+                                  subtitle:@"已保存的视频数量"
                                       icon:SPKSettingsIcon(@"video")],
             [SPKSetting valueCellWithTitle:@"音频"
-                                  subtitle:@"Saved audio count"
+                                  subtitle:@"已保存的音频数量"
                                       icon:SPKSettingsIcon(@"audio")]
         ],
                         nil),
-        SPKTopicSection(@"Browsing", @[
-            [SPKSetting switchCellWithTitle:@"Show Favorites at Top"
+
+        SPKTopicSection(@"浏览", @[
+            [SPKSetting switchCellWithTitle:@"置顶收藏"
                                        icon:SPKSettingsIcon(@"heart")
                                 defaultsKey:kFavoritesAtTopKey],
-            [SPKSetting switchCellWithTitle:@"Show Files From Subfolders"
+            [SPKSetting switchCellWithTitle:@"显示子文件夹中的文件"
                                        icon:SPKSettingsIcon(@"folder")
                                 defaultsKey:kSPKGalleryFlatBrowsingKey],
-            [SPKSetting navigationCellWithTitle:@"Hidden Sources"
+            [SPKSetting navigationCellWithTitle:@"隐藏来源"
                                        subtitle:@""
                                            icon:SPKSettingsIcon(@"eye_off")
                                  viewController:[SPKGalleryHiddenSourcesViewController new]]
         ],
-                        @"Pin favorites above other files inside the current sort and folder context."),
-        SPKTopicSection(@"Editing", @[
-            [SPKSetting switchCellWithTitle:@"Ask to Replace Original"
+                        @"在当前排序和文件夹范围内，将收藏内容置于其他文件之上。"),
+
+        SPKTopicSection(@"编辑", @[
+            [SPKSetting switchCellWithTitle:@"询问是否替换原文件"
                                        icon:SPKSettingsIcon(@"left_right")
                                 defaultsKey:@"trim_gallery_prompt_replace"]
         ],
-                        @"When you trim or edit a Gallery item, ask whether to replace the original or save a copy. Off always saves a copy and keeps the original."),
-        SPKTopicSection(@"Preview", @[
-            [SPKSetting switchCellWithTitle:@"Show Media Info"
+                        @"裁剪或编辑图库项目时，询问是替换原文件还是保存副本。关闭后始终保存副本并保留原文件。"),
+
+        SPKTopicSection(@"预览", @[
+            [SPKSetting switchCellWithTitle:@"显示媒体信息"
                                        icon:SPKSettingsIcon(@"info")
                                 defaultsKey:@"gallery_preview_show_metadata"]
         ],
-                        @"Overlay the username, source, and saved/posted dates on the expanded photo preview."),
-        SPKTopicSection(@"Lock", @[
-            [SPKSetting switchCellWithTitle:@"Gallery Passcode Lock"
+                        @"在展开的照片预览中显示用户名、来源以及保存/发布日期。"),
+
+        SPKTopicSection(@"锁定", @[
+            [SPKSetting switchCellWithTitle:@"图库密码锁"
                                        icon:SPKSettingsIcon(@"lock")
                                 defaultsKey:@""],
-            [SPKSetting buttonCellWithTitle:@"Change Passcode"
+            [SPKSetting buttonCellWithTitle:@"更改密码"
                                    subtitle:nil
                                        icon:SPKSettingsIcon(@"key")
                                      action:^{
                                      }]
         ],
-                        @"Lock the Gallery with a passcode or biometrics."),
-        SPKTopicSection(@"Import", @[
-            // A navigation row, not a button: this mirror feeds the settings search index, and a
-            // button row's action is what search runs on tap — an empty one silently does nothing.
-            // The framework pushes navViewController itself, so the result is actually reachable.
-            // No folder context from search, so it imports to the gallery root (nil).
+                        @"使用密码或生物识别锁定图库。"),
+
+        SPKTopicSection(@"导入", @[
             [SPKSetting navigationCellWithTitle:@"导入媒体"
                                        subtitle:nil
                                            icon:SPKSettingsIcon(@"media")
-                                 viewController:[[SPKGalleryImportViewController alloc] initWithDestinationFolderPath:nil]]
+                                 viewController:[[SPKGalleryImportViewController alloc]
+                                                    initWithDestinationFolderPath:nil]]
         ],
-                        @"Import media from the Files app with full editable metadata.\n"
-                        @"Coming from Regram? Pick your exported folder or MediaVault.zip here to bring your whole Media Vault over."),
+                        @"从“文件”App 导入媒体，并保留完整的可编辑元数据。\n"
+                        @"从 Regram 导入？在这里选择你导出的文件夹或 MediaVault.zip，即可将整个 Media Vault 导入。"),
+
         SPKTopicSection(@"删除", @[
-            [SPKSetting buttonCellWithTitle:@"Delete Files"
+            [SPKSetting buttonCellWithTitle:@"删除文件"
                                    subtitle:nil
                                        icon:SPKSettingsIcon(@"trash")
                                      action:^{
@@ -157,9 +160,8 @@ static NSString *const kGalleryQuickAccessDisabledValue = @"none";
 }
 
 - (instancetype)init {
-    return [super initWithTitle:@"Gallery Settings" sections:@[] reduceMargin:NO];
+    return [super initWithTitle:@"图库设置" sections:@[] reduceMargin:NO];
 }
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self reloadStats];
@@ -199,14 +201,14 @@ static NSString *const kGalleryQuickAccessDisabledValue = @"none";
 - (void)rebuildSections {
     NSMutableArray *sections = [NSMutableArray array];
 
-    [sections addObject:SPKTopicSection(@"Storage", @[
-                  [SPKSetting valueCellWithTitle:@"Total"
-                                        subtitle:[NSString stringWithFormat:@"%ld files • %@", (long)self.stats.totalFiles, [self formattedSize:self.stats.totalSize]]
+    [sections addObject:SPKTopicSection(@"存储", @[
+                  [SPKSetting valueCellWithTitle:@"总计"
+                                        subtitle:[NSString stringWithFormat:@"%ld 个文件 • %@", (long)self.stats.totalFiles, [self formattedSize:self.stats.totalSize]]
                                             icon:SPKSettingsIcon(@"info")],
-                  [SPKSetting valueCellWithTitle:@"Images"
+                  [SPKSetting valueCellWithTitle:@"图片"
                                         subtitle:[NSString stringWithFormat:@"%ld", (long)self.stats.imageCount]
                                             icon:SPKSettingsIcon(@"photo")],
-                  [SPKSetting valueCellWithTitle:@"Videos"
+                  [SPKSetting valueCellWithTitle:@"视频"
                                         subtitle:[NSString stringWithFormat:@"%ld", (long)self.stats.videoCount]
                                             icon:SPKSettingsIcon(@"video")],
                   [SPKSetting valueCellWithTitle:@"音频"
@@ -215,12 +217,13 @@ static NSString *const kGalleryQuickAccessDisabledValue = @"none";
               ],
                                         nil)];
 
-    SPKSetting *favoritesRow = [SPKSetting switchCellWithTitle:@"Show Favorites at Top" icon:SPKSettingsIcon(@"heart") defaultsKey:kFavoritesAtTopKey];
+    SPKSetting *favoritesRow = [SPKSetting switchCellWithTitle:@"置顶收藏" icon:SPKSettingsIcon(@"heart") defaultsKey:kFavoritesAtTopKey];
     favoritesRow.action = ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:@"SPKGalleryFavoritesSortPreferenceChanged" object:nil];
     };
+
     // Defaults ON; the backing pref stores the *disabled* state, so the switch inverts.
-    SPKSetting *pinFolderRow = [SPKSetting switchCellWithTitle:@"Pin Folder Bar" icon:SPKSettingsIcon(@"pin") defaultsKey:@""];
+    SPKSetting *pinFolderRow = [SPKSetting switchCellWithTitle:@"固定文件夹栏" icon:SPKSettingsIcon(@"pin") defaultsKey:@""];
     pinFolderRow.switchValueProvider = ^BOOL {
         return ![[NSUserDefaults standardUserDefaults] boolForKey:kSPKGalleryFolderBarPinDisabledKey];
     };
@@ -228,23 +231,26 @@ static NSString *const kGalleryQuickAccessDisabledValue = @"none";
         [[NSUserDefaults standardUserDefaults] setBool:!isOn forKey:kSPKGalleryFolderBarPinDisabledKey];
         [[NSNotificationCenter defaultCenter] postNotificationName:kSPKGalleryGridControlsChangedNotification object:nil];
     };
-    SPKSetting *flatBrowsingRow = [SPKSetting switchCellWithTitle:@"Show Files From Subfolders" icon:SPKSettingsIcon(@"folder") defaultsKey:kSPKGalleryFlatBrowsingKey];
+
+    SPKSetting *flatBrowsingRow = [SPKSetting switchCellWithTitle:@"显示子文件夹中的文件" icon:SPKSettingsIcon(@"folder") defaultsKey:kSPKGalleryFlatBrowsingKey];
     flatBrowsingRow.action = ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:kSPKGalleryBrowsingScopeChangedNotification object:nil];
     };
-    [sections addObject:SPKTopicSection(@"Browsing", @[favoritesRow, pinFolderRow, flatBrowsingRow],
-                                        @"1. Pin favorites above other files inside the current sort and folder context.\n"
-                                        @"2. Keep the subfolder bar pinned to the top while scrolling.\n"
-                                        @"3. Show files from all folders instead of only the current folder's files. The folders stay in the bar above and still narrow the list.")];
 
-    [sections addObject:SPKTopicSection(@"Editing", @[
-                  [SPKSetting switchCellWithTitle:@"Ask to Replace Original"
+    [sections addObject:SPKTopicSection(@"浏览",
+                                        @[favoritesRow, pinFolderRow, flatBrowsingRow],
+                                        @"1. 在当前排序和文件夹范围内，将收藏内容置于其他文件之上。\n"
+                                        @"2. 滚动时将子文件夹栏固定在顶部。\n"
+                                        @"3. 显示所有文件夹中的文件，而不仅是当前文件夹中的文件。文件夹仍会显示在上方的栏中，并可继续用于筛选列表。")];
+
+    [sections addObject:SPKTopicSection(@"编辑", @[
+                  [SPKSetting switchCellWithTitle:@"询问是否替换原文件"
                                              icon:SPKSettingsIcon(@"left_right")
                                       defaultsKey:@"trim_gallery_prompt_replace"]
               ],
-                                        @"When you trim or edit a Gallery item, ask whether to replace the original or save a copy. Off always saves a copy and keeps the original.")];
+                                        @"裁剪或编辑图库项目时，询问是替换原文件还是保存副本。关闭后始终保存副本并保留原文件。")];
 
-    SPKSetting *accountFilterRow = [SPKSetting switchCellWithTitle:@"This Account Only" icon:SPKSettingsIcon(@"user_circle") defaultsKey:@"gallery_filter_current_account"];
+    SPKSetting *accountFilterRow = [SPKSetting switchCellWithTitle:@"仅显示此账户" icon:SPKSettingsIcon(@"user_circle") defaultsKey:@"gallery_filter_current_account"];
     __weak typeof(self) weakAccountSelf = self;
     accountFilterRow.action = ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:SPKGalleryHiddenSourcesDidChangeNotification object:nil];
@@ -252,19 +258,20 @@ static NSString *const kGalleryQuickAccessDisabledValue = @"none";
             [weakAccountSelf promptClaimUnassignedFiles];
         }
     };
-    [sections addObject:SPKTopicSection(@"Visibility", @[
+
+    [sections addObject:SPKTopicSection(@"可见性", @[
                   accountFilterRow,
-                  [SPKSetting navigationCellWithTitle:@"Hidden Sources"
+                  [SPKSetting navigationCellWithTitle:@"隐藏来源"
                                              subtitle:@""
                                                  icon:SPKSettingsIcon(@"eye_off")
                                        viewController:[SPKGalleryHiddenSourcesViewController new]]
               ],
-                                        @"1. Show only media saved while logged into the current account, plus older unassigned files; reassign a file's account from its details sheet.\n"
-                                        @"2. Hide selected sources from Gallery browsing and upload picker sheets without deleting their files.")];
+                                        @"1. 仅显示当前账户登录期间保存的媒体，以及较早保存的未分配文件；可以从文件详情页面重新分配文件所属账户。\n"
+                                        @"2. 在图库浏览和上传选择器中隐藏指定来源，但不会删除这些文件。")];
 
     // Grid section: pinch-to-zoom toggle. Defaults ON; the backing pref stores
     // the *disabled* state, so the switch inverts.
-    SPKSetting *pinchRow = [SPKSetting switchCellWithTitle:@"Pinch to Zoom" icon:SPKSettingsIcon(@"pinch") defaultsKey:@""];
+    SPKSetting *pinchRow = [SPKSetting switchCellWithTitle:@"双指缩放" icon:SPKSettingsIcon(@"pinch") defaultsKey:@""];
     pinchRow.switchValueProvider = ^BOOL {
         return ![[NSUserDefaults standardUserDefaults] boolForKey:kSPKGalleryGridPinchDisabledKey];
     };
@@ -273,7 +280,7 @@ static NSString *const kGalleryQuickAccessDisabledValue = @"none";
         [[NSNotificationCenter defaultCenter] postNotificationName:kSPKGalleryGridControlsChangedNotification object:nil];
     };
 
-    SPKSetting *sourceUsernameRow = [SPKSetting switchCellWithTitle:@"Show Source & Username" icon:SPKSettingsIcon(@"user_circle") defaultsKey:@""];
+    SPKSetting *sourceUsernameRow = [SPKSetting switchCellWithTitle:@"显示来源和用户名" icon:SPKSettingsIcon(@"user_circle") defaultsKey:@""];
     sourceUsernameRow.switchValueProvider = ^BOOL {
         return ![[NSUserDefaults standardUserDefaults] boolForKey:kSPKGalleryGridShowSourceUsernameDisabledKey];
     };
@@ -282,148 +289,218 @@ static NSString *const kGalleryQuickAccessDisabledValue = @"none";
         [[NSNotificationCenter defaultCenter] postNotificationName:kSPKGalleryGridControlsChangedNotification object:nil];
     };
 
-    [sections addObject:SPKTopicSection(@"Grid", @[ pinchRow, sourceUsernameRow ],
-                                        @"1. Pinch the grid to change density (2, 3 or 5 columns).\n"
-                                        @"2. Overlay the source icon and username on each grid item; the username shows at lower densities.")];
+    [sections addObject:SPKTopicSection(@"网格",
+                                        @[ pinchRow, sourceUsernameRow ],
+                                        @"1. 双指缩放网格以调整密度（2、3 或 5 列）。\n"
+                                        @"2. 在每个网格项目上显示来源图标和用户名；在较低密度下会显示用户名。")];
 
-    [sections addObject:SPKTopicSection(@"Preview", @[
-                  [SPKSetting switchCellWithTitle:@"Show Media Info"
+    [sections addObject:SPKTopicSection(@"预览", @[
+                  [SPKSetting switchCellWithTitle:@"显示媒体信息"
                                              icon:SPKSettingsIcon(@"info")
                                       defaultsKey:@"gallery_preview_show_metadata"]
               ],
-                                        @"Overlay the username, source, and saved/posted dates on the expanded photo preview. Tap the media to hide it along with the controls.")];
+                                        @"在展开的照片预览中显示用户名、来源以及保存/发布日期。点击媒体可隐藏这些信息和控件。")];
 
     NSMutableArray *lockRows = [NSMutableArray array];
-
     __weak typeof(self) weakSelf = self;
-    SPKSetting *lockSwitch = [SPKSetting switchCellWithTitle:@"Gallery Passcode Lock" icon:SPKSettingsIcon(@"lock") defaultsKey:@""];
+    SPKSetting *lockSwitch =
+        [SPKSetting switchCellWithTitle:@"图库密码锁"
+                                   icon:SPKSettingsIcon(@"lock")
+                            defaultsKey:@""];
+
     lockSwitch.switchValueProvider = ^BOOL {
         return [SPKGalleryManager sharedManager].isLockEnabled;
     };
+
     lockSwitch.switchChangeHandler = ^(BOOL isOn) {
         [weakSelf handleLockToggleEnabled:isOn];
     };
+
     [lockRows addObject:lockSwitch];
 
-    SPKSetting *changePasscode = [SPKSetting buttonCellWithTitle:@"Change Passcode"
-                                                        subtitle:nil
-                                                            icon:SPKSettingsIcon(@"key")
-                                                          action:^{
-                                                              [SPKGalleryLockViewController presentMode:SPKGalleryLockModeChangePasscode
-                                                                                     fromViewController:self
-                                                                                             completion:^(BOOL success){
-                                                                                             }];
-                                                          }];
+    SPKSetting *changePasscode =
+        [SPKSetting buttonCellWithTitle:@"更改密码"
+                               subtitle:nil
+                                   icon:SPKSettingsIcon(@"key")
+                                 action:^{
+                                     [SPKGalleryLockViewController
+                                         presentMode:SPKGalleryLockModeChangePasscode
+                                         fromViewController:self
+                                         completion:^(BOOL success) {
+                                         }];
+                                 }];
+
     changePasscode.enabledProvider = ^BOOL {
         return [SPKGalleryManager sharedManager].isLockEnabled;
     };
+
     [lockRows addObject:changePasscode];
 
-    [sections addObject:SPKTopicSection(@"Lock", lockRows, @"Lock the Gallery with a passcode or biometrics.")];
+    [sections addObject:
+        SPKTopicSection(@"锁定",
+                        lockRows,
+                        @"使用密码或生物识别锁定图库。")];
 
-    SPKSetting *importRow = [SPKSetting buttonCellWithTitle:@"导入媒体"
-                                                   subtitle:nil
-                                                       icon:SPKSettingsIcon(@"media")
-                                                     action:^{
-                                                         SPKGalleryImportViewController *vc = [[SPKGalleryImportViewController alloc] initWithDestinationFolderPath:self.importDestinationFolderPath];
-                                                         [self.navigationController pushViewController:vc animated:YES];
-                                                     }];
-    [sections addObject:SPKTopicSection(@"Import", @[ importRow ],
-                                        @"Import media from the Files app with full editable metadata.\n"
-                                        @"Coming from Regram? Pick your exported folder or MediaVault.zip here to bring your whole Media Vault over.")];
+    SPKSetting *importRow =
+        [SPKSetting buttonCellWithTitle:@"导入媒体"
+                               subtitle:nil
+                                   icon:SPKSettingsIcon(@"media")
+                                 action:^{
+                                     SPKGalleryImportViewController *vc =
+                                         [[SPKGalleryImportViewController alloc]
+                                             initWithDestinationFolderPath:
+                                                 self.importDestinationFolderPath];
 
-    SPKSetting *deleteRow = [SPKSetting buttonCellWithTitle:@"Delete Files"
-                                                   subtitle:nil
-                                                       icon:SPKSettingsIcon(@"trash")
-                                                     action:^{
-                                                         SPKGalleryDeleteViewController *vc = [[SPKGalleryDeleteViewController alloc] initWithMode:SPKGalleryDeletePageModeRoot];
-                                                         __weak typeof(self) weakSelf = self;
-                                                         vc.onDidDelete = ^{
-                                                             [weakSelf reloadStats];
-                                                             [weakSelf rebuildSections];
-                                                             [[NSNotificationCenter defaultCenter] postNotificationName:@"SPKGalleryFavoritesSortPreferenceChanged" object:nil];
-                                                         };
-                                                         [self.navigationController pushViewController:vc animated:YES];
-                                                     }];
-    deleteRow.tintColor = [SPKUtils SPKColor_InstagramDestructive];
-    deleteRow.iconTintColor = [SPKUtils SPKColor_InstagramDestructive];
+                                     [self.navigationController
+                                         pushViewController:vc
+                                         animated:YES];
+                                 }];
 
-    [sections addObject:SPKTopicSection(@"删除", @[ deleteRow ], nil)];
+    [sections addObject:
+        SPKTopicSection(@"导入",
+                        @[ importRow ],
+                        @"从“文件”App 导入媒体，并完整编辑媒体信息。\n"
+                         @"如果来自 Regram，可在这里选择导出的文件夹或 MediaVault.zip，以导入整个 Media Vault。")];
+
+    SPKSetting *deleteRow =
+        [SPKSetting buttonCellWithTitle:@"删除文件"
+                               subtitle:nil
+                                   icon:SPKSettingsIcon(@"trash")
+                                 action:^{
+                                     SPKGalleryDeleteViewController *vc =
+                                         [[SPKGalleryDeleteViewController alloc]
+                                             initWithMode:
+                                                 SPKGalleryDeletePageModeRoot];
+
+                                     __weak typeof(self) weakSelf = self;
+
+                                     vc.onDidDelete = ^{
+                                         [weakSelf reloadStats];
+                                         [weakSelf rebuildSections];
+
+                                         [[NSNotificationCenter defaultCenter]
+                                             postNotificationName:
+                                                 @"SPKGalleryFavoritesSortPreferenceChanged"
+                                             object:nil];
+                                     };
+
+                                     [self.navigationController
+                                         pushViewController:vc
+                                         animated:YES];
+                                 }];
+
+    deleteRow.tintColor =
+        [SPKUtils SPKColor_InstagramDestructive];
+
+    deleteRow.iconTintColor =
+        [SPKUtils SPKColor_InstagramDestructive];
+
+    [sections addObject:
+        SPKTopicSection(@"删除",
+                        @[ deleteRow ],
+                        nil)];
 
     [self replaceSections:sections];
-}
-
-- (void)promptClaimUnassignedFiles {
-    NSString *pk = [SPKAccountManager currentAccountPK];
-    if (pk.length == 0)
-        return;
-    NSUInteger count = [SPKGalleryFile unassignedFileCount];
-    if (count == 0)
-        return;
-
-    NSString *username = [SPKAccountManager currentAccountUsername];
-    NSString *who = username.length > 0 ? [@"@" stringByAppendingString:username] : @"this account";
-    NSString *message = [NSString stringWithFormat:@"%lu existing file%@ %@ no account and won't show under This Account Only. Assign %@ to %@?",
-                                                   (unsigned long)count,
-                                                   count == 1 ? @"" : @"s",
-                                                   count == 1 ? @"has" : @"have",
-                                                   count == 1 ? @"it" : @"them",
-                                                   who];
-
-    [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Claim Existing Files?"
-                                                message:message
-                                                actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Not Now"
-                                                                                style:SPKIGAlertActionStyleCancel
-                                                                              handler:nil],
-                                                    [SPKIGAlertAction actionWithTitle:@"Assign"
-                                                                                style:SPKIGAlertActionStyleDefault
-                                                                              handler:^{
-                                                                                  [SPKGalleryFile claimUnassignedFilesForAccountPK:pk username:username];
-                                                                                  [[NSNotificationCenter defaultCenter] postNotificationName:SPKGalleryHiddenSourcesDidChangeNotification object:nil];
-                                                                              }]
-                                                ]];
-}
-
-- (void)handleLockToggleEnabled:(BOOL)enabled {
-    SPKGalleryManager *mgr = [SPKGalleryManager sharedManager];
-    if (enabled && !mgr.isLockEnabled) {
-        __weak typeof(self) weakSelf = self;
-        [SPKGalleryLockViewController presentMode:SPKGalleryLockModeSetPasscode
-                               fromViewController:self
-                                       completion:^(BOOL success) {
-                                           [weakSelf rebuildSections];
-                                       }];
-        return;
     }
 
-    if (enabled && mgr.isLockEnabled) {
-        [self rebuildSections];
-        return;
+    - (void)promptClaimUnassignedFiles {
+        NSString *pk = [SPKAccountManager currentAccountPK];
+        if (pk.length == 0)
+            return;
+
+        NSUInteger count = [SPKGalleryFile unassignedFileCount];
+        if (count == 0)
+            return;
+
+        NSString *username =
+            [SPKAccountManager currentAccountUsername];
+
+        NSString *who =
+            username.length > 0
+                ? [@"@" stringByAppendingString:username]
+                : @"此账号";
+
+        NSString *message =
+            [NSString stringWithFormat:
+                @"%lu 个现有文件没有分配账号，因此不会显示在“仅此账号”中。要将 %@ 分配给 %@？",
+                (unsigned long)count,
+                count == 1 ? @"该文件" : @"这些文件",
+                who];
+
+        [SPKIGAlertPresenter
+            presentAlertFromViewController:self
+            title:@"认领现有文件？"
+            message:message
+            actions:@[
+                [SPKIGAlertAction
+                    actionWithTitle:@"暂不"
+                    style:SPKIGAlertActionStyleCancel
+                    handler:nil],
+
+                [SPKIGAlertAction
+                    actionWithTitle:@"分配"
+                    style:SPKIGAlertActionStyleDefault
+                    handler:^{
+                        [SPKGalleryFile
+                            claimUnassignedFilesForAccountPK:pk
+                            username:username];
+
+                        [[NSNotificationCenter defaultCenter]
+                            postNotificationName:
+                                SPKGalleryHiddenSourcesDidChangeNotification
+                            object:nil];
+                    }]
+            ]];
     }
 
-    if (!enabled && !mgr.isLockEnabled) {
-        [self rebuildSections];
-        return;
+    - (void)handleLockToggleEnabled:(BOOL)enabled {
+        SPKGalleryManager *mgr =
+            [SPKGalleryManager sharedManager];
+
+        if (enabled && !mgr.isLockEnabled) {
+            __weak typeof(self) weakSelf = self;
+
+            [SPKGalleryLockViewController
+                presentMode:SPKGalleryLockModeSetPasscode
+                fromViewController:self
+                completion:^(BOOL success) {
+                    [weakSelf rebuildSections];
+                }];
+
+            return;
+        }
+
+        if (enabled && mgr.isLockEnabled) {
+            [self rebuildSections];
+            return;
+        }
+
+        if (!enabled && !mgr.isLockEnabled) {
+            [self rebuildSections];
+            return;
+        }
+
+        [SPKIGAlertPresenter
+            presentAlertFromViewController:self
+            title:@"禁用密码"
+            message:
+                @"图库将不再要求身份验证即可打开。"
+            actions:@[
+                [SPKIGAlertAction
+                    actionWithTitle:@"取消"
+                    style:SPKIGAlertActionStyleCancel
+                    handler:^{
+                        [self rebuildSections];
+                    }],
+
+                [SPKIGAlertAction
+                    actionWithTitle:@"禁用"
+                    style:SPKIGAlertActionStyleDestructive
+                    handler:^{
+                        [mgr removePasscode];
+                        [self rebuildSections];
+                    }]
+            ]];
     }
 
-    [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Disable Passcode"
-                                                message:@"The gallery will no longer require authentication to open."
-                                                actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"取消"
-                                                                                style:SPKIGAlertActionStyleCancel
-                                                                              handler:^{
-                                                                                  [self rebuildSections];
-                                                                              }],
-                                                    [SPKIGAlertAction actionWithTitle:@"Disable"
-                                                                                style:SPKIGAlertActionStyleDestructive
-                                                                              handler:^{
-                                                                                  [mgr removePasscode];
-                                                                                  [self rebuildSections];
-                                                                              }],
-                                                ]];
-}
-
-@end
+    @end

@@ -81,13 +81,13 @@
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    return section == 0 ? @"Enabled Actions" : @"Available Actions";
+    return section == 0 ? @"已启用的操作" : @"可用的操作";
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
     if (section == 0)
-        return @"Drag to reorder. Tap to disable an action.";
-    return @"Tap an action to enable it in this submenu.";
+        return @"拖动以重新排序。轻点以停用操作。";
+    return @"轻点操作以在此子菜单中启用。";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

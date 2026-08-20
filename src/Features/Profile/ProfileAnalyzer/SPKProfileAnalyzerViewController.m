@@ -152,9 +152,9 @@ typedef NS_ENUM(NSInteger, SPKPACategory) {
         [self.statsRow removeArrangedSubview:v];
         [v removeFromSuperview];
     }
-    [self.statsRow addArrangedSubview:[self statColumnValue:posts caption:@"Posts"]];
-    [self.statsRow addArrangedSubview:[self statColumnValue:followers caption:@"Followers"]];
-    [self.statsRow addArrangedSubview:[self statColumnValue:following caption:@"Following"]];
+    [self.statsRow addArrangedSubview:[self statColumnValue:posts caption:@"帖子"]];
+    [self.statsRow addArrangedSubview:[self statColumnValue:followers caption:@"粉丝"]];
+    [self.statsRow addArrangedSubview:[self statColumnValue:following caption:@"关注"]];
 }
 
 @end
@@ -266,7 +266,7 @@ typedef NS_ENUM(NSInteger, SPKPACategory) {
     self.header.translatesAutoresizingMaskIntoConstraints = NO;
     [self.headerContainer addSubview:self.header];
     [self.header.scanButton addTarget:self action:@selector(scanTapped) forControlEvents:UIControlEventTouchUpInside];
-    [self.header.scanButton setText:@"Run Analysis"];
+    [self.header.scanButton setText:@"再次分析"];
 
     [NSLayoutConstraint activateConstraints:@[
         [self.header.topAnchor constraintEqualToAnchor:self.headerContainer.topAnchor],
@@ -332,7 +332,7 @@ static NSString *SPKPACompact(NSInteger n) {
         df.dateStyle = NSDateFormatterMediumStyle;
         df.timeStyle = NSDateFormatterShortStyle;
         df.doesRelativeDateFormatting = YES;
-        self.scanDateText = [NSString stringWithFormat:@"Last scanned: %@", [df stringFromDate:cur.scanDate]];
+        self.scanDateText = [NSString stringWithFormat:@"上次分析：%@", [df stringFromDate:cur.scanDate]];
     } else {
         self.scanDateText = nil;
     }
@@ -348,7 +348,7 @@ static NSString *SPKPACompact(NSInteger n) {
 // The idle CTA label. While a scan has run, the button intermittently swaps this
 // for the "Last scanned ..." line so we don't need a separate footer.
 - (NSString *)idleButtonCTA {
-    return self.report.current ? @"Scan Again" : @"Scan Now";
+    return self.report.current ? @"再次分析" : @"立即分析";
 }
 
 - (void)refreshIdleButton {
@@ -498,7 +498,7 @@ static NSString *SPKPACompact(NSInteger n) {
 
     SPKNotificationPillView *pill = nil;
     if (SPKNotificationIsEnabled(kSPKNotificationProfileAnalyzerComplete)) {
-        pill = SPKNotifyProgress(kSPKNotificationProfileAnalyzerComplete, @"Analyzing profile...", ^{
+        pill = SPKNotifyProgress(kSPKNotificationProfileAnalyzerComplete, @"正在分析个人资料...", ^{
             [[SPKProfileAnalyzerService sharedService] cancel];
         });
         [pill setProgress:0.02f animated:NO];
@@ -515,7 +515,7 @@ static NSString *SPKPACompact(NSInteger n) {
             [weakSelf paintHeaderIdentity];
         }
         progress:^(NSString *status, double fraction) {
-            [pill updateProgressTitle:@"Analyzing profile..." subtitle:status];
+            [pill updateProgressTitle:@"正在分析个人资料..." subtitle:status];
             [pill setProgress:(float)fraction animated:YES];
         }
         completion:^(SPKProfileAnalyzerSnapshot *snapshot, NSError *error) {
@@ -524,7 +524,7 @@ static NSString *SPKPACompact(NSInteger n) {
                 if (error.code == SPKProfileAnalyzerErrorCancelled) {
                     [pill dismiss];
                 } else {
-                    [pill showErrorWithTitle:@"Analysis failed" subtitle:error.localizedDescription icon:nil];
+                    [pill showErrorWithTitle:@"分析失败" subtitle:error.localizedDescription icon:nil];
                     SPKNotificationTriggerHaptic(kSPKNotificationProfileAnalyzerComplete, SPKNotificationToneError);
                 }
                 return;
@@ -647,11 +647,11 @@ typedef NS_ENUM(NSInteger, SPKPASectionKind) {
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     switch ([self kindForSection:section]) {
     case SPKPASectionCurrent:
-        return @"This Scan";
+        return @"本次分析";
     case SPKPASectionChanges:
-        return @"Changes";
+        return @"变化";
     case SPKPASectionOptions:
-        return @"Options";
+        return @"选项";
     case SPKPASectionReset:
         return nil;
     }
@@ -671,7 +671,7 @@ typedef NS_ENUM(NSInteger, SPKPASectionKind) {
     content.secondaryTextProperties.color = [SPKUtils SPKColor_InstagramSecondaryText];
 
     if (kind == SPKPASectionReset) {
-        content.text = @"Reset Profile Analyzer Data";
+        content.text = @"重置个人资料分析数据";
         content.textProperties.color = [SPKUtils SPKColor_InstagramDestructive];
         content.image = [SPKAssetUtils instagramIconNamed:@"trash" pointSize:24.0 renderingMode:UIImageRenderingModeAlwaysTemplate];
         content.imageProperties.tintColor = [SPKUtils SPKColor_InstagramDestructive];
@@ -682,7 +682,7 @@ typedef NS_ENUM(NSInteger, SPKPASectionKind) {
     if (kind == SPKPASectionOptions) {
         SPKPAOptionRow opt = (SPKPAOptionRow)[[self optionRows][indexPath.row] integerValue];
         if (opt == SPKPAOptionTrackVisits) {
-            content.text = @"Track Visited Profiles";
+            content.text = @"记录访问过的个人资料";
             content.image = [SPKAssetUtils instagramIconNamed:@"eye" pointSize:24.0 renderingMode:UIImageRenderingModeAlwaysTemplate];
             content.imageProperties.tintColor = [SPKUtils SPKColor_InstagramPrimaryText];
             SPKSwitch *toggle = [SPKSwitch new];
@@ -691,7 +691,7 @@ typedef NS_ENUM(NSInteger, SPKPASectionKind) {
             cell.accessoryView = toggle;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         } else if (opt == SPKPAOptionVisitedProfiles) {
-            content.text = @"Visited Profiles";
+            content.text = @"访问记录";
             content.image = [SPKAssetUtils instagramIconNamed:@"history" pointSize:24.0 renderingMode:UIImageRenderingModeAlwaysTemplate];
             content.imageProperties.tintColor = [SPKUtils SPKColor_InstagramPrimaryText];
             content.secondaryText = [NSString stringWithFormat:@"%lu", (unsigned long)self.visits.count];
@@ -792,14 +792,14 @@ typedef NS_ENUM(NSInteger, SPKPASectionKind) {
 
 - (void)showAbout {
     NSString *message =
-        @"Profile Analyzer fetches your full followers and following lists and stores them on-device. "
-        @"Each analysis is compared to the previous one to surface new and lost followers, who you started "
-        @"following or unfollowed, and profile changes. These changes accumulate into a history that isn't "
-        @"cleared by re-running. Anything you haven't looked at yet is badged and grouped under “Latest.”\n\n"
-        @"Because Instagram limits how many requests can be made in a short window, accounts with more than "
-        @"13,000 total connections (followers, following) can't be analyzed.\n\n"
-        @"Analysis runs in the background; you'll get a notification when it finishes.\n\n"
-        @"All data stays on your device and is never uploaded.";
+    @"个人资料分析器会获取你的完整粉丝和关注列表，并将数据保存在设备本地。"
+            @"每次分析都会与上一次结果进行比较，用于发现新增和流失的粉丝、你新关注或取消关注的账户，以及个人资料变化。"
+            @"这些变化会持续累积到历史记录中，不会因为重新运行分析而被清除。"
+            @"你尚未查看的变化会显示标记，并归类到“最新”中。\n\n"
+            @"由于 Instagram 限制短时间内可以发送的请求数量，"
+            @"关注者和关注账户总数超过 13,000 的账户无法进行分析。\n\n"
+            @"分析会在后台运行，完成后你将收到通知。\n\n"
+            @"所有数据都会保存在你的设备上，绝不会上传。";
     [SPKIGAlertPresenter presentAlertFromViewController:self
                                                   title:@"关于个人资料分析"
                                                 message:message
@@ -813,12 +813,12 @@ typedef NS_ENUM(NSInteger, SPKPASectionKind) {
 - (void)confirmReset {
     [SPKIGAlertPresenter presentAlertFromViewController:self
                                                   title:@"重置个人资料分析"
-                                                message:@"This deletes all stored snapshots, the change history and visited-profile history. This cannot be undone."
+                                                message:@"这将删除所有已保存的分析快照、变化历史记录和访问过的个人资料历史记录。此操作无法撤销。"
                                                 actions:@[
                                                     [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
-                                                    [SPKIGAlertAction actionWithTitle:@"Reset"
+                                                    [SPKIGAlertAction actionWithTitle:@"重置"
                                                                                 style:SPKIGAlertActionStyleDestructive
                                                                               handler:^{
                                                                                   [SPKProfileAnalyzerStorage resetAll];
@@ -830,7 +830,7 @@ typedef NS_ENUM(NSInteger, SPKPASectionKind) {
 
 - (void)openVisitedList {
     SPKProfileAnalyzerListViewController *vc =
-        [[SPKProfileAnalyzerListViewController alloc] initVisitedListWithTitle:@"Visited Profiles"
+        [[SPKProfileAnalyzerListViewController alloc] initVisitedListWithTitle:@"访问记录"
                                                                         visits:self.visits];
     NSString *owner = self.selfPK;
     vc.onRemoveVisit = ^(SPKProfileAnalyzerVisit *visit) {

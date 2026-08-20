@@ -115,13 +115,13 @@ SPKDownloadState SPKDownloadDerivedJobState(NSArray<NSNumber *> *itemStates) {
 NSString *SPKDownloadDestinationDisplayName(SPKDownloadDestination destination) {
     switch (destination) {
     case SPKDownloadDestinationPhotos:
-        return @"Photos";
+        return @"照片";
     case SPKDownloadDestinationGallery:
         return @"图库";
     case SPKDownloadDestinationShare:
         return @"分享";
     case SPKDownloadDestinationClipboard:
-        return @"Clipboard";
+        return @"剪贴板";
     case SPKDownloadDestinationCacheOnly:
         return @"下载";
     }
@@ -137,11 +137,11 @@ NSString *SPKDownloadSourceSurfaceDisplayName(SPKDownloadSourceSurface surface) 
     case SPKDownloadSourceSurfaceStories:
         return @"快拍";
     case SPKDownloadSourceSurfaceDirect:
-        return @"Direct";
+        return @"私信";
     case SPKDownloadSourceSurfaceAudioPage:
         return @"音频";
     case SPKDownloadSourceSurfaceMediaPreview:
-        return @"Preview";
+        return @"预览";
     case SPKDownloadSourceSurfaceGallery:
         return @"图库";
     case SPKDownloadSourceSurfaceProfile:
@@ -149,8 +149,8 @@ NSString *SPKDownloadSourceSurfaceDisplayName(SPKDownloadSourceSurface surface) 
     case SPKDownloadSourceSurfaceInstants:
         return @"Instants";
     case SPKDownloadSourceSurfaceComments:
-        return @"Comments";
+        return @"评论";
     default:
-        return @"Other";
+        return @"其他";
     }
 }

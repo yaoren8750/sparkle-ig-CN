@@ -60,8 +60,7 @@ static NSString *const kSPKReelsActionButtonEnabledKey = @"reels_action_btn";
                                          min:1
                                          max:100
                                         step:1
-                                       label:@"Reels"
-                               singularLabel:@"Reel"]
+                                       label:@"Reels"                               singularLabel:@"Reel"]
         ],
                         @"1. 禁止上下滑动切换 Reels，停留在当前 Reels。\n"
                          @"2. 达到设定数量后停止继续加载 Reels。\n"

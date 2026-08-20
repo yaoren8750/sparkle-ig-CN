@@ -363,7 +363,7 @@ static void SPKAudioDMNotify(NSString *title, NSString *message, BOOL success) {
     NSString *preset = [compatiblePresets containsObject:AVAssetExportPresetAppleM4A] ? AVAssetExportPresetAppleM4A : AVAssetExportPresetPassthrough;
     AVAssetExportSession *session = [[AVAssetExportSession alloc] initWithAsset:asset presetName:preset];
     if (!session) {
-        [self finishUploadProgressWithErrorTitle:@"音频上传失败" subtitle:@"Could not create an audio conversion session."];
+        [self finishUploadProgressWithErrorTitle:@"音频上传失败" subtitle:@"无法创建音频转换会话。"];
         if (sSPKAudioActiveDMUploadCoordinator == self)
             sSPKAudioActiveDMUploadCoordinator = nil;
         return;

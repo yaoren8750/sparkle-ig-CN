@@ -121,14 +121,14 @@ static NSString *SPKCopiedDownloadURLTitleForPlaybackSource(
     NSString *noun = nil;
     switch (playbackSource) {
     case SPKFullScreenPlaybackSourceStories:
-        noun = @"Story";
+        noun = @"快拍";
         break;
     case SPKFullScreenPlaybackSourceReels:
         noun = @"Reel";
         break;
     case SPKFullScreenPlaybackSourceFeed:
     case SPKFullScreenPlaybackSourceProfile:
-        noun = @"Post";
+        noun = @"帖子";
         break;
     case SPKFullScreenPlaybackSourceDirect:
     case SPKFullScreenPlaybackSourceInstants:
@@ -138,11 +138,10 @@ static NSString *SPKCopiedDownloadURLTitleForPlaybackSource(
         break;
     }
 
-    NSString *urlWord = plural ? @"URLs" : @"URL";
+    
     return noun.length > 0
-               ? [NSString
-                     stringWithFormat:@"%@ download %@ copied", noun, urlWord]
-               : [NSString stringWithFormat:@"Download %@ copied", urlWord];
+                  ? [NSString stringWithFormat:@"%@下载链接已复制", noun]
+                               : @"下载链接已复制";
 }
 
 static UIViewController *
@@ -321,7 +320,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
     // rare and its page already shows the load-failure state, so let the page that
     // actually gets displayed discover it.
     NSInteger adjustedIndex = MAX(0, MIN(index, (NSInteger)files.count - 1));
-    SPKNotify(kSPKNotificationMediaPreviewOpenGallery, @"Opened Gallery media",
+    SPKNotify(kSPKNotificationMediaPreviewOpenGallery, @"已打开图库媒体",
               nil, @"media", SPKNotificationToneInfo);
 
     SPKFullScreenMediaPlayer *player = [[SPKFullScreenMediaPlayer alloc] init];
@@ -836,13 +835,13 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
 
 - (void)setupTopNavigationItems {
     UIBarButtonItem *closeItem = SPKMediaChromeTopBarButtonItemWithTint(
-        @"xmark", self, @selector(closeTapped), [UIColor labelColor], @"Close");
+        @"xmark", self, @selector(closeTapped), [UIColor labelColor], @"关闭");
     SPKMediaChromeSetLeadingTopBarItems(self.navigationItem, @[ closeItem ]);
 
     if (_isFromGallery) {
         _topFavoriteItem = SPKMediaChromeTopBarButtonItemWithTint(
             @"heart", self, @selector(favoriteTapped), [UIColor labelColor],
-            @"Favorite");
+            @"收藏");
     } else {
         _topFavoriteItem = nil;
     }
@@ -1432,11 +1431,11 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
                                                   if (success) {
                                                       // Quiet when a link was just made: that toast already said it.
                                                       if (!didLink)
-                                                          SPKNotify(kSPKNotificationGalleryOpenProfile, @"Opened profile", nil,
+                                                          SPKNotify(kSPKNotificationGalleryOpenProfile, @"已打开个人主页", nil,
                                                                     @"user_circle",
                                                                     SPKNotificationToneForIconResource(@"user_circle"));
                                                   } else {
-                                                      [weakSelf showGalleryOpenFailureMessage:@"Unable to open profile"
+                                                      [weakSelf showGalleryOpenFailureMessage:@"无法打开个人主页"
                                                                              actionIdentifier:kSPKNotificationGalleryOpenProfile];
                                                   }
                                               }];
@@ -1449,7 +1448,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
 
     if (file.hasOpenableOriginalMedia) {
         [actions addObject:[UIAction
-                               actionWithTitle:@"Open Original Post"
+                               actionWithTitle:@"打开原始帖子"
                                          image:SPKGalleryPreviewMenuIcon(
                                                    @"external_link")
                                     identifier:nil
@@ -1471,7 +1470,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
     }
 
     if (actions.count == 0) {
-        UIAction *empty = [UIAction actionWithTitle:@"No origin actions available"
+        UIAction *empty = [UIAction actionWithTitle:@"暂无可用的来源操作"
                                               image:nil
                                          identifier:nil
                                             handler:^(__unused UIAction *action){
@@ -1504,8 +1503,8 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
     }
     NSURL *url = item.resolvedFileURL ?: item.fileURL;
     if (!url || ![[NSFileManager defaultManager] fileExistsAtPath:url.path]) {
-        SPKNotify(@"spk.trim.preview", @"Cannot trim",
-                  @"The media file is unavailable.", @"error_filled",
+        SPKNotify(@"spk.trim.preview", @"无法裁剪",
+                  @"媒体文件不可用。", @"error_filled",
                   SPKNotificationToneError);
         return;
     }
@@ -1529,7 +1528,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
         if (isAudio) {
             [options addObject:[SPKTrimDoneOption optionWithTitle:@"将音频保存到文件" identifier:@"files" iconName:@"audio_download"]];
             [options addObject:[SPKTrimDoneOption optionWithTitle:@"分享音频" identifier:@"share" iconName:@"share"]];
-            [options addObject:[SPKTrimDoneOption optionWithTitle:@"Copy Audio" identifier:@"clipboard" iconName:@"copy"]];
+            [options addObject:[SPKTrimDoneOption optionWithTitle:@"复制音频" identifier:@"clipboard" iconName:@"copy"]];
             [options addObject:[SPKTrimDoneOption optionWithTitle:@"将音频保存到图库" identifier:@"gallery" iconName:@"sparkle_gallery"]];
         } else {
             [options addObject:[SPKTrimDoneOption optionWithTitle:@"保存到照片" identifier:@"photos" iconName:@"download"]];
@@ -1599,8 +1598,8 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
                                                     presenter:self];
             return;
         }
-        SPKNotify(@"spk.photoedit.load", @"Cannot Edit",
-                  @"The image file is unavailable.", @"error_filled",
+        SPKNotify(@"spk.photoedit.load", @"无法编辑",
+                  @"图片文件不可用。", @"error_filled",
                   SPKNotificationToneError);
         return;
     }
@@ -1756,7 +1755,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
 
     if (actionCount == 1) {
         NSString *resourceName = hasProfile ? @"user_circle" : @"external_link";
-        NSString *label = hasProfile ? @"打开个人资料" : @"Open Original Post";
+        NSString *label = hasProfile ? @"打开个人资料" : @"打开原始帖子";
         _galleryOriginItem.image = SPKMediaChromeBottomBarIcon(resourceName);
         _galleryOriginItem.accessibilityLabel = label;
         _galleryOriginItem.menu = nil;
@@ -2102,7 +2101,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
 
 - (void)copyDownloadLinks:(NSArray<NSString *> *)links {
     if (links.count == 0) {
-        SPKNotify(kSPKActionCopyDownloadLink, @"No links available", nil,
+        SPKNotify(kSPKActionCopyDownloadLink, @"暂无可用链接", nil,
                   @"error_filled", SPKNotificationToneError);
         return;
     }
@@ -2112,8 +2111,8 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
     SPKNotify(
         kSPKActionCopyDownloadLink,
         SPKCopiedDownloadURLTitleForPlaybackSource(self.playbackSource, YES),
-        [NSString stringWithFormat:@"%lu item%@", (unsigned long)links.count,
-                                   links.count == 1 ? @"" : @"s"],
+              [NSString stringWithFormat:@"共 %lu 个项目",
+                                         (unsigned long)links.count],
         @"circle_check_filled", SPKNotificationToneSuccess);
 }
 
@@ -2174,7 +2173,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
 
     // Mirror the action-button bulk menu: let the user hand-pick a subset.
     UIAction *selectMediaAction = [UIAction
-        actionWithTitle:[NSString stringWithFormat:@"Select Media • %lu",
+        actionWithTitle:[NSString stringWithFormat:@"选择媒体 • %lu",
                                                    (unsigned long)bulkItems.count]
                   image:[SPKAssetUtils menuIconNamed:@"carousel"]
              identifier:nil
@@ -2325,7 +2324,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
         SPKNotify(kSPKNotificationMediaPreviewSavePhotos, @"已保存到照片", nil,
                   @"circle_check_filled", SPKNotificationToneSuccess);
     } else {
-        SPKNotify(kSPKNotificationMediaPreviewSavePhotos, @"Failed to save",
+        SPKNotify(kSPKNotificationMediaPreviewSavePhotos, @"保存失败",
                   error.localizedDescription, @"error_filled",
                   SPKNotificationToneError);
     }
@@ -2365,7 +2364,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
         return NO;
 
     if (identifier.length > 0 && SPKNotificationIsEnabled(identifier)) {
-        [[SPKNotificationCenter shared] beginTransientProgressWithTitle:@"Fetching 4K candidates..."
+        [[SPKNotificationCenter shared] beginTransientProgressWithTitle:@"正在获取 4K 候选项..."
                                                                onCancel:nil];
     }
     [SPKInstagramAPI fetchWebMediaInfoForPK:mediaPK
@@ -2464,7 +2463,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
     SPKMediaItem *item = [self currentItem];
 
     if (!targetURL && !item.image) {
-        SPKNotify(kSPKNotificationMediaPreviewSaveGallery, @"No media to save", nil,
+        SPKNotify(kSPKNotificationMediaPreviewSaveGallery, @"没有可保存的媒体", nil,
                   @"media", SPKNotificationToneError);
         return;
     }
@@ -2576,7 +2575,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
                 activityItem = item.image;
             }
         }
-        SPKNotify(kSPKNotificationMediaPreviewShare, @"Opened share sheet", nil,
+        SPKNotify(kSPKNotificationMediaPreviewShare, @"已打开分享菜单", nil,
                   @"share", SPKNotificationToneInfo);
         UIActivityViewController *acVC = [[UIActivityViewController alloc]
             initWithActivityItems:@[ activityItem ]
@@ -2643,7 +2642,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
     [SPKIGAlertPresenter
         presentAlertFromViewController:self
                                  title:@"从图库删除"
-                               message:@"This will permanently remove this file."
+                               message:@"此操作将永久删除此文件。"
                                actions:@[
                                    [SPKIGAlertAction
                                        actionWithTitle:@"取消"
@@ -2669,7 +2668,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
     NSError *err;
     [item.galleryFile removeWithError:&err];
     if (err) {
-        SPKNotify(kSPKNotificationMediaPreviewDeleteGallery, @"Failed to delete",
+        SPKNotify(kSPKNotificationMediaPreviewDeleteGallery, @"删除失败",
                   err.localizedDescription, @"error_filled",
                   SPKNotificationToneError);
         return;
@@ -2692,7 +2691,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
 
     if ([self itemCount] == 0) {
         SPKNotify(kSPKNotificationMediaPreviewDeleteGallery,
-                  @"Deleted from Gallery", nil, @"circle_check_filled",
+                  @"已从图库删除", nil, @"circle_check_filled",
                   SPKNotificationToneSuccess);
         [self closeTapped];
         return;
@@ -2720,7 +2719,7 @@ static CGPoint SPKCenterForBounds(CGRect bounds) {
     [self prepareViewControllerForDisplay:newVC];
     [self prepareAdjacentViewControllersAroundIndex:_currentIndex];
     [self updateUI];
-    SPKNotify(kSPKNotificationMediaPreviewDeleteGallery, @"Deleted from Gallery",
+    SPKNotify(kSPKNotificationMediaPreviewDeleteGallery, @"已从图库删除",
               nil, @"circle_check_filled", SPKNotificationToneSuccess);
 }
 

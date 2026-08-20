@@ -112,8 +112,8 @@
                             if (error) {
                                 [SPKIGAlertPresenter presentAlertFromViewController:self
                                                                               title:@"更改应用图标失败"
-                                                                            message:error.localizedDescription ?: @"Unable to change the app icon."
-                                                                            actions:@[ [SPKIGAlertAction actionWithTitle:@"OK" style:SPKIGAlertActionStyleDefault handler:nil] ]];
+                                                                            message:error.localizedDescription ?: @"无法更改应用图标。"
+                                                                            actions:@[ [SPKIGAlertAction actionWithTitle:@"确定" style:SPKIGAlertActionStyleDefault handler:nil] ]];
                                 return;
                             }
 
@@ -122,7 +122,7 @@
                             if (self.onSelect)
                                 self.onSelect(identifier);
                             [self refreshSelectionHighlight];
-                            SPKNotify(@"settings_app_icon", @"App icon changed", appIcon.displayName, @"circle_check_filled", SPKNotificationToneForIconResource(@"circle_check_filled"));
+                            SPKNotify(@"settings_app_icon", @"应用图标已更改", appIcon.displayName, @"circle_check_filled", SPKNotificationToneForIconResource(@"circle_check_filled"));
                             [self.navigationController popViewControllerAnimated:YES];
                         }];
 }

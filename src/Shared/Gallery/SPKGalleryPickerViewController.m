@@ -284,7 +284,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryPickerViewMode) {
                                         state:UIControlStateNormal];
     // Scope toggle: search the current folder, or across all folders. Let the
     // search controller manage the scope bar's visibility (shown while searching).
-    self.searchController.searchBar.scopeButtonTitles = @[ @"This Folder", @"All Folders" ];
+    self.searchController.searchBar.scopeButtonTitles = @[ @"此文件夹", @"所有文件夹" ];
     self.searchController.automaticallyShowsScopeBar = YES;
     self.navigationItem.searchController = self.searchController;
     self.navigationItem.hidesSearchBarWhenScrolling = YES;
@@ -547,10 +547,10 @@ typedef NS_ENUM(NSInteger, SPKGalleryPickerViewMode) {
     SPKMediaChromeConfigureBottomToolbar(self.navigationController.toolbar);
 
     NSString *toggleResource = self.viewMode == SPKGalleryPickerViewModeGrid ? @"list" : @"grid";
-    NSString *toggleAX = self.viewMode == SPKGalleryPickerViewModeGrid ? @"List view" : @"Grid view";
+    NSString *toggleAX = self.viewMode == SPKGalleryPickerViewModeGrid ? @"列表视图" : @"网格视图";
     UIBarButtonItem *toggleItem = [self pickerBottomBarItemWithResource:toggleResource accessibility:toggleAX action:@selector(togglePickerViewMode)];
 
-    UIBarButtonItem *sortItem = [self pickerBottomBarItemWithResource:@"sort" accessibility:@"Sort" action:@selector(presentSort)];
+    UIBarButtonItem *sortItem = [self pickerBottomBarItemWithResource:@"sort" accessibility:@"排序" action:@selector(presentSort)];
     UIBarButtonItem *filterItem = [self pickerBottomBarItemWithResource:@"filter" accessibility:@"筛选" action:@selector(presentFilter)];
 
     NSArray<UIBarButtonItem *> *primary = @[ toggleItem, sortItem, filterItem ];
@@ -559,7 +559,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryPickerViewMode) {
 
 - (void)refreshNavigationRightItems {
     if (self.allowsMultipleSelection) {
-        UIBarButtonItem *addItem = [[UIBarButtonItem alloc] initWithTitle:@"Add"
+        UIBarButtonItem *addItem = [[UIBarButtonItem alloc] initWithTitle:@"添加"
                                                                     style:UIBarButtonItemStyleDone
                                                                    target:self
                                                                    action:@selector(doneTapped)];
@@ -804,8 +804,8 @@ typedef NS_ENUM(NSInteger, SPKGalleryPickerViewMode) {
         title = @"没有结果";
         // Point at the scope toggle: the match may simply live in another folder.
         subtitle = (!self.searchAllFolders && folderName.length > 0)
-                       ? @"Nothing in this folder matches your search. Try All Folders."
-                       : @"No media matches your search.";
+                    ? @"此文件夹中没有符合搜索条件的内容。试试“所有文件夹”。"
+                       : @"没有符合搜索条件的媒体。";
     } else if (hasFilters) {
         title = @"没有匹配的文件";
         subtitle = @"请尝试调整筛选条件。";
@@ -814,7 +814,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryPickerViewMode) {
         subtitle = @"这里没有可选择的内容。";
     } else {
         title = @"没有可选择的内容";
-        subtitle = @"There is no Gallery media of this kind yet.";
+        subtitle = @"暂无此类图库媒体。";
     }
     self.emptyStateLabel.text = title;
     self.emptyStateSubtitle.text = subtitle;
@@ -1030,7 +1030,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryPickerViewMode) {
     UIBarButtonItem *leadingItem;
     if ([self canNavigateBackInFolders]) {
         leadingItem = SPKMediaChromeTopBarButtonItem(@"chevron_left", self, @selector(navigateBackInFolders));
-        leadingItem.accessibilityLabel = @"Back";
+        leadingItem.accessibilityLabel = @"返回";
     } else {
         leadingItem = SPKMediaChromeTopBarButtonItem(@"xmark", self, @selector(cancelTapped));
         leadingItem.accessibilityLabel = @"取消";

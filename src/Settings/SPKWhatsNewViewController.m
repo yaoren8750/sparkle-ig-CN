@@ -9,42 +9,43 @@
 // SPKAssetUtils override keys — never SF Symbols. Keep in sync with README/FEATURES.
 - (NSArray<SPKPagedSheetPage *> *)buildPages {
     return @[
-        [SPKPagedSheetPage pageWithTitle:@"New Features"
-                                    body:[NSString stringWithFormat:@"What's new in %@", SPKVersionString]
-                                    rows:@[
-                                        @{ @"icon": @"sparkle_gallery", @"text": @"Import media into the Gallery from Files or a Regram vault" },
-                                        @{ @"icon": @"folder", @"text": @"Browse every Gallery file at once, without entering folders" },
-                                        @{ @"icon": @"crop", @"text": @"Crop, rotate and flip a video, with finer trimming" },
-                                        @{ @"icon": @"instants", @"text": @"Upload any media as an instant" },
-                                        @{ @"icon": @"instants_burst", @"text": @"Browse the instants you saved, grouped by person" },
-                                        @{ @"icon": @"download", @"text": @"Auto-save stories, view-once messages and instants as you view them" },
-                                        @{ @"icon": @"external_link", @"text": @"Profiles, posts and reels open as real Instagram pages" },
-                                    ]],
-        [SPKPagedSheetPage pageWithTitle:@"More To Explore"
-                                    body:@""
-                                    rows:@[
-                                        @{ @"icon": @"hd_check_filled", @"text": @"Refined photo quality tiers with 4K fetching" },
-                                        @{ @"icon": @"folder", @"text": @"Save downloads into a custom Photos album" },
-                                        @{ @"icon": @"pinch", @"text": @"Pinch to zoom into videos in the full-screen preview" },
-                                        @{ @"icon": @"messages", @"text": @"Refined messages-only mode" },
-                                        @{ @"icon": @"story_preview", @"text": @"See message previews by long pressing a chat" },
-                                        @{ @"icon": @"sticker", @"text": @"Upload videos as story stickers from Photos or Sparkle Gallery" },
-                                        @{ @"icon": @"calendar", @"text": @"See a post's date in the action button menu" },
-                                        @{ @"icon": @"profile_analyzer", @"text": @"Swipe to delete a single change in Profile Analyzer" },
-                                        @{ @"icon": @"filter", @"text": @"Sort, filter and search the Gallery picker across folders" },
-                                        @{ @"text": @"...and plenty more!" },
-                                    ]],
-        [SPKPagedSheetPage pageWithTitle:@"Fixes & Improvements"
-                                    body:@""
-                                    rows:@[
-                                        @{ @"icon": @"subtract", @"text": @"Fixed a long-standing freeze that made the app crawl after a few screens" },
-                                        @{ @"icon": @"subtract", @"text": @"Notifications are now instant and don't duplicate" },
-                                        @{ @"icon": @"subtract", @"text": @"Much faster Gallery: instant opening, smoother picker, far less memory" },
-                                        @{ @"icon": @"subtract", @"text": @"Story preview and inbox refresh work again on the latest Instagram" },
-                                        @{ @"icon": @"subtract", @"text": @"Instants now download/auto-save in full resolution" },
-                                        @{ @"icon": @"subtract", @"text": @"Poll vote counts now respect hide UI on capture" },
-                                        @{ @"icon": @"subtract", @"text": @"Safe Mode now explains itself, and offers to turn itself off" },
-                                        @{ @"icon": @"subtract", @"text": @"Other bug fixes & UI improvements" },
+        [SPKPagedSheetPage pageWithTitle:@"新功能"
+                                  body:[NSString stringWithFormat:@"探索 %@ 的新功能", SPKVersionString]
+                                  rows:@[
+                                      @{ @"icon": @"sparkle_gallery", @"text": @"从「文件」或 Regram 私密库将媒体导入图库" },
+                                      @{ @"icon": @"folder", @"text": @"一次查看图库中的所有文件，无需逐个打开文件夹" },
+                                      @{ @"icon": @"crop", @"text": @"视频支持裁剪、旋转和翻转，剪辑更精细" },
+                                      @{ @"icon": @"instants", @"text": @"将任意媒体上传为即时内容" },
+                                      @{ @"icon": @"instants_burst", @"text": @"按用户查看你保存的所有即时内容" },
+                                      @{ @"icon": @"download", @"text": @"查看限时动态、阅后即焚消息和即时内容时自动保存" },
+                                      @{ @"icon": @"external_link", @"text": @"个人主页、帖子和 Reels 可直接打开为真实 Instagram 页面" },
+                                  ]],
+        [SPKPagedSheetPage pageWithTitle:@"更多功能"
+                                  body:@""
+                                  rows:@[
+                                      @{ @"icon": @"hd_check_filled", @"text": @"优化照片画质选项，支持获取 4K 原图" },
+                                      @{ @"icon": @"folder", @"text": @"将下载内容保存到自定义照片相册" },
+                                      @{ @"icon": @"pinch", @"text": @"全屏预览视频时双指捏合即可缩放" },
+                                      @{ @"icon": @"messages", @"text": @"优化「仅消息」模式" },
+                                      @{ @"icon": @"story_preview", @"text": @"长按聊天即可预览消息内容" },
+                                      @{ @"icon": @"sticker", @"text": @"从照片或 Sparkle 图库将视频上传为限时动态贴图" },
+                                      @{ @"icon": @"calendar", @"text": @"在操作按钮菜单中查看帖子的发布日期" },
+                                      @{ @"icon": @"profile_analyzer", @"text": @"在个人主页分析器中滑动即可删除单项变化记录" },
+                                      @{ @"icon": @"filter", @"text": @"图库选择器支持跨文件夹排序、筛选和搜索" },
+                                      @{ @"text": @"还有更多功能等你发现！" },
+                                  ]],
+        [SPKPagedSheetPage pageWithTitle:@"修复与优化"
+                                  body:@""
+                                  rows:@[
+                                      @{ @"icon": @"subtract", @"text": @"修复使用几屏后应用卡顿、运行缓慢的问题" },
+                                      @{ @"icon": @"subtract", @"text": @"通知现在即时送达，不再重复显示" },
+                                      @{ @"icon": @"subtract", @"text": @"图库速度大幅提升：打开更快、选择更流畅、占用内存更少" },
+                                      @{ @"icon": @"subtract", @"text": @"修复最新 Instagram 上限时动态预览和收件箱刷新问题" },
+                                      @{ @"icon": @"subtract", @"text": @"即时内容现已支持完整分辨率下载和自动保存" },
+                                      @{ @"icon": @"subtract", @"text": @"投票结果现在会遵循截图时的「隐藏界面」设置" },
+                                      @{ @"icon": @"subtract", @"text": @"安全模式现在会说明原因，并提供关闭选项" },
+                                      @{ @"icon": @"subtract", @"text": @"修复其他问题并优化界面体验" },
+                                  
                                     ]],
     ];
 }

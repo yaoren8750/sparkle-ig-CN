@@ -30,6 +30,7 @@ NSString *SPKDeletedMessageKindToString(SPKDeletedMessageKind kind) {
     }
 }
 
+
 SPKDeletedMessageKind SPKDeletedMessageKindFromString(NSString *s) {
     if (![s isKindOfClass:[NSString class]])
         return SPKDeletedMessageKindUnknown;
@@ -61,17 +62,17 @@ SPKDeletedMessageKind SPKDeletedMessageKindFromString(NSString *s) {
 NSString *SPKDeletedMessageKindLocalizedName(SPKDeletedMessageKind kind) {
     switch (kind) {
     case SPKDeletedMessageKindText:
-        return @"Text";
+        return @"文字";
     case SPKDeletedMessageKindPhoto:
-        return @"Photo";
+        return @"照片";
     case SPKDeletedMessageKindVideo:
         return @"视频";
     case SPKDeletedMessageKindVoice:
-        return @"Voice";
+        return @"语音";
     case SPKDeletedMessageKindGif:
         return @"GIF";
     case SPKDeletedMessageKindSticker:
-        return @"Sticker";
+        return @"贴图";
     case SPKDeletedMessageKindShare:
         return @"分享";
     case SPKDeletedMessageKindLink:
@@ -79,12 +80,12 @@ NSString *SPKDeletedMessageKindLocalizedName(SPKDeletedMessageKind kind) {
     case SPKDeletedMessageKindAudioShare:
         return @"音频";
     case SPKDeletedMessageKindReaction:
-        return @"Reaction";
+        return @"表情回应";
     case SPKDeletedMessageKindOther:
-        return @"Other";
+        return @"其他";
     case SPKDeletedMessageKindUnknown:
     default:
-        return @"Unknown";
+        return @"未知";
     }
 }
 
@@ -124,20 +125,20 @@ NSString *SPKDeletedMessageKindSymbolFilled(SPKDeletedMessageKind kind, BOOL fil
 
 NSString *SPKDeletedMessageShareSubtypeName(NSString *subtype) {
     if ([subtype isEqualToString:@"reel"])
-        return @"Reel";
+        return @"Reels";
     if ([subtype isEqualToString:@"post"])
-        return @"Post";
+        return @"帖子";
     if ([subtype isEqualToString:@"story"])
-        return @"Story";
+        return @"快拍";
     if ([subtype isEqualToString:@"profile"])
         return @"个人资料";
     if ([subtype isEqualToString:@"note"])
-        return @"Note";
+        return @"备注";
     if ([subtype isEqualToString:@"location"])
-        return @"Location";
+        return @"地点";
     if ([subtype isEqualToString:@"audio"])
         return @"音频";
-    return @"Shared post";
+    return @"分享的帖子";
 }
 
 NSString *SPKDeletedMessageShareSubtypeSymbol(__unused NSString *subtype) {
@@ -297,13 +298,13 @@ static double spkDouble(id v) {
     if (self.isGroup) {
         if (self.threadTitle.length)
             return self.threadTitle;
-        return @"Group chat";
+        return @"群聊";
     }
     if (self.senderUsername.length)
         return [@"@" stringByAppendingString:self.senderUsername];
     if (self.senderFullName.length)
         return self.senderFullName;
-    return @"Unknown user";
+    return @"未知用户";
 }
 
 - (NSString *)flagKey {

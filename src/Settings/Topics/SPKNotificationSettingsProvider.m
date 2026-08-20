@@ -11,14 +11,20 @@
 
     for (NSDictionary *sectionInfo in SPKNotificationPreferenceSections()) {
         NSMutableArray<SPKSetting *> *rows = [NSMutableArray array];
+
         for (NSDictionary *item in sectionInfo[@"items"] ?: @[]) {
             NSString *identifier = item[@"identifier"];
-            NSString *title = item[@"title"] ?: @"Feature";
+            NSString *title = item[@"title"] ?: @"功能";
             NSString *iconName = item[@"iconName"] ?: @"info";
-            SPKSetting *setting = [SPKSetting switchCellWithTitle:title
-                                                         subtitle:@""
-                                                             icon:SPKSettingsIcon(iconName)
-                                                      defaultsKey:haptics ? SPKNotificationHapticDefaultsKey(identifier) : SPKNotificationDefaultsKey(identifier)];
+
+            SPKSetting *setting =
+                [SPKSetting switchCellWithTitle:title
+                                        subtitle:@""
+                                            icon:SPKSettingsIcon(iconName)
+                                     defaultsKey:haptics
+                                         ? SPKNotificationHapticDefaultsKey(identifier)
+                                         : SPKNotificationDefaultsKey(identifier)];
+
             setting.userInfo = @{@"defaultValue" : @YES};
             [rows addObject:setting];
         }
@@ -36,19 +42,19 @@
     NSArray<NSDictionary *> *configs = @[
         @{
             @"title" : @"已保存到图库",
-            @"subtitle" : @"Notification preview: success tone.",
+            @"subtitle" : @"通知预览：成功提示音。",
             @"iconResource" : @"circle_check_filled",
             @"tone" : @(SPKNotificationToneSuccess)
         },
         @{
-            @"title" : @"Something Went Wrong",
-            @"subtitle" : @"Notification preview: error tone.",
+            @"title" : @"出现问题",
+            @"subtitle" : @"通知预览：错误提示音。",
             @"iconResource" : @"error_filled",
             @"tone" : @(SPKNotificationToneError)
         },
         @{
-            @"title" : @"Heads Up",
-            @"subtitle" : @"Notification preview: info tone.",
+            @"title" : @"提示",
+            @"subtitle" : @"通知预览：信息提示音。",
             @"iconResource" : @"info_filled",
             @"tone" : @(SPKNotificationToneInfo)
         }
@@ -66,50 +72,57 @@
 
 + (NSArray *)sections {
     NSMutableArray *sections = [NSMutableArray arrayWithArray:@[
-        SPKTopicSection(@"Appearance", @[
-            [SPKSetting switchCellWithTitle:@"Glow"
-                                   subtitle:@"Show glow effect around notifications"
+        SPKTopicSection(@"外观", @[
+            [SPKSetting switchCellWithTitle:@"发光效果"
+                                   subtitle:@"在通知周围显示发光效果"
                                 defaultsKey:kSPKNotificationPillGlowEnabledKey],
-            [SPKSetting switchCellWithTitle:@"Liquid Glass"
+
+            [SPKSetting switchCellWithTitle:@"液态玻璃"
                                    subtitle:(SPKPrefIsAvailable(kSPKNotificationPillLiquidGlassEnabledKey)
-                                                 ? @"Render notifications with iOS 26 Liquid Glass"
-                                                 : @"Requires iOS 26 or later")
-                                   defaultsKey:kSPKNotificationPillLiquidGlassEnabledKey],
-            [SPKSetting menuCellWithTitle:@"Download Progress"
+                                                 ? @"使用 iOS 26 液态玻璃显示通知"
+                                                 : @"需要 iOS 26 或更高版本")
+                                defaultsKey:kSPKNotificationPillLiquidGlassEnabledKey],
+
+            [SPKSetting menuCellWithTitle:@"下载进度"
                                  subtitle:@""
                                      menu:SPKNotificationProgressSubtitleStyleMenu()],
-            [SPKSetting menuCellWithTitle:@"Position"
+
+            [SPKSetting menuCellWithTitle:@"位置"
                                  subtitle:@""
                                      menu:SPKNotificationPillPositionMenu()],
-            [SPKSetting stepperCellWithTitle:@"Duration"
-                                    subtitle:@"Dismiss after %@%@"
+
+            [SPKSetting stepperCellWithTitle:@"持续时间"
+                                    subtitle:@"在 %@%@ 后关闭"
                                  defaultsKey:kSPKNotificationPillDurationKey
                                          min:0.5
                                          max:5.0
                                         step:0.25
-                                       label:@" seconds"
-                               singularLabel:@" second"]
+                                       label:@" 秒"
+                               singularLabel:@" 秒"]
         ],
-                        nil),
-        SPKTopicSection(@"Preview", @[
-            [SPKSetting buttonCellWithTitle:@"Test Notification"
+        nil),
+
+        SPKTopicSection(@"预览", @[
+            [SPKSetting buttonCellWithTitle:@"测试通知"
                                    subtitle:@""
                                        icon:nil
                                      action:^{
                                          [self spk_showNextNotificationPreview];
                                      }]
         ],
-                        nil),
+        nil),
+
         SPKTopicSection(@"", @[
-            [SPKSetting navigationCellWithTitle:@"Haptics"
+            [SPKSetting navigationCellWithTitle:@"触感反馈"
                                        subtitle:@""
                                            icon:SPKSettingsIcon(@"haptics")
                                     navSections:[self spk_featureSectionsForHaptics:YES]]
         ],
-                        nil)
+        nil)
     ]];
 
     [sections addObjectsFromArray:[self spk_featureSectionsForHaptics:NO]];
+
     return [sections copy];
 }
 

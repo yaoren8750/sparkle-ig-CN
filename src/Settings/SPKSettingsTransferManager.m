@@ -894,8 +894,8 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
     if (includeDeletedMessages)
         [parts addObject:@"消息"];
     if (includeProfileAnalyzer)
-        [parts addObject:@"Analyzer"];
-    NSString *content = parts.count == 0 ? @"Backup" : (parts.count > 2 ? @"Backup" : [parts componentsJoinedByString:@"+"]);
+        [parts addObject:@"个人资料分析"];
+    NSString *content = parts.count == 0 ? @"备份" : (parts.count > 2 ? @"备份" : [parts componentsJoinedByString:@"+"]);
 
     NSMutableString *name = [NSMutableString stringWithFormat:@"Sparkle-%@", content];
     // Tag the filename by the scope that was chosen: a "this account" export always
@@ -906,10 +906,10 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
         if (who.length == 0)
             who = [SPKAccountManager usernameForPK:currentPK];
         if (who.length == 0)
-            who = currentPK.length ? currentPK : @"account";
+            who = currentPK.length ? currentPK : @"账号";
         [name appendFormat:@"-%@", SPKSanitizeFilenameComponent(who)];
     } else if (includeSettings || includeGallery) {
-        [name appendString:@"-AllAccounts"];
+        [name appendString:@"-所有账号"];
     }
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     formatter.dateFormat = @"yyyy-MM-dd";
@@ -943,16 +943,23 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
     }
 
     NSString *username = [SPKAccountManager currentAccountUsername];
-    NSString *thisTitle = username.length ? [NSString stringWithFormat:@"This Account Only (%@)", username] : @"This Account Only";
+
+    NSString *thisTitle = username.length
+        ? [NSString stringWithFormat:@"仅此账号（%@）", username]
+        : @"仅此账号";
+
     NSString *scopeMessage = includeGallery
-                                 ? @"Per-account settings are on. Back up every account's settings and Gallery, or only the active account's."
-                                 : @"Per-account settings are on. Back up every account's settings, or only the active account's.";
+        ? @"当前已启用按账号分别保存设置。要备份所有账号的设置和图库，还是仅备份当前账号？"
+        : @"当前已启用按账号分别保存设置。要备份所有账号的设置，还是仅备份当前账号？";
+
     __weak typeof(self) weakSelf = self;
+
     [SPKIGAlertPresenter presentActionSheetFromViewController:controller
-                                                        title:@"哪些账户？"
+                                                        title:@"选择账号"
                                                       message:scopeMessage
                                                       actions:@[
-                                                          [SPKIGAlertAction actionWithTitle:@"All Accounts"
+        [SPKIGAlertAction actionWithTitle:@"所有账号"
+                                     // ...
                                                                                       style:SPKIGAlertActionStyleDefault
                                                                                     handler:^{
                                                                                         [weakSelf exportFromController:controller includeSettings:includeSettings includeGallery:includeGallery includeDeletedMessages:includeDeletedMessages includeProfileAnalyzer:includeProfileAnalyzer settingsScope:SPKTransferAccountScopeAllAccounts];
@@ -993,12 +1000,12 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
     void (^setProgress)(float, NSString *) = ^(float fraction, NSString *subtitle) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [pill setProgress:fraction animated:YES];
-            [pill updateProgressTitle:@"Exporting..." subtitle:subtitle];
+            [pill updateProgressTitle:@"正在导出…" subtitle:subtitle];
         });
     };
     void (^failExport)(NSString *) = ^(NSString *message) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [pill showErrorWithTitle:@"Export failed" subtitle:message icon:nil];
+            [pill showErrorWithTitle:@"导出失败" subtitle:message icon:nil];
         });
     };
 
@@ -1022,17 +1029,17 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
                                                                              ownerAccountPK:ownerScope
                                                                             progressHandler:^(NSInteger done, NSInteger total) {
                                                                                 setProgress(0.05f + 0.55f * (total > 0 ? (float)done / total : 1.0f),
-                                                                                            [NSString stringWithFormat:@"Gallery %ld/%ld", (long)done, (long)total]);
+                                                                                            [NSString stringWithFormat:@"图库 %ld/%ld", (long)done, (long)total]);
                                                                             }
                                                                                       error:&galleryError];
             if (!ok) {
-                failExport(galleryError.localizedDescription ?: @"Gallery export failed.");
+                failExport(galleryError.localizedDescription ?: @"图库导出失败。");
                 return;
             }
         }
 
         if (includeDeletedMessages) {
-            setProgress(0.65f, @"Messages...");
+            setProgress(0.65f, @"正在导出消息…");
             NSError *copyError = nil;
             NSString *source = [SPKDeletedMessagesStorage storageRootPath];
             if ([fm fileExistsAtPath:source]) {
@@ -1050,7 +1057,7 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
         }
 
         if (includeProfileAnalyzer) {
-            setProgress(0.72f, @"Profile Analyzer...");
+            setProgress(0.72f, @"正在导出个人资料分析…");
             NSError *copyError = nil;
             NSString *source = [SPKProfileAnalyzerStorage storageRootPath];
             if ([fm fileExistsAtPath:source]) {
@@ -1069,12 +1076,12 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
 
         [SPKTransferManifest(includeSettings, includeGallery, includeDeletedMessages, includeProfileAnalyzer, settingsScope, sourcePK, includedKeys) writeToFile:manifestPath atomically:YES];
 
-        setProgress(0.8f, @"Compressing...");
+        setProgress(0.8f, @"正在压缩…");
         NSError *archiveError = nil;
         NSString *archiveName = SPKTransferArchiveFilename(includeSettings, includeGallery, includeDeletedMessages, includeProfileAnalyzer, settingsScope, [SPKAccountManager currentAccountUsername], currentPK);
         NSString *archivePath = [root stringByAppendingPathComponent:archiveName];
         if (!SPKWriteStoredZipFromDirectory(bundleRoot, archivePath, &archiveError)) {
-            failExport(archiveError.localizedDescription ?: @"The export zip could not be created.");
+            failExport(archiveError.localizedDescription ?: @"无法创建导出压缩包。");
             return;
         }
         setProgress(1.0f, nil);
@@ -1087,7 +1094,7 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
             self.activeDocumentPicker = picker;
             UIViewController *presenter = SPKDocumentPickerPresenter(controller);
             if (!presenter || !presenter.view.window) {
-                SPKNotify(kSPKNotificationSettingsExport, @"Export ready", @"Unable to open Files; opening share sheet instead.", @"arrow_up", SPKNotificationToneForIconResource(@"arrow_up"));
+                SPKNotify(kSPKNotificationSettingsExport, @"导出完成", @"无法打开“文件; 将改为打开分享菜单。", @"arrow_up", SPKNotificationToneForIconResource(@"arrow_up"));
                 [SPKUtils showShareVC:archiveURL];
                 return;
             }
@@ -1119,14 +1126,14 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
     dispatch_async(dispatch_get_main_queue(), ^{
         UIViewController *presenter = SPKDocumentPickerPresenter(controller);
         if (!presenter || !presenter.view.window) {
-            SPKNotify(kSPKNotificationSettingsImport, @"Import failed", @"Unable to open Files picker.", @"error_filled", SPKNotificationToneForIconResource(@"error_filled"));
+            SPKNotify(kSPKNotificationSettingsImport, @"导入失败", @"无法打开“文件”选择器。", @"error_filled", SPKNotificationToneForIconResource(@"error_filled"));
             self.activeDocumentPicker = nil;
             return;
         }
         [presenter presentViewController:picker
                                 animated:YES
                               completion:^{
-                                  SPKNotify(kSPKNotificationSettingsImport, @"Choose an export bundle", nil, @"arrow_down", SPKNotificationToneForIconResource(@"arrow_down"));
+                                  SPKNotify(kSPKNotificationSettingsImport, @"选择导出文件", nil, @"arrow_down", SPKNotificationToneForIconResource(@"arrow_down"));
                               }];
     });
 }
@@ -1149,30 +1156,30 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
         return;
 
     if (!self.isImportMode) {
-        SPKNotify(kSPKNotificationSettingsExport, @"Export complete", @"Sparkle backup saved successfully.", @"circle_check_filled", SPKNotificationToneForIconResource(@"circle_check_filled"));
+        SPKNotify(kSPKNotificationSettingsExport, @"导出完成", @"Sparkle 备份已成功保存。", @"circle_check_filled", SPKNotificationToneForIconResource(@"circle_check_filled"));
         return;
     }
 
     BOOL scoped = [url startAccessingSecurityScopedResource];
 
     // Progress pill so unzip + the heavy merges never block the UI.
-    SPKNotificationPillView *pill = SPKNotifyProgress(kSPKNotificationSettingsImport, @"Importing...", nil);
+    SPKNotificationPillView *pill = SPKNotifyProgress(kSPKNotificationSettingsImport, @"正在导入…", nil);
     void (^setProgress)(float, NSString *) = ^(float fraction, NSString *sub) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [pill setProgress:fraction animated:YES];
-            [pill updateProgressTitle:@"Importing..." subtitle:sub];
+            [pill updateProgressTitle:@"正在导入…" subtitle:sub];
         });
     };
     void (^failImport)(NSString *) = ^(NSString *message) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (scoped)
                 [url stopAccessingSecurityScopedResource];
-            [pill showErrorWithTitle:@"Import failed" subtitle:message icon:nil];
+            [pill showErrorWithTitle:@"导入失败" subtitle:message icon:nil];
         });
     };
 
     dispatch_async(SPKTransferWorkQueue(), ^{
-        setProgress(0.05f, @"Reading backup...");
+        setProgress(0.05f, @"正在读取备份…");
         NSError *archiveError = nil;
         NSString *bundleRoot = SPKResolvedImportBundleRootForPickedURL(url, &archiveError);
         NSString *prefsPath = [bundleRoot stringByAppendingPathComponent:@"Preferences/settings.plist"];
@@ -1211,7 +1218,7 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
         }
 
         if ((importSettings && !archiveHasSettings) || (importGallery && !archiveHasGallery) || (importDeletedMessages && !archiveHasDeletedMessages) || (importProfileAnalyzer && !archiveHasProfileAnalyzer) || (!archiveHasSettings && !archiveHasGallery && !archiveHasDeletedMessages && !archiveHasProfileAnalyzer)) {
-            failImport(archiveError.localizedDescription ?: @"Archive contents were invalid.");
+            failImport(archiveError.localizedDescription ?: @"备份文件内容无效。");
             return;
         }
         setProgress(0.15f, nil);
@@ -1275,22 +1282,22 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
         void (^finishImport)(NSInteger) = ^(NSInteger galleryAddedCount) {
             NSInteger messagesAdded = 0;
             if (importDeletedMessages) {
-                setProgress(0.85f, @"Messages...");
+                setProgress(0.85f, @"正在导入消息…");
                 NSError *deletedMessagesError = nil;
                 messagesAdded = [SPKDeletedMessagesStorage mergeFromStorageDirectory:deletedMessagesPath ownerFilterPK:nil error:&deletedMessagesError];
                 if (messagesAdded < 0) {
-                    failImport(deletedMessagesError.localizedDescription ?: @"Messages import failed.");
+                    failImport(deletedMessagesError.localizedDescription ?: @"消息导入失败。");
                     return;
                 }
             }
 
             NSInteger visitsAdded = 0;
             if (importProfileAnalyzer) {
-                setProgress(0.93f, @"Profile Analyzer...");
+                setProgress(0.93f, @"正在导入个人资料分析…");
                 NSError *profileAnalyzerError = nil;
                 visitsAdded = [SPKProfileAnalyzerStorage mergeFromStorageDirectory:profileAnalyzerPath ownerFilterPK:nil error:&profileAnalyzerError];
                 if (visitsAdded < 0) {
-                    failImport(profileAnalyzerError.localizedDescription ?: @"Profile Analyzer import failed.");
+                    failImport(profileAnalyzerError.localizedDescription ?: @"个人资料分析导入失败。");
                     return;
                 }
             }
@@ -1298,19 +1305,19 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
 
             NSMutableArray<NSString *> *restored = [NSMutableArray array];
             if (importSettings)
-                [restored addObject:@"preferences"];
+                [restored addObject:@"设置"];
             if (importGallery)
-                [restored addObject:[NSString stringWithFormat:@"Gallery (%ld added)", (long)galleryAddedCount]];
+                [restored addObject:[NSString stringWithFormat:@"图库（新增 %ld 项）", (long)galleryAddedCount]];
             if (importDeletedMessages)
-                [restored addObject:[NSString stringWithFormat:@"Messages (%ld added)", (long)messagesAdded]];
+                [restored addObject:[NSString stringWithFormat:@"消息（新增 %ld 条）", (long)messagesAdded]];
             if (importProfileAnalyzer)
-                [restored addObject:[NSString stringWithFormat:@"Profile Analyzer (%ld visits)", (long)visitsAdded]];
-            NSString *subtitle = [NSString stringWithFormat:@"Restored: %@.", [restored componentsJoinedByString:@", "]];
+                [restored addObject:[NSString stringWithFormat:@"个人资料分析（%ld 条记录）", (long)visitsAdded]];
+            NSString *subtitle = [NSString stringWithFormat:@"已恢复：%@。", [restored componentsJoinedByString:@", "]];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (scoped)
                     [url stopAccessingSecurityScopedResource];
                 [pill dismiss];
-                SPKNotify(kSPKNotificationSettingsImport, @"Import complete", subtitle, @"circle_check_filled", SPKNotificationToneForIconResource(@"circle_check_filled"));
+                SPKNotify(kSPKNotificationSettingsImport, @"导入完成", subtitle, @"circle_check_filled", SPKNotificationToneForIconResource(@"circle_check_filled"));
                 // Only preferences need a relaunch (read at launch / hook-install time). The
                 // gallery/messages/analyzer merges write live and post change notifications.
                 if (importSettings)
@@ -1335,11 +1342,11 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
                                                                                               conflictStrategy:strategy
                                                                                                progressHandler:^(NSInteger done, NSInteger total) {
                                                                                                    setProgress(0.25f + 0.55f * (total > 0 ? (float)done / total : 1.0f),
-                                                                                                               [NSString stringWithFormat:@"Gallery %ld/%ld", (long)done, (long)total]);
+                                                                                                               [NSString stringWithFormat:@"图库 %ld/%ld", (long)done, (long)total]);
                                                                                                }
                                                                                                          error:&galleryMergeError];
                     if (galleryAddedCount < 0) {
-                        failImport(galleryMergeError.localizedDescription ?: @"Gallery import failed.");
+                        failImport(galleryMergeError.localizedDescription ?: @"图库导入失败。");
                         return;
                     }
                 }
@@ -1362,24 +1369,26 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
             return;
         }
 
-        NSString *message = [NSString stringWithFormat:@"%ld imported file%@ already exist%@ on this device under a different account. What should happen to %@?",
-                                                       (long)conflicts, conflicts == 1 ? @"" : @"s", conflicts == 1 ? @"s" : @"", conflicts == 1 ? @"it" : @"them"];
+        NSString *message = [NSString stringWithFormat:
+                             @"发现 %ld 个已导入的文件，这些文件已在此设备上归属于其他账号。要如何处理%@？",
+                             (long)conflicts,
+                             conflicts == 1 ? @"它" : @"它们"];
         dispatch_async(dispatch_get_main_queue(), ^{
             [SPKIGAlertPresenter presentAlertFromViewController:topMostController()
                                                           title:@"其他账户的文件"
                                                         message:message
                                                         actions:@[
-                                                            [SPKIGAlertAction actionWithTitle:@"Claim for This Account"
+                                                            [SPKIGAlertAction actionWithTitle:@"归入此账号"
                                                                                         style:SPKIGAlertActionStyleDefault
                                                                                       handler:^{
                                                                                           mergeGalleryThenFinish(SPKGalleryImportConflictStrategyClaim);
                                                                                       }],
-                                                            [SPKIGAlertAction actionWithTitle:@"Keep a Separate Copy"
+                                                            [SPKIGAlertAction actionWithTitle:@"保留为副本"
                                                                                         style:SPKIGAlertActionStyleDefault
                                                                                       handler:^{
                                                                                           mergeGalleryThenFinish(SPKGalleryImportConflictStrategyDuplicate);
                                                                                       }],
-                                                            [SPKIGAlertAction actionWithTitle:[NSString stringWithFormat:@"Skip %@", conflicts == 1 ? @"It" : @"Them"]
+                                                            [SPKIGAlertAction actionWithTitle:[NSString stringWithFormat:@"跳过%@", conflicts == 1 ? @"此文件" : @"这些文件"]
                                                                                         style:SPKIGAlertActionStyleCancel
                                                                                       handler:^{
                                                                                           mergeGalleryThenFinish(SPKGalleryImportConflictStrategySkip);
@@ -1402,13 +1411,13 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
     }
 
     NSString *username = [SPKAccountManager currentAccountUsername];
-    NSString *thisTitle = username.length ? [NSString stringWithFormat:@"This Account Only (%@)", username] : @"This Account Only";
+    NSString *thisTitle = username.length ? [NSString stringWithFormat:@"仅当前账户（%@）", username] : @"仅当前账户";
     __weak typeof(self) weakSelf = self;
     [SPKIGAlertPresenter presentActionSheetFromViewController:controller
-                                                        title:@"哪些账户？"
+                                                        title:@"选择账户？"
                                                       message:@"账户独立设置已开启。请选择重置所有账户的设置，还是仅重置当前账户的设置。"
                                                       actions:@[
-                                                          [SPKIGAlertAction actionWithTitle:@"All Accounts"
+                                                          [SPKIGAlertAction actionWithTitle:@"所有账户"
                                                                                       style:SPKIGAlertActionStyleDefault
                                                                                     handler:^{
                                                                                         [weakSelf confirmResetFromController:controller scope:SPKTransferAccountScopeAllAccounts];
@@ -1428,8 +1437,8 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
     BOOL currentScope = (scope == SPKTransferAccountScopeCurrentAccount);
     NSString *username = [SPKAccountManager currentAccountUsername];
     NSString *message = currentScope
-                            ? [NSString stringWithFormat:@"This restores every Sparkle preference for %@ to its default value. Other accounts and Gallery media are left untouched. This cannot be undone.", username.length ? username : @"the active account"]
-                            : @"This restores every Sparkle preference to its default value. Gallery media is left untouched. This cannot be undone.";
+                            ? [NSString stringWithFormat:@"这会将 %@ 的所有 Sparkle 设置恢复为默认值。其他账户和图库中的媒体不会受到影响。此操作无法撤销。", username.length ? username : @"当前账户"]
+                            : @"这会将所有 Sparkle 设置恢复为默认值。图库中的媒体不会受到影响。此操作无法撤销。";
     NSString *currentPK = [SPKAccountManager currentAccountPK];
     [SPKIGAlertPresenter presentAlertFromViewController:controller
                                                   title:@"重置所有设置"
@@ -1438,7 +1447,7 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
                                                     [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
-                                                    [SPKIGAlertAction actionWithTitle:@"Reset"
+                                                    [SPKIGAlertAction actionWithTitle:@"重置"
                                                                                 style:SPKIGAlertActionStyleDestructive
                                                                               handler:^{
                                                                                   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -1456,12 +1465,15 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
                                                                                       }
                                                                                       [[SPKSettingsLockManager sharedManager] removePasscode];
                                                                                   }
-                                                                                  SPKNotify(kSPKNotificationSettingsImport,
-                                                                                            @"Settings reset",
-                                                                                            currentScope ? @"This account's Sparkle preferences were restored to defaults." : @"All Sparkle preferences were restored to defaults.",
-                                                                                            @"circle_check_filled",
-                                                                                            SPKNotificationToneForIconResource(@"circle_check_filled"));
-                                                                                  [SPKUtils showRestartConfirmation];
+                                                        SPKNotify(kSPKNotificationSettingsImport,
+                                                                  @"设置已重置",
+                                                                  currentScope
+                                                                      ? @"当前账户的 Sparkle 设置已恢复为默认值。"
+                                                                      : @"所有 Sparkle 设置已恢复为默认值。",
+                                                                  @"circle_check_filled",
+                                                                  SPKNotificationToneForIconResource(@"circle_check_filled"));
+
+                                                        [SPKUtils showRestartConfirmation];
                                                                               }],
                                                 ]];
 }
@@ -1479,7 +1491,7 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
                                                     [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
-                                                    [SPKIGAlertAction actionWithTitle:(confirmTitle.length ? confirmTitle : @"Reset")
+                                                    [SPKIGAlertAction actionWithTitle:(confirmTitle.length ? confirmTitle : @"重置")
                                                                                 style:SPKIGAlertActionStyleDestructive
                                                                               handler:^{
                                                                                   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -1493,8 +1505,8 @@ static NSString *SPKTransferArchiveFilename(BOOL includeSettings, BOOL includeGa
                                                                                           [defaults removeObjectForKey:effectiveKey];
                                                                                   }
                                                                                   SPKNotify(kSPKNotificationSettingsImport,
-                                                                                            @"Reset to default",
-                                                                                            @"These settings were restored to their default values.",
+                                                                                            @"已恢复默认设置",
+                                                                                            @"这些设置已恢复为默认值。",
                                                                                             @"circle_check_filled",
                                                                                             SPKNotificationToneForIconResource(@"circle_check_filled"));
                                                                                   dispatch_async(dispatch_get_main_queue(), ^{

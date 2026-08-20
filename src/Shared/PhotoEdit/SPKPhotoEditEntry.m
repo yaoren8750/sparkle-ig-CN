@@ -25,7 +25,7 @@
     if (!presenter)
         return;
     if (!photoURL) {
-        SPKNotify(@"spk.photoedit.entry", @"No photo to edit", nil, @"error_filled",
+        SPKNotify(@"spk.photoedit.entry", @"没有可编辑的照片", nil, @"error_filled",
                   SPKNotificationToneError);
         return;
     }
@@ -39,8 +39,8 @@
     if (photoURL.isFileURL) {
         UIImage *image = [UIImage imageWithContentsOfFile:photoURL.path];
         if (!image) {
-            SPKNotify(@"spk.photoedit.entry", @"Cannot Edit",
-                      @"The image is unavailable.", @"error_filled", SPKNotificationToneError);
+            SPKNotify(@"spk.photoedit.entry", @"无法编辑",
+                      @"图片不可用。.", @"error_filled", SPKNotificationToneError);
             [entry finish];
             return;
         }
@@ -55,7 +55,7 @@
 
 - (void)downloadPhotoURL:(NSURL *)url {
     __weak typeof(self) weakSelf = self;
-    self.prepPill = [[SPKNotificationCenter shared] beginUnmanagedProgressWithTitle:@"Preparing photo..."
+    self.prepPill = [[SPKNotificationCenter shared] beginUnmanagedProgressWithTitle:@"正在准备照片…"
                                                                            onCancel:^{
                                                                                [SPKTrimSaveCoordinator confirmCancelThen:^{
                                                                                    __strong typeof(weakSelf) self = weakSelf;
@@ -106,7 +106,7 @@
             return;
         UIImage *image = self.tempPath ? [UIImage imageWithContentsOfFile:self.tempPath] : nil;
         if (error || !image) {
-            [self.prepPill showError:error.localizedDescription ?: @"Could not download the photo."];
+            [self.prepPill showError:error.localizedDescription ?: @"无法下载照片。"];
             self.prepPill = nil;
             [self cleanupAndFinish];
             return;

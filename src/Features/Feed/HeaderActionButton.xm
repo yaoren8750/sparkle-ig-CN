@@ -94,35 +94,39 @@ NSArray<SPKHeaderDestination *> *SPKHeaderButtonAllDestinations(void) {
     dispatch_once(&onceToken, ^{
         destinations = @[
             [SPKHeaderDestination destinationWithIdentifier:kSPKHeaderDestGallery
-                                                      title:@"Gallery"
-                                                   iconName:@"sparkle_gallery"
-                                                    present:^(UIWindow *window) {
-                                                        [SPKGalleryViewController presentGallery];
-                                                    }],
-            [SPKHeaderDestination destinationWithIdentifier:kSPKHeaderDestAnalyzer
-                                                      title:@"Profile Analyzer"
-                                                   iconName:@"profile_analyzer"
-                                                    present:^(UIWindow *window) {
-                                                        [SPKProfileAnalyzerViewController presentFromTop];
-                                                    }],
-            [SPKHeaderDestination destinationWithIdentifier:kSPKHeaderDestDeleted
-                                                      title:@"Deleted Messages"
-                                                   iconName:@"channels"
-                                                    present:^(UIWindow *window) {
-                                                        [SPKDeletedMessagesViewController presentFromViewController:nil];
-                                                    }],
-            [SPKHeaderDestination destinationWithIdentifier:kSPKHeaderDestDownloads
-                                                      title:@"Downloads"
-                                                   iconName:@"download"
-                                                    present:^(UIWindow *window) {
-                                                        [SPKDownloadService presentDownloadsHistorySheet];
-                                                    }],
-            [SPKHeaderDestination destinationWithIdentifier:kSPKHeaderDestSettings
-                                                      title:@"Sparkle Settings"
-                                                   iconName:@"settings"
-                                                    present:^(UIWindow *window) {
-                                                        [SPKUtils showSettingsVC:window];
-                                                    }],
+                                          title:@"图库"
+                                       iconName:@"sparkle_gallery"
+                                         present:^(UIWindow *window) {
+                                             [SPKGalleryViewController presentGallery];
+                                         }],
+
+[SPKHeaderDestination destinationWithIdentifier:kSPKHeaderDestAnalyzer
+                                          title:@"个人资料分析"
+                                       iconName:@"profile_analyzer"
+                                         present:^(UIWindow *window) {
+                                             [SPKProfileAnalyzerViewController presentFromTop];
+                                         }],
+
+[SPKHeaderDestination destinationWithIdentifier:kSPKHeaderDestDeleted
+                                          title:@"已删除消息"
+                                       iconName:@"channels"
+                                         present:^(UIWindow *window) {
+                                             [SPKDeletedMessagesViewController presentFromViewController:nil];
+                                         }],
+
+[SPKHeaderDestination destinationWithIdentifier:kSPKHeaderDestDownloads
+                                          title:@"下载"
+                                       iconName:@"download"
+                                         present:^(UIWindow *window) {
+                                             [SPKDownloadService presentDownloadsHistorySheet];
+                                         }],
+
+[SPKHeaderDestination destinationWithIdentifier:kSPKHeaderDestSettings
+                                          title:@"Sparkle 设置"
+                                       iconName:@"settings"
+                                         present:^(UIWindow *window) {
+                                             [SPKUtils showSettingsVC:window];
+                                         }],
         ];
     });
     return destinations;
@@ -156,7 +160,7 @@ NSString *SPKHeaderButtonResolvedDefaultActionIdentifier(void) {
 NSString *SPKHeaderButtonDefaultActionTitle(void) {
     NSString *identifier = SPKHeaderButtonResolvedDefaultActionIdentifier();
     SPKHeaderDestination *destination = SPKHeaderDestinationForIdentifier(identifier);
-    return destination ? destination.title : @"Open Menu";
+    return destination ? destination.title : @"打开菜单";
 }
 
 NSString *SPKHeaderButtonDefaultActionIconName(void) {

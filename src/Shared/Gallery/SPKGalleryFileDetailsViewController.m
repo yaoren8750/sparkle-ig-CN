@@ -70,26 +70,26 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
 
 - (void)buildInfoRows {
     NSMutableArray<NSArray<NSString *> *> *rows = [NSMutableArray array];
-    NSString *typeName = @"Photo";
+    NSString *typeName = @"照片";
     if (self.file.mediaType == SPKGalleryMediaTypeVideo)
         typeName = @"视频";
     else if (self.file.mediaType == SPKGalleryMediaTypeAudio)
         typeName = @"音频";
-    [rows addObject:@[ @"Type", typeName ]];
+    [rows addObject:@[ @"类型", typeName ]];
     if (self.file.pixelWidth > 0 && self.file.pixelHeight > 0) {
-        [rows addObject:@[ @"Dimensions", [NSString stringWithFormat:@"%d × %d", self.file.pixelWidth, self.file.pixelHeight] ]];
+        [rows addObject:@[ @"尺寸", [NSString stringWithFormat:@"%d × %d", self.file.pixelWidth, self.file.pixelHeight] ]];
     }
     if (self.file.mediaType == SPKGalleryMediaTypeVideo && self.file.durationSeconds > 0) {
         NSInteger total = (NSInteger)llround(self.file.durationSeconds);
-        [rows addObject:@[ @"Duration", [NSString stringWithFormat:@"%ld:%02ld", (long)(total / 60), (long)(total % 60)] ]];
+        [rows addObject:@[ @"时长", [NSString stringWithFormat:@"%ld:%02ld", (long)(total / 60), (long)(total % 60)] ]];
     }
     if (self.file.fileSize > 0) {
-        [rows addObject:@[ @"Size", [NSByteCountFormatter stringFromByteCount:self.file.fileSize countStyle:NSByteCountFormatterCountStyleFile] ]];
+        [rows addObject:@[ @"大小", [NSByteCountFormatter stringFromByteCount:self.file.fileSize countStyle:NSByteCountFormatterCountStyleFile] ]];
     }
     NSString *folder = self.file.folderPath.length > 0 ? [self.file.folderPath lastPathComponent] : @"图库";
-    [rows addObject:@[ @"Folder", folder ]];
+    [rows addObject:@[ @"文件夹", folder ]];
     if (self.file.sourceMediaCode.length > 0) {
-        [rows addObject:@[ @"Media code", self.file.sourceMediaCode ]];
+        [rows addObject:@[ @"媒体代码", self.file.sourceMediaCode ]];
     }
     self.infoRows = rows;
 }
@@ -101,7 +101,7 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
 
     UIBarButtonItem *cancelItem = SPKMediaChromeTopBarButtonItem(@"xmark", self, @selector(cancel));
     cancelItem.accessibilityLabel = @"取消";
-    UIBarButtonItem *saveItem = SPKMediaChromeTopBarButtonItemWithStyle(@"check", self, @selector(save), UIBarButtonItemStyleDone, [SPKUtils SPKColor_InstagramBlue], @"Save");
+    UIBarButtonItem *saveItem = SPKMediaChromeTopBarButtonItemWithStyle(@"check", self, @selector(save), UIBarButtonItemStyleDone, [SPKUtils SPKColor_InstagramBlue], @"保存");
     SPKMediaChromeSetLeadingTopBarItems(self.navigationItem, @[ cancelItem ]);
     SPKMediaChromeSetTrailingTopBarItems(self.navigationItem, @[ saveItem ]);
 }
@@ -133,7 +133,7 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    return section == 0 ? @"Details" : @"Info";
+    return section == 0 ? @"详细信息" : @"信息";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -150,7 +150,7 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
     if (indexPath.section == 0) {
         switch ((SPKDetailsEditRow)indexPath.row) {
         case SPKDetailsEditRowName:
-            cell.textLabel.text = @"Name";
+            cell.textLabel.text = @"名称";
             [self embedAccessory:self.nameField inCell:cell];
             break;
         case SPKDetailsEditRowUsername:
@@ -158,7 +158,7 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
             [self embedAccessory:self.usernameField inCell:cell];
             break;
         case SPKDetailsEditRowAccount: {
-            cell.textLabel.text = @"Account";
+            cell.textLabel.text = @"账号";
             cell.detailTextLabel.text = [self ownerDisplayText];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
@@ -168,7 +168,7 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
             break;
         }
         case SPKDetailsEditRowDate:
-            cell.textLabel.text = @"Date";
+            cell.textLabel.text = @"日期";
             [self embedAccessory:self.datePicker inCell:cell];
             break;
         default:
@@ -184,7 +184,7 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
 
 - (NSString *)ownerDisplayText {
     if (self.selectedOwnerPK.length == 0)
-        return @"Unassigned";
+        return @"未分配";
     NSString *username = self.selectedOwnerUsername.length > 0
                              ? self.selectedOwnerUsername
                              : [SPKAccountManager usernameForPK:self.selectedOwnerPK];
@@ -226,7 +226,7 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
                                                          [weakSelf.tableView reloadData];
                                                      }]];
     }
-    [actions addObject:[SPKIGAlertAction actionWithTitle:@"Unassigned"
+    [actions addObject:[SPKIGAlertAction actionWithTitle:@"未分配"
                                                    style:SPKIGAlertActionStyleDestructive
                                                  handler:^{
                                                      weakSelf.selectedOwnerPK = nil;
@@ -236,8 +236,8 @@ typedef NS_ENUM(NSInteger, SPKDetailsEditRow) {
     [actions addObject:[SPKIGAlertAction actionWithTitle:@"取消" style:SPKIGAlertActionStyleCancel handler:nil]];
 
     [SPKIGAlertPresenter presentActionSheetFromViewController:self
-                                                        title:@"Change File Owner"
-                                                      message:@"Which account does this file belong to?"
+                                                        title:@"更改文件归属"
+                                                      message:@"此文件属于哪个账号？"
                                                       actions:actions];
 }
 

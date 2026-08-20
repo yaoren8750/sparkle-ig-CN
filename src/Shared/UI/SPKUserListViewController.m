@@ -128,8 +128,8 @@ typedef NS_ENUM(NSInteger, SPKUserListSortMode) {
         _enablesSearch = YES;
         _enablesSort = YES;
         _allowsDelete = YES;
-        _emptyTitle = @"Nothing here";
-        _emptySubtitle = @"There are no accounts in this list.";
+        _emptyTitle = @"暂无内容";
+        _emptySubtitle = @"此列表中没有账户。";
         _sortMode = SPKUserListSortModeDefault;
     }
     return self;
@@ -176,7 +176,7 @@ typedef NS_ENUM(NSInteger, SPKUserListSortMode) {
     // and a single "•••" overflow that folds sort + "How It Works" together.
     NSMutableArray<UIBarButtonItem *> *items = [NSMutableArray array];
     if (self.showsAddButton)
-        [items addObject:SPKMediaChromeTopBarButtonItemWithTint(@"plus", self, @selector(spk_addTapped), [SPKUtils SPKColor_InstagramPrimaryText], @"Add")];
+        [items addObject:SPKMediaChromeTopBarButtonItemWithTint(@"plus", self, @selector(spk_addTapped), [SPKUtils SPKColor_InstagramPrimaryText], @"添加")];
     // When the overflow folds nothing but sort, say so with the sort glyph: "•••"
     // promises more than the menu delivers. It only earns the dots once something
     // else ("How It Works") shares it.
@@ -184,7 +184,7 @@ typedef NS_ENUM(NSInteger, SPKUserListSortMode) {
         BOOL sortOnly = (self.enablesSort && self.infoText.length == 0);
         [items addObject:SPKMediaChromeTopBarMenuButtonItem(sortOnly ? @"sort" : @"more",
                                                             [self moreMenu],
-                                                            sortOnly ? @"Sort" : @"更多")];
+                                                            sortOnly ? @"排序" : @"更多")];
     }
     if (items.count)
         SPKMediaChromeSetTrailingTopBarItems(self.navigationItem, items);
@@ -197,7 +197,7 @@ typedef NS_ENUM(NSInteger, SPKUserListSortMode) {
         if (weakSelf.enablesSort)
             [children addObjectsFromArray:[weakSelf sortMenuElements]];
         if (weakSelf.infoText.length) {
-            UIAction *info = [UIAction actionWithTitle:@"How It Works"
+            UIAction *info = [UIAction actionWithTitle:@"使用说明"
                                                  image:[SPKAssetUtils menuIconNamed:@"info"]
                                             identifier:nil
                                                handler:^(__unused UIAction *action) {
@@ -225,19 +225,19 @@ typedef NS_ENUM(NSInteger, SPKUserListSortMode) {
             a.state = UIMenuElementStateOn;
         [actions addObject:a];
     };
-    add(@"Default", SPKUserListSortModeDefault);
+    add(@"默认", SPKUserListSortModeDefault);
     add(@"A–Z", SPKUserListSortModeAZ);
     add(@"Z–A", SPKUserListSortModeZA);
-    return @[ [UIMenu menuWithTitle:@"Sort" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:actions] ];
+    return @[ [UIMenu menuWithTitle:@"排序" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:actions] ];
 }
 
 - (void)spk_showInfo {
     if (!self.infoText.length)
         return;
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"How It Works"
+                                                  title:@"使用说明"
                                                 message:self.infoText
-                                                actions:@[ [SPKIGAlertAction actionWithTitle:@"OK" style:SPKIGAlertActionStyleCancel handler:nil] ]];
+                                                actions:@[ [SPKIGAlertAction actionWithTitle:@"确定" style:SPKIGAlertActionStyleCancel handler:nil] ]];
 }
 
 - (void)spk_addTapped {
@@ -303,7 +303,7 @@ typedef NS_ENUM(NSInteger, SPKUserListSortMode) {
     if (!isEmpty)
         return;
     if (self.searchText.length) {
-        self.emptyStateTitle.text = @"No matches";
+        self.emptyStateTitle.text = @"没有匹配结果";
         self.emptyStateSubtitle.text = self.emptySearchSubtitle.length ? self.emptySearchSubtitle : @"没有符合搜索条件的账户。";
     } else {
         self.emptyStateTitle.text = self.emptyTitle;
@@ -369,7 +369,7 @@ typedef NS_ENUM(NSInteger, SPKUserListSortMode) {
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     SPKUserListCell *cell = [tableView dequeueReusableCellWithIdentifier:@"u" forIndexPath:indexPath];
     SPKUserListItem *item = [self itemAtIndexPath:indexPath];
-    cell.titleLabel.text = item.title.length ? item.title : @"Unknown";
+    cell.titleLabel.text = item.title.length ? item.title :@"未知";
     cell.verifiedBadge.hidden = !item.isVerified;
     cell.subtitleLabel.text = item.subtitle ?: @"";
     [cell setSubtitleShown:item.subtitle.length > 0];

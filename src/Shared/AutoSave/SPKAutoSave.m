@@ -82,13 +82,18 @@ static void SPKAutoSaveFlushSummaryIfDrained(void) {
     if (saved == 0 && failed == 0)
         return;
 
-    NSString *title = saved == 1 ? @"Auto-saved 1 item"
-                                 : [NSString stringWithFormat:@"Auto-saved %lu items", (unsigned long)saved];
+    NSString *title = saved == 1 ? @"已自动保存 1 个项目"
+                                 : [NSString stringWithFormat:@"已自动保存 %lu 个项目", (unsigned long)saved];
+
     NSString *subtitle = toPhotos ? @"点击打开照片" : @"点击打开图库";
+
     if (failed > 0) {
-        subtitle = failed == 1 ? @"1 item failed" : [NSString stringWithFormat:@"%lu items failed", (unsigned long)failed];
+        subtitle = failed == 1
+                        ? @"1 个项目保存失败"
+                        : [NSString stringWithFormat:@"%lu 个项目保存失败", (unsigned long)failed];
+
         if (saved == 0)
-            title = @"Auto-save failed";
+            title = @"自动保存失败";
     }
 
     // Nothing landed, so there's nothing to go look at -- leave the pill inert.
@@ -121,8 +126,8 @@ static void SPKAutoSaveNoteSubmission(NSString *notificationIdentifier, SPKDownl
     SPKAutoSaveSessionStarted = YES;
     SPKAutoSaveSessionDestination = destination;
 
-    SPKNotify(notificationIdentifier, @"Auto-save started",
-              [NSString stringWithFormat:@"Saving to %@", SPKDownloadDestinationDisplayName(destination)],
+    SPKNotify(notificationIdentifier, @"自动保存已开始",
+              [NSString stringWithFormat:@"正在保存到%@", SPKDownloadDestinationDisplayName(destination)],
               @"info_filled", SPKNotificationToneInfo);
 }
 
@@ -257,11 +262,13 @@ void SPKAutoSaveSessionDidEnd(void) {
     // after dismissal when High quality is muxing DASH video and audio. Say so, rather
     // than leaving the viewer thinking nothing happened.
     NSUInteger pending = SPKAutoSaveSessionPendingCount;
-    SPKNotify(kSPKNotificationAutoSavePending, @"Auto-save still working",
-              pending == 1 ? @"1 item is being processed"
-                           : [NSString stringWithFormat:@"%lu items are being processed", (unsigned long)pending],
-              @"history", SPKNotificationToneInfo);
-
+    SPKNotify(kSPKNotificationAutoSavePending,
+              @"自动保存仍在进行",
+              pending == 1
+                  ? @"正在处理 1 个项目"
+                  : [NSString stringWithFormat:@"正在处理 %lu 个项目", (unsigned long)pending],
+              @"history",
+              SPKNotificationToneInfo);
     // Still downloading or merging. The watcher posts the summary the moment the last
     // job lands; this only catches jobs that never report back at all.
     NSUInteger generation = SPKAutoSaveSessionGeneration;

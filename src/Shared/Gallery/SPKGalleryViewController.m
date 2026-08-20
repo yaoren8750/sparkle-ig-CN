@@ -341,8 +341,8 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
     NSString *text = nil;
     if (self.selectionMode) {
         text = self.selectedFileIDs.count > 0
-                   ? [NSString stringWithFormat:@"%lu Selected", (unsigned long)self.selectedFileIDs.count]
-                   : @"Select Files";
+                   ? [NSString stringWithFormat:@"已选择 %lu 个", (unsigned long)self.selectedFileIDs.count]
+                   : @"选择文件";
     } else {
         text = self.currentFolderPath.length > 0 ? [self.currentFolderPath lastPathComponent]
                                                  : (self.seededFilterTitle.length > 0 ? self.seededFilterTitle : @"图库");
@@ -373,7 +373,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
     controller.searchBar.placeholder = @"搜索图库";
     // Scope toggle: search the current folder, or across all folders. Let the
     // search controller manage the scope bar's visibility (shown while searching).
-    controller.searchBar.scopeButtonTitles = @[ @"This Folder", @"All Folders" ];
+    controller.searchBar.scopeButtonTitles = @[ @"当前文件夹", @"全部文件夹" ];
     controller.automaticallyShowsScopeBar = YES;
     self.searchController = controller;
     self.navigationItem.searchController = controller;
@@ -405,16 +405,16 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
 - (void)refreshNavigationItems {
     // Selection-mode select-all icon reflects current selection.
     NSString *selectionIcon = @"circle";
-    NSString *selectionAccessibilityLabel = @"Select all";
+    NSString *selectionAccessibilityLabel = @"选择全部";
     if (self.selectionMode) {
         NSArray<SPKGalleryFile *> *files = [self visibleGalleryFiles];
         BOOL allSelected = files.count > 0 && self.selectedFileIDs.count == files.count;
         if (allSelected) {
             selectionIcon = @"circle_check_filled";
-            selectionAccessibilityLabel = @"Deselect all";
+            selectionAccessibilityLabel = @"取消选择";
         } else if (self.selectedFileIDs.count > 0) {
             selectionIcon = @"circle_check";
-            selectionAccessibilityLabel = @"Select all";
+            selectionAccessibilityLabel = @"选择全部";
         }
     }
 
@@ -436,7 +436,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
             leadingItem = SPKMediaChromeTopBarButtonItem(@"chevron_left", self, @selector(navigateBackInFolders));
         } else if (isPushed) {
             leadingItem = SPKMediaChromeTopBarButtonItem(@"chevron_left", self, @selector(popSelf));
-            leadingItem.accessibilityLabel = @"Back";
+            leadingItem.accessibilityLabel = @"返回";
         } else {
             leadingItem = SPKMediaChromeTopBarButtonItem(@"xmark", self, @selector(dismissSelf));
         }
@@ -479,22 +479,22 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
 
     NSArray<UIBarButtonItem *> *primary;
     if (self.selectionMode) {
-        UIBarButtonItem *shareItem = [self galleryBottomBarItemWithResource:@"share" accessibility:@"Share selected" action:@selector(shareSelectedFiles)];
-        UIBarButtonItem *moveItem = [self galleryBottomBarItemWithResource:@"folder_move" accessibility:@"Move selected" action:@selector(moveSelectedFiles)];
-        UIBarButtonItem *favoriteItem = [self galleryBottomBarItemWithResource:@"heart" accessibility:@"Favorite selected" action:@selector(toggleFavoriteForSelectedFiles)];
-        UIBarButtonItem *deleteItem = [self galleryBottomBarItemWithResource:@"trash" accessibility:@"Delete selected" action:@selector(deleteSelectedFiles)];
+        UIBarButtonItem *shareItem = [self galleryBottomBarItemWithResource:@"share" accessibility:@"分享已选择项目" action:@selector(shareSelectedFiles)];
+        UIBarButtonItem *moveItem = [self galleryBottomBarItemWithResource:@"folder_move" accessibility:@"移动已选择项目" action:@selector(moveSelectedFiles)];
+        UIBarButtonItem *favoriteItem = [self galleryBottomBarItemWithResource:@"heart" accessibility:@"收藏已选择项目" action:@selector(toggleFavoriteForSelectedFiles)];
+        UIBarButtonItem *deleteItem = [self galleryBottomBarItemWithResource:@"trash" accessibility:@"删除已选择项目" action:@selector(deleteSelectedFiles)];
         deleteItem.tintColor = [SPKUtils SPKColor_InstagramDestructive];
 
         primary = @[ shareItem, moveItem, favoriteItem, deleteItem ];
     } else {
         UIBarButtonItem *filterItem = [self galleryBottomBarItemWithResource:@"filter" accessibility:@"筛选" action:@selector(presentFilter)];
-        UIBarButtonItem *sortItem = [self galleryBottomBarItemWithResource:@"sort" accessibility:@"Sort" action:@selector(presentSort)];
+        UIBarButtonItem *sortItem = [self galleryBottomBarItemWithResource:@"sort" accessibility:@"排序" action:@selector(presentSort)];
 
-        NSString *toggleResource = self.viewMode == SPKGalleryViewModeGrid ? @"list" : @"grid";
-        NSString *toggleAX = self.viewMode == SPKGalleryViewModeGrid ? @"List view" : @"Grid view";
+        NSString *toggleResource = self.viewMode == SPKGalleryViewModeGrid ? @"列表视图" : @"grid";
+        NSString *toggleAX = self.viewMode == SPKGalleryViewModeGrid ? @"网格视图" : @"Grid view";
         UIBarButtonItem *toggleItem = [self galleryBottomBarItemWithResource:toggleResource accessibility:toggleAX action:@selector(toggleViewMode)];
 
-        UIBarButtonItem *folderItem = [self galleryBottomBarItemWithResource:@"folder" accessibility:@"New folder" action:@selector(presentCreateFolder)];
+        UIBarButtonItem *folderItem = [self galleryBottomBarItemWithResource:@"folder" accessibility:@"新建文件夹" action:@selector(presentCreateFolder)];
 
         primary = self.locksSeededFilter ? @[ toggleItem, sortItem, folderItem ]
                                          : @[ toggleItem, sortItem, filterItem, folderItem ];
@@ -773,15 +773,15 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
     NSString *subtitle;
     if (query.length > 0) {
         title = @"没有结果";
-        subtitle = @"No media matches your search.";
+        subtitle = @"没有找到相关内容";
     } else if (hasFilters) {
         title = @"没有匹配的文件";
         subtitle = @"请尝试调整筛选条件。";
     } else if (folderName.length > 0) {
         title = @"此文件夹为空";
-        subtitle = [NSString stringWithFormat:@"Media you save to “%@” will appear here.", folderName];
+        subtitle = [NSString stringWithFormat:@"保存到“%@”的内容会显示在这里。", folderName];
     } else {
-        title = @"图库中没有文件";
+        title = @"暂无内容";
         subtitle = @"使用 Sparkle 保存的媒体会显示在这里。";
     }
     self.emptyStateLabel.text = title;
@@ -1310,7 +1310,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
 }
 
 - (void)showGalleryOpenFailureMessage:(NSString *)title actionIdentifier:(NSString *)actionIdentifier {
-    SPKNotify(actionIdentifier, title, @"The original content may no longer exist.", @"error_filled", SPKNotificationToneError);
+    SPKNotify(actionIdentifier, title, @"原始内容可能已不存在", @"error_filled", SPKNotificationToneError);
 }
 
 - (void)dismissGalleryForOriginOpenWithCompletion:(void (^)(void))completion {
@@ -1345,7 +1345,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
                                                         onDismiss:nil]) {
         // Nothing to announce: the post is on screen.
     } else {
-        [self showGalleryOpenFailureMessage:[NSString stringWithFormat:@"Unable to open %@", lowerNoun] actionIdentifier:kSPKNotificationGalleryOpenOriginal];
+        [self showGalleryOpenFailureMessage:[NSString stringWithFormat:@"无法打开%@", lowerNoun] actionIdentifier:kSPKNotificationGalleryOpenOriginal];
     }
 }
 
@@ -1360,9 +1360,9 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
                                                   if (success) {
                                                       // Quiet when a link was just made: that toast already said it.
                                                       if (!didLink)
-                                                          SPKNotify(kSPKNotificationGalleryOpenProfile, @"Opened profile", nil, @"user_circle", SPKNotificationToneForIconResource(@"user_circle"));
+                                                          SPKNotify(kSPKNotificationGalleryOpenProfile, @"已打开主页", nil, @"user_circle", SPKNotificationToneForIconResource(@"user_circle"));
                                                   } else {
-                                                      [weakSelf showGalleryOpenFailureMessage:@"Unable to open profile" actionIdentifier:kSPKNotificationGalleryOpenProfile];
+                                                      [weakSelf showGalleryOpenFailureMessage:@"无法打开主页" actionIdentifier:kSPKNotificationGalleryOpenProfile];
                                                   }
                                               }];
 }
@@ -1599,7 +1599,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
         return;
     }
 
-    NSString *message = [NSString stringWithFormat:@"This will permanently remove %ld file%@ from the gallery.", (long)files.count, files.count == 1 ? @"" : @"s"];
+    NSString *message = [NSString stringWithFormat:@"此操作将永久删除图库中的 %ld 个项目", (long)files.count];
     [SPKIGAlertPresenter presentAlertFromViewController:self
                                                   title:@"删除选中的文件？"
                                                 message:message
@@ -1619,10 +1619,10 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
                                                                                       }
                                                                                   }
                                                                                   if (firstError) {
-                                                                                      SPKNotify(kSPKNotificationGalleryDeleteSelected, @"Failed to delete", firstError.localizedDescription, @"error_filled", SPKNotificationToneError);
+                                                                                      SPKNotify(kSPKNotificationGalleryDeleteSelected, @"删除失败", firstError.localizedDescription, @"error_filled", SPKNotificationToneError);
                                                                                       return;
                                                                                   }
-                                                                                  SPKNotify(kSPKNotificationGalleryDeleteSelected, @"Deleted selected files", nil, @"circle_check_filled", SPKNotificationToneSuccess);
+                                                                                  SPKNotify(kSPKNotificationGalleryDeleteSelected, @"已删除选中的项目", nil, @"circle_check_filled", SPKNotificationToneSuccess);
                                                                                   [self pruneStaleUsernameFilters];
                                                                                   [self exitSelectionMode];
                                                                               }],
@@ -1648,7 +1648,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
 - (UIMenu *)fileActionsMenuForFile:(SPKGalleryFile *)file {
     __weak typeof(self) weakSelf = self;
 
-    NSString *favTitle = file.isFavorite ? @"Unfavorite" : @"Favorite";
+    NSString *favTitle = file.isFavorite ? @"取消收藏" : @"收藏";
     UIImage *favImg = file.isFavorite
                           ? SPKGalleryMenuActionIcon(@"heart_filled")
                           : SPKGalleryMenuActionIcon(@"heart");
@@ -1694,7 +1694,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
 
     UIAction *editAction = nil;
     if (file.mediaType == SPKGalleryMediaTypeImage) {
-        editAction = [UIAction actionWithTitle:@"Edit"
+        editAction = [UIAction actionWithTitle:@"编辑"
                                          image:SPKGalleryMenuActionIcon(@"crop")
                                     identifier:nil
                                        handler:^(__unused UIAction *a) {
@@ -1750,9 +1750,9 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
                                                                                                                                  NSError *err;
                                                                                                                                  [file removeWithError:&err];
                                                                                                                                  if (err) {
-                                                                                                                                     SPKNotify(kSPKNotificationGalleryDeleteFile, @"Failed to delete", err.localizedDescription, @"error_filled", SPKNotificationToneError);
+                                                                                                                                     SPKNotify(kSPKNotificationGalleryDeleteFile, @"删除失败", err.localizedDescription, @"error_filled", SPKNotificationToneError);
                                                                                                                                  } else {
-                                                                                                                                     SPKNotify(kSPKNotificationGalleryDeleteFile, @"Deleted from Gallery", nil, @"circle_check_filled", SPKNotificationToneSuccess);
+                                                                                                                                     SPKNotify(kSPKNotificationGalleryDeleteFile, @"已删除", nil, @"circle_check_filled", SPKNotificationToneSuccess);
                                                                                                                                  }
                                                                                                                              }],
                                                                                                ]];
@@ -1764,12 +1764,22 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
     if (file.sourceUsername.length > 0) {
         NSString *username = [file.sourceUsername copy];
         BOOL isCurrentUsernameFilter = [self usernameFilterContainsUsername:username];
-        usernameAction = [UIAction actionWithTitle:[NSString stringWithFormat:@"%@ %@", (isCurrentUsernameFilter ? @"Undo View All from" : @"View All from"), username]
-                                             image:SPKGalleryMenuActionIcon(@"mention")
-                                        identifier:nil
-                                           handler:^(__unused UIAction *a) {
-                                               [weakSelf toggleUsernameFilter:username];
-                                           }];
+
+        NSString *displayUsername =
+            [username caseInsensitiveCompare:@"audio"] == NSOrderedSame
+                ? @"音频"
+                : username;
+
+        usernameAction = [UIAction actionWithTitle:
+            [NSString stringWithFormat:@"%@ %@",
+                (isCurrentUsernameFilter ? @"取消查看" : @"查看全部"),
+                displayUsername]
+            image:SPKGalleryMenuActionIcon(@"mention")
+            identifier:nil
+            handler:^(__unused UIAction *a) {
+                [weakSelf toggleUsernameFilter:username];
+            }];
+    
     }
 
     // Grouped into inline sections so related actions read together and the
@@ -1831,7 +1841,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
                                                }];
 
     UIImage *folderDeleteImg = SPKGalleryMenuActionIcon(@"trash");
-    UIAction *deleteAction = [UIAction actionWithTitle:@"Delete Folder"
+    UIAction *deleteAction = [UIAction actionWithTitle:@"删除文件夹"
                                                  image:folderDeleteImg
                                             identifier:nil
                                                handler:^(UIAction *a) {
@@ -1852,7 +1862,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
                                                      placeholder:@"文件夹名称"
                                                      initialText:nil
                                                  autocapitalized:YES
-                                                    confirmTitle:@"Create"
+                                                    confirmTitle:@"创建"
                                                      cancelTitle:@"取消"
                                                     confirmStyle:SPKIGAlertActionStyleDefault
                                                     confirmBlock:^(NSString *text) {
@@ -1913,7 +1923,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
                                                      placeholder:nil
                                                      initialText:[folderPath lastPathComponent]
                                                  autocapitalized:YES
-                                                    confirmTitle:@"Rename"
+                                                    confirmTitle:@"重命名"
                                                      cancelTitle:@"取消"
                                                     confirmStyle:SPKIGAlertActionStyleDefault
                                                     confirmBlock:^(NSString *text) {
@@ -1977,8 +1987,8 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
     NSInteger count = [ctx countForFetchRequest:req error:nil];
 
     NSString *msg = count == 0
-                        ? @"This folder is empty."
-                        : [NSString stringWithFormat:@"This folder contains %ld file(s). They will be moved to the parent folder.", (long)count];
+                        ? @"此文件夹为空."
+                        : [NSString stringWithFormat:@"此文件夹包含 %ld 个项目，将移动到上一级文件夹。", (long)count];
 
     [SPKIGAlertPresenter presentAlertFromViewController:self
                                                   title:@"删除文件夹？"
@@ -2047,7 +2057,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
 - (void)trimFile:(SPKGalleryFile *)file {
     NSURL *url = [file fileURL];
     if (!url || ![[NSFileManager defaultManager] fileExistsAtPath:url.path]) {
-        SPKNotify(@"spk.trim.gallery", @"Cannot trim", @"The original file is missing.", @"error_filled", SPKNotificationToneError);
+        SPKNotify(@"spk.trim.gallery", @"无法裁剪", @"原始内容不存在.", @"error_filled", SPKNotificationToneError);
         return;
     }
     SPKTrimConfiguration *config = (file.mediaType == SPKGalleryMediaTypeAudio)
@@ -2069,7 +2079,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
                           ? [UIImage imageWithContentsOfFile:url.path]
                           : nil;
     if (!source) {
-        SPKNotify(@"spk.photoedit.gallery", @"Cannot Edit", @"The original file is missing.", @"error_filled", SPKNotificationToneError);
+        SPKNotify(@"spk.photoedit.gallery", @"无法编辑", @"原始内容不存在", @"error_filled", SPKNotificationToneError);
         return;
     }
     __weak typeof(self) weakSelf = self;
@@ -2159,16 +2169,16 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
                                                      }]];
     }
 
-    [actions addObject:[SPKIGAlertAction actionWithTitle:@"New folder..."
+    [actions addObject:[SPKIGAlertAction actionWithTitle:@"新建文件夹..."
                                                    style:SPKIGAlertActionStyleDefault
                                                  handler:^{
                                                      [SPKIGAlertPresenter presentTextInputAlertFromViewController:self
                                                                                                             title:@"新建文件夹"
-                                                                                                          message:@"Enter a new folder name, then move the selected files there."
+                                                                                                          message:@"输入文件夹名称，然后将选中的项目移动到此处."
                                                                                                       placeholder:@"文件夹名称"
                                                                                                       initialText:nil
                                                                                                   autocapitalized:NO
-                                                                                                     confirmTitle:@"Create & Move"
+                                                                                                     confirmTitle:@"创建并移动"
                                                                                                       cancelTitle:@"取消"
                                                                                                      confirmStyle:SPKIGAlertActionStyleDefault
                                                                                                      confirmBlock:^(NSString *text) {
@@ -2187,7 +2197,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryViewMode) {
     NSString *message = @"请选择要将选中文件移动到的位置。";
     if (sharesCurrentFolder) {
         NSString *currentName = currentFolder.length > 0 ? [currentFolder lastPathComponent] : @"/";
-        message = [NSString stringWithFormat:@"Currently in %@. Choose where to move the selected file(s).", currentName];
+        message = [NSString stringWithFormat:@"当前位于 %@。请选择要移动选中项目的位置。", currentName];
     }
     [SPKIGAlertPresenter presentActionSheetFromViewController:self
                                                         title:@"移动到文件夹"

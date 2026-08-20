@@ -80,21 +80,20 @@ void SPKStabilityGuardPresentSafeModeAlertIfNeeded(void) {
 
     [SPKIGAlertPresenter presentAlertFromViewController:nil
                                                  title:@"Sparkle 安全模式"
-                                               message:@"Instagram 连续多次未能完成启动，因此 Sparkle 已暂时关闭相关功能，以便让你重新进入应用。\n\n"
-                                                        "Every Sparkle feature is disabled right now. Only Sparkle Settings is reachable. Turn Safe Mode off to enable them again."
+                                               message:@"Instagram 连续多次未能完成启动，因此 Sparkle 已暂时关闭相关功能，以便让你重新进入应用。\n\n目前所有 Sparkle 功能均已关闭，仅可进入 Sparkle 设置。关闭安全模式后即可重新启用这些功能。"
                                                actions:@[
-                                                   [SPKIGAlertAction actionWithTitle:@"Turn Off Safe Mode"
+                                                   [SPKIGAlertAction actionWithTitle:@"关闭安全模式"
                                                                                style:SPKIGAlertActionStyleDefault
                                                                              handler:^{
                                                                                  SPKStabilityGuardReset();
                                                                                  [SPKUtils showRestartConfirmation];
                                                                              }],
-                                                   [SPKIGAlertAction actionWithTitle:@"Open Sparkle Settings"
+                                                   [SPKIGAlertAction actionWithTitle:@"打开 Sparkle 设置"
                                                                                style:SPKIGAlertActionStyleDefault
                                                                              handler:^{
                                                                                  [SPKUtils showSettingsForTopicTitle:@"Tools"];
                                                                              }],
-                                                   [SPKIGAlertAction actionWithTitle:@"Not Now"
+                                                   [SPKIGAlertAction actionWithTitle:@"暂不"
                                                                                style:SPKIGAlertActionStyleCancel
                                                                              handler:nil],
                                                ]];

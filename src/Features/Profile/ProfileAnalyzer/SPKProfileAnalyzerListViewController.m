@@ -407,14 +407,14 @@ typedef NS_ENUM(NSInteger, SPKPASortMode) {
 #pragma mark - Sort
 
 - (void)installSortItem {
-    UIBarButtonItem *sortItem = SPKMediaChromeTopBarMenuButtonItem(@"sort", [self sortMenu], @"Sort");
+    UIBarButtonItem *sortItem = SPKMediaChromeTopBarMenuButtonItem(@"sort", [self sortMenu], @"排序");
     UIBarButtonItem *moreItem = SPKMediaChromeTopBarMenuButtonItem(@"more", [self moreMenu], @"更多");
     SPKMediaChromeSetTrailingTopBarItems(self.navigationItem, @[ sortItem, moreItem ]);
 }
 
 - (UIMenu *)moreMenu {
     __weak typeof(self) weakSelf = self;
-    UIAction *refreshAvatars = [UIAction actionWithTitle:@"Refresh Profile Pictures"
+    UIAction *refreshAvatars = [UIAction actionWithTitle:@"刷新头像"
                                                    image:[SPKAssetUtils menuIconNamed:@"user_circle"]
                                               identifier:nil
                                                  handler:^(__unused UIAction *action) {
@@ -426,7 +426,7 @@ typedef NS_ENUM(NSInteger, SPKPASortMode) {
 
     // Visited history is the only mutable-in-bulk list; offer a destructive clear.
     if (self.kind == SPKPAListKindVisited) {
-        UIAction *clearHistory = [UIAction actionWithTitle:@"Clear History"
+        UIAction *clearHistory = [UIAction actionWithTitle:@"清除记录"
                                                      image:[SPKAssetUtils menuIconNamed:@"trash"]
                                                 identifier:nil
                                                    handler:^(__unused UIAction *action) {
@@ -443,12 +443,12 @@ typedef NS_ENUM(NSInteger, SPKPASortMode) {
     __weak typeof(self) weakSelf = self;
     [SPKIGAlertPresenter presentAlertFromViewController:self
                                                   title:@"清除访问记录"
-                                                message:@"This removes every profile from your visited history. This cannot be undone."
+                                                message:@"这将删除访问记录中的所有个人资料，且无法撤销。"
                                                 actions:@[
                                                     [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
                                                                               handler:nil],
-                                                    [SPKIGAlertAction actionWithTitle:@"Clear History"
+                                                    [SPKIGAlertAction actionWithTitle:@"清除记录"
                                                                                 style:SPKIGAlertActionStyleDestructive
                                                                               handler:^{
                                                                                   typeof(self) strongSelf = weakSelf;
@@ -486,16 +486,16 @@ typedef NS_ENUM(NSInteger, SPKPASortMode) {
         [actions addObject:a];
     };
     if (self.kind == SPKPAListKindVisited) {
-        add(@"Most Recent", SPKPASortModeRecent);
-        add(@"Most Visited", SPKPASortModeMostVisited);
+        add(@"最近访问", SPKPASortModeRecent);
+        add(@"访问最多", SPKPASortModeMostVisited);
         add(@"A–Z", SPKPASortModeAZ);
         add(@"Z–A", SPKPASortModeZA);
     } else {
-        add(@"Default", SPKPASortModeDefault);
+        add(@"默认", SPKPASortModeDefault);
         add(@"A–Z", SPKPASortModeAZ);
         add(@"Z–A", SPKPASortModeZA);
     }
-    return @[ [UIMenu menuWithTitle:@"Sort" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:actions] ];
+    return @[ [UIMenu menuWithTitle:@"排序" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:actions] ];
 }
 
 #pragma mark - Filter + sort
@@ -617,12 +617,12 @@ typedef NS_ENUM(NSInteger, SPKPASortMode) {
         return;
     if (self.searchText.length) {
         self.emptyStateIcon.image = [SPKAssetUtils instagramIconNamed:@"promote_empty" pointSize:96.0 renderingMode:UIImageRenderingModeAlwaysTemplate];
-        self.emptyStateTitle.text = @"No matches";
+        self.emptyStateTitle.text = @"没有匹配结果";
         self.emptyStateSubtitle.text = @"没有符合搜索条件的账户。";
     } else {
         self.emptyStateIcon.image = [SPKAssetUtils instagramIconNamed:@"promote_empty" pointSize:96.0 renderingMode:UIImageRenderingModeAlwaysTemplate];
-        self.emptyStateTitle.text = @"Nothing here";
-        self.emptyStateSubtitle.text = @"There are no accounts in this list.";
+        self.emptyStateTitle.text = @"暂无内容";
+        self.emptyStateSubtitle.text = @"此列表中没有账户。";
     }
 }
 
@@ -736,12 +736,12 @@ static NSString *SPKPARelativeDate(NSDate *date) {
 
     SPKProfileAnalyzerUser *user = [self userAtIndexPath:indexPath];
     cell.boundPK = user.pk;
-    cell.usernameLabel.text = user.username.length ? [@"@" stringByAppendingString:user.username] : @"Unknown user";
+    cell.usernameLabel.text = user.username.length ? [@"@" stringByAppendingString:user.username] : @"未知用户";
     cell.verifiedBadge.hidden = !user.isVerified;
 
     if (self.kind == SPKPAListKindVisited && indexPath.row < (NSInteger)self.shownVisits.count) {
         SPKProfileAnalyzerVisit *v = self.shownVisits[indexPath.row];
-        NSString *count = v.visitCount > 1 ? [NSString stringWithFormat:@"  •  %ld visits", (long)v.visitCount] : @"";
+        NSString *count = v.visitCount > 1 ? [NSString stringWithFormat:@"  •  %ld 次访问", (long)v.visitCount] : @"";
         cell.subtitleLabel.text = [NSString stringWithFormat:@"%@%@", SPKPARelativeDate(v.lastSeen), count];
     } else if (self.kind == SPKPAListKindProfileUpdate) {
         SPKProfileAnalyzerProfileChange *ch = [self updateAtIndexPath:indexPath];
@@ -774,9 +774,9 @@ static NSString *SPKPARelativeDate(NSDate *date) {
     if (ch.usernameChanged)
         [parts addObject:[NSString stringWithFormat:@"@%@ → @%@", ch.previous.username ?: @"", ch.current.username ?: @""]];
     if (ch.fullNameChanged)
-        [parts addObject:[NSString stringWithFormat:@"name: %@ → %@", ch.previous.fullName ?: @"—", ch.current.fullName ?: @"—"]];
+        [parts addObject:[NSString stringWithFormat:@"名字: %@ → %@", ch.previous.fullName ?: @"—", ch.current.fullName ?: @"—"]];
     if (ch.profilePicChanged)
-        [parts addObject:@"changed profile picture"];
+        [parts addObject:@"更换了头像"];
     return [parts componentsJoinedByString:@"  •  "];
 }
 
@@ -955,12 +955,12 @@ static NSString *SPKPARelativeDate(NSDate *date) {
 
 - (void)styleButton:(UIButton *)button following:(BOOL)following {
     if (following) {
-        [button setTitle:@"Following" forState:UIControlStateNormal];
+        [button setTitle:@"已关注" forState:UIControlStateNormal];
         [button setTitleColor:[SPKUtils SPKColor_InstagramPrimaryText] forState:UIControlStateNormal];
         button.backgroundColor = [SPKUtils SPKColor_InstagramSecondaryBackground];
         button.layer.borderWidth = 0.0;
     } else {
-        [button setTitle:@"Follow" forState:UIControlStateNormal];
+        [button setTitle:@"关注" forState:UIControlStateNormal];
         [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         button.backgroundColor = [SPKUtils SPKColor_InstagramBlue] ?: [UIColor systemBlueColor];
         button.layer.borderWidth = 0.0;

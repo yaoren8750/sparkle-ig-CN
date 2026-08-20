@@ -169,10 +169,10 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
     // without dismissing first); otherwise it's a plain confirm.
     UIBarButtonItem *doneItem;
     if (_configuration.doneOptions.count > 0) {
-        doneItem = SPKMediaChromeTopBarMenuButtonItem(@"check", [self buildDoneMenu], @"Save");
+        doneItem = SPKMediaChromeTopBarMenuButtonItem(@"check", [self buildDoneMenu], @"保存");
         self.doneMenuItem = doneItem;
     } else {
-        doneItem = SPKMediaChromeTopBarButtonItemWithStyle(@"check", self, @selector(doneTapped), UIBarButtonItemStyleDone, [SPKUtils SPKColor_InstagramBlue], @"Save");
+        doneItem = SPKMediaChromeTopBarButtonItemWithStyle(@"check", self, @selector(doneTapped), UIBarButtonItemStyleDone, [SPKUtils SPKColor_InstagramBlue], @"保存");
     }
     self.doneItem = doneItem;
     if (_configuration.mediaKind == SPKTrimMediaKindVideo && _configuration.allowsCrop) {
@@ -482,15 +482,15 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
     for (NSNumber *modeNum in self.availableModes) {
         SPKTrimResultMode mode = modeNum.integerValue;
         if (mode == SPKTrimResultModeTrimmedVideo) {
-            [titles addObject:@"Trim Video"];
+            [titles addObject:@"裁剪视频"];
             [symbols addObject:@"video"];
             [selectedSymbols addObject:@"video_filled"];
         } else if (mode == SPKTrimResultModeFrameOnly) {
-            [titles addObject:@"Frame Only"];
+            [titles addObject:@"仅截帧"];
             [symbols addObject:@"photo"];
             [selectedSymbols addObject:@"photo_filled"];
         } else if (mode == SPKTrimResultModeTrimmedAudio) {
-            [titles addObject:@"Audio Only"];
+            [titles addObject:@"仅音频"];
             [symbols addObject:@"audio"];
             [selectedSymbols addObject:@"audio_filled"];
         }
@@ -538,7 +538,7 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
                                  NSError *err = nil;
                                  AVKeyValueStatus status = [asset statusOfValueForKey:@"duration" error:&err];
                                  if (status != AVKeyValueStatusLoaded) {
-                                     [strongSelf failWithMessage:@"This file could not be opened for trimming."];
+                                     [strongSelf failWithMessage:@"无法打开此文件进行裁剪。"];
                                      return;
                                  }
                                  [strongSelf configurePlayerAndScrubber];
@@ -549,7 +549,7 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
 - (void)configurePlayerAndScrubber {
     NSTimeInterval duration = CMTimeGetSeconds(self.asset.duration);
     if (duration <= 0.0 || !isfinite(duration)) {
-        [self failWithMessage:@"This file has no playable duration."];
+        [self failWithMessage:@"此文件没有可播放的时长。"];
         return;
     }
 
@@ -698,7 +698,7 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
     BOOL canPlay = self.playerReady && !frameOnly;
     [self.playPauseButton setImage:SPKTrimPlayerIcon(self.isPlaying ? @"video_pause" : @"video_play", 36.0)
                           forState:UIControlStateNormal];
-    self.playPauseButton.accessibilityLabel = self.isPlaying ? @"Pause" : @"播放";
+    self.playPauseButton.accessibilityLabel = self.isPlaying ? @"暂停" : @"播放";
     self.playPauseButton.enabled = canPlay;
     self.playPauseButton.alpha = canPlay ? 1.0 : 0.35;
     [self updateFrameEditingUI];
@@ -731,7 +731,7 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
                          ? [UIImage imageWithContentsOfFile:self.pendingEditedFrameURL.path]
                          : [self extractFrameAtSeconds:self.scrubber.frameTime];
     if (!frame) {
-        [self failWithMessage:@"Couldn't read this frame."];
+        [self failWithMessage:@"无法读取此帧。"];
         return;
     }
     __weak typeof(self) weakSelf = self;
@@ -836,8 +836,8 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
 
 - (void)updateTimeLabel {
     if (self.scrubber.isFrameOnlyMode) {
-        NSString *suffix = self.pendingEditedFrameURL ? @"  •  edited" : @"";
-        self.timeLabel.text = [NSString stringWithFormat:@"Frame • %@%@",
+        NSString *suffix = self.pendingEditedFrameURL ? @"  •  已编辑" : @"";
+        self.timeLabel.text = [NSString stringWithFormat:@"帧 • %@%@",
                                                          SPKTrimFormatTime(self.scrubber.frameTime), suffix];
         return;
     }
@@ -908,7 +908,7 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
             } else if ([identifier isEqualToString:@"share"]) {
                 title = @"分享音频";
             } else if ([identifier isEqualToString:@"clipboard"]) {
-                title = @"Copy Audio";
+                title = @"复制音频";
             } else if ([identifier isEqualToString:@"gallery"]) {
                 title = @"将音频保存到图库";
             }
@@ -993,7 +993,7 @@ static NSString *SPKTrimFormatTime(NSTimeInterval seconds) {
 #pragma mark - Finish
 
 - (void)failWithMessage:(NSString *)message {
-    SPKNotify(@"spk.trim.editor", @"Trim failed", message, @"error_filled", SPKNotificationToneError);
+    SPKNotify(@"spk.trim.editor", @"裁剪失败", message, @"error_filled", SPKNotificationToneError);
 }
 
 - (void)finishWithResult:(SPKTrimResult *)result {

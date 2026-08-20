@@ -23,7 +23,7 @@
 + (instancetype)lockedSquareConfiguration {
     SPKPhotoEditorConfiguration *c = [SPKPhotoEditorConfiguration new];
     c.aspectMode = SPKCropAspectModeLocked;
-    c.confirmButtonTitle = @"Use";
+    c.confirmButtonTitle = @"使用";
     return c;
 }
 
@@ -148,7 +148,7 @@ static UIImage *SPKPhotoEditorFlipped(UIImage *image) {
     if (!self.configuration) {
         self.configuration = [SPKPhotoEditorConfiguration freeformConfiguration];
     }
-    self.title = @"Edit";
+    self.title = @"编辑";
     self.view.backgroundColor = [SPKUtils SPKColor_InstagramBackground] ?: [UIColor blackColor];
 
     _workingImage = SPKPhotoEditorNormalized(self.sourceImage);

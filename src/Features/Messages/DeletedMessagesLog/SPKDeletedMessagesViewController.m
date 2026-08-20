@@ -67,7 +67,7 @@ static NSString *SPKDMCurrentUserPK(void) {
 // there's no dedicated "All" chip. Index maps to an explicit kind so chip order
 // is decoupled from the enum's numeric values.
 static NSArray<NSString *> *SPKDMChipTitles(void) {
-    return @[ @"Text", @"Photo", @"视频", @"Voice", @"GIF", @"Sticker", @"Shares", @"链接", @"Reaction" ];
+    return @[ @"文字", @"照片", @"视频", @"语音", @"GIF", @"贴纸", @"分享", @"链接", @"表情回应" ];
 }
 static NSArray<NSString *> *SPKDMChipSymbols(void) {
     return @[ @"message", @"photo", @"video", @"voice", @"gif", @"sticker", @"shares", @"link", @"reactions" ];
@@ -160,7 +160,7 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
     self.view.backgroundColor = [SPKUtils SPKColor_InstagramGroupedBackground];
 
     UIBarButtonItem *moreItem = SPKMediaChromeTopBarMenuButtonItem(@"more", [self moreMenu], @"更多");
-    UIBarButtonItem *sortItem = SPKMediaChromeTopBarMenuButtonItem(@"sort", [self sortMenu], @"Sort and Filter");
+    UIBarButtonItem *sortItem = SPKMediaChromeTopBarMenuButtonItem(@"sort", [self sortMenu], @"排序和筛选");
     // More button is always rightmost (last in trailing-group order), matching
     // the downloads history convention.
     SPKMediaChromeSetTrailingTopBarItems(self.navigationItem, @[ sortItem, moreItem ]);
@@ -337,14 +337,14 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
 
     if (!loggingEnabled && !hasAnyData) {
         self.emptyStateIcon.image = [SPKAssetUtils instagramIconNamed:@"messages_empty" pointSize:96.0 renderingMode:UIImageRenderingModeAlwaysTemplate];
-        self.emptyStateTitle.text = @"Logging is off";
-        self.emptyStateSubtitle.text = @"Turn on Log Deleted Messages in Settings to start capturing unsent messages.";
+        self.emptyStateTitle.text = @"日志功能已关闭";
+        self.emptyStateSubtitle.text = @"请在设置中开启“记录已删除消息”，以开始记录被撤回的消息。";
     } else if (hasAnyData && hasFiltersActive) {
-        self.emptyStateTitle.text = @"No matches";
-        self.emptyStateSubtitle.text = @"No deleted messages match the current filters.";
+        self.emptyStateTitle.text = @"没有匹配结果";
+        self.emptyStateSubtitle.text = @"没有已删除的消息符合当前筛选条件。";
     } else {
-        self.emptyStateTitle.text = @"Nothing here yet";
-        self.emptyStateSubtitle.text = @"Messages that other people unsend will show up here.";
+        self.emptyStateTitle.text = @"暂无内容";
+        self.emptyStateSubtitle.text = @"其他人撤回的消息会显示在这里。";
     }
 }
 
@@ -385,9 +385,9 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
 - (NSArray<UIMenuElement *> *)sortMenuElements {
     __weak typeof(self) weakSelf = self;
     NSArray *items = @[
-        @[ @"Recent", @(SPKDMSortRecent) ],
-        @[ @"Oldest", @(SPKDMSortOldest) ],
-        @[ @"Most Messages", @(SPKDMSortCountDesc) ]
+        @[ @"最近", @(SPKDMSortRecent) ],
+        @[ @"最早", @(SPKDMSortOldest) ],
+        @[ @"消息最多", @(SPKDMSortCountDesc) ]
     ];
     NSMutableArray<UIAction *> *sortActions = [NSMutableArray array];
     for (NSArray *item in items) {
@@ -403,14 +403,14 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
             action.state = UIMenuElementStateOn;
         [sortActions addObject:action];
     }
-    UIMenu *sortSection = [UIMenu menuWithTitle:@"Sort" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:sortActions];
+    UIMenu *sortSection = [UIMenu menuWithTitle:@"排序" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:sortActions];
 
     NSMutableArray<UIAction *> *dateActions = [NSMutableArray array];
     NSArray *dateItems = @[
-        @[ @"All Time", @(SPKDMDateRangeAll) ],
-        @[ @"Today", @(SPKDMDateRangeToday) ],
-        @[ @"Last 7 Days", @(SPKDMDateRangeWeek) ],
-        @[ @"Last 30 Days", @(SPKDMDateRangeMonth) ]
+        @[ @"所有时间", @(SPKDMDateRangeAll) ],
+        @[ @"今天", @(SPKDMDateRangeToday) ],
+        @[ @"最近 7 天", @(SPKDMDateRangeWeek) ],
+        @[ @"最近 30 天", @(SPKDMDateRangeMonth) ]
     ];
     for (NSArray *item in dateItems) {
         SPKDMDateRange range = [item[1] integerValue];
@@ -425,7 +425,7 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
             action.state = UIMenuElementStateOn;
         [dateActions addObject:action];
     }
-    UIMenu *dateSection = [UIMenu menuWithTitle:@"Date Range" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:dateActions];
+    UIMenu *dateSection = [UIMenu menuWithTitle:@"日期范围" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:dateActions];
 
     return @[ sortSection, dateSection ];
 }
@@ -441,14 +441,14 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
 - (NSArray<UIMenuElement *> *)moreMenuElements {
     __weak typeof(self) weakSelf = self;
 
-    UIAction *storageAction = [UIAction actionWithTitle:@"Storage"
+    UIAction *storageAction = [UIAction actionWithTitle:@"存储"
                                                   image:[SPKAssetUtils menuIconNamed:@"info"]
                                              identifier:nil
                                                 handler:^(__unused UIAction *a) {
                                                     [weakSelf.navigationController pushViewController:[SPKDeletedMessagesStorageViewController new] animated:YES];
                                                 }];
 
-    UIAction *refreshAvatarsAction = [UIAction actionWithTitle:@"Refresh Profile Pictures"
+    UIAction *refreshAvatarsAction = [UIAction actionWithTitle:@"刷新头像"
                                                          image:[SPKAssetUtils menuIconNamed:@"user_circle"]
                                                     identifier:nil
                                                        handler:^(__unused UIAction *a) {
@@ -456,7 +456,7 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
                                                            [weakSelf.tableView reloadData];
                                                        }];
 
-    UIAction *clearFiltersAction = [UIAction actionWithTitle:@"Clear Filters"
+    UIAction *clearFiltersAction = [UIAction actionWithTitle:@"清除筛选条件"
                                                        image:[SPKAssetUtils menuIconNamed:@"filter"]
                                                   identifier:nil
                                                      handler:^(__unused UIAction *a) {
@@ -466,7 +466,7 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
                                                          [weakSelf applyFilter];
                                                      }];
 
-    UIAction *clearAllAction = [UIAction actionWithTitle:@"Clear All Messages"
+    UIAction *clearAllAction = [UIAction actionWithTitle:@"清除所有消息"
                                                    image:[SPKAssetUtils menuIconNamed:@"trash"]
                                               identifier:nil
                                                  handler:^(__unused UIAction *a) {
@@ -482,8 +482,8 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
 
 - (void)confirmClearAll {
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:@"Clear deleted messages?"
-                                                message:@"This removes the log and captured media for the current account."
+                                                  title:@"清除已删除消息？"
+                                                message:@"这将删除当前账号的消息记录和已捕获的媒体文件。"
                                                 actions:@[
                                                     [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
@@ -501,10 +501,10 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
     if (isGroup ? !group.threadId.length : !group.senderPk.length)
         return;
     NSString *who = isGroup ? group.displayName
-                            : (group.senderUsername.length ? [@"@" stringByAppendingString:group.senderUsername] : @"this sender");
+                            : (group.senderUsername.length ? [@"@" stringByAppendingString:group.senderUsername] : @"此用户");
     [SPKIGAlertPresenter presentAlertFromViewController:self
-                                                  title:isGroup ? @"Delete group log?" : @"Delete sender log?"
-                                                message:[NSString stringWithFormat:@"This removes all logged messages from %@.", who]
+                                                  title:isGroup ? @"删除群组记录？" : @"删除用户记录？?"
+                                                message:[NSString stringWithFormat:@"这将删除 %@ 的所有记录消息.", who]
                                                 actions:@[
                                                     [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
@@ -544,9 +544,9 @@ static SPKDeletedMessageKind SPKDMChipKindForIndex(NSInteger index) {
                                                                               [SPKDeletedMessagesStorage setSenderPinned:!group.isPinned senderPK:group.flagKey ownerPK:self.ownerPK];
                                                                               completionHandler(YES);
                                                                           }];
-    pinAction.image = [SPKAssetUtils menuIconNamed:(group.isPinned ? @"pin_filled" : @"pin")];
+    pinAction.image = [SPKAssetUtils menuIconNamed:(group.isPinned ? @"取消置顶" : @"置顶")];
     pinAction.backgroundColor = [SPKUtils SPKColor_InstagramBlue];
-    pinAction.accessibilityLabel = group.isPinned ? @"Unpin" : @"Pin";
+    pinAction.accessibilityLabel = group.isPinned ? @"取消屏蔽" : @"屏蔽";
     UIContextualAction *blockAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
                                                                               title:nil
                                                                             handler:^(__unused UIContextualAction *action, __unused UIView *sourceView, void (^completionHandler)(BOOL)) {

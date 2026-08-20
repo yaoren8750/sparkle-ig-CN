@@ -30,7 +30,7 @@ SPKAutoSaveFilterConfig *SPKInstantsAutoSaveFilterConfig(void) {
         config.includedKey = @"instants_auto_save_included";
         config.identityField = @"用户名";
         config.sortField = @"用户名";
-        config.subjectPlural = @"Users";
+        config.subjectPlural = @"用户";
         config.ruleNotificationIdentifier = kSPKNotificationInstantsAutoSaveUserRule;
     });
     return config;
@@ -143,14 +143,12 @@ void SPKInstantsAutoSaveConsiderSnap(id snap, NSString *username, NSString *snap
         BOOL allUsers = SPKInstantsAutoSaveAllUsersMode();
         self.showsAddButton = YES;
         self.infoText = allUsers
-                            ? @"Filter Mode is All Users, so every instant you open is saved except from users in this "
-                              @"list. Instants you already have are skipped."
-                            : @"Filter Mode is Selected Users, so only instants from users in this list are saved. "
-                              @"Instants you already have are skipped.";
-        self.emptyTitle = @"No users yet";
+                            ? @"筛选模式为“所有用户”，因此你打开的所有快拍都会自动保存，但此列表中的用户除外。已有的快拍不会重复保存。"
+                            : @"筛选模式为“指定用户”，因此只有此列表中用户的快拍会自动保存。已有的快拍不会重复保存。";
+        self.emptyTitle = @"暂无用户";
         self.emptySubtitle = allUsers
-                                 ? @"Add users whose instants should never be auto-saved."
-                                 : @"Add users whose instants should be saved automatically as you open them.";
+                                 ? @"添加不希望自动保存其快拍的用户。"
+                                 : @"添加希望在打开快拍时自动保存其快拍的用户。";
     }
     return self;
 }
@@ -172,7 +170,7 @@ void SPKInstantsAutoSaveConsiderSnap(id snap, NSString *username, NSString *snap
 
         SPKUserListItem *item = [SPKUserListItem new];
         item.pk = pk;
-        item.title = username.length > 0 ? [@"@" stringByAppendingString:username] : @"Unknown user";
+        item.title = username.length > 0 ? [@"@" stringByAppendingString:username] : @"未知用户";
         item.subtitle = fullName.length > 0 ? fullName : nil;
         item.avatarURLString = profilePicUrl;
         item.representedObject = entry;
@@ -185,14 +183,14 @@ void SPKInstantsAutoSaveConsiderSnap(id snap, NSString *username, NSString *snap
     [SPKIGAlertPresenter presentAlertFromViewController:self
                                                   title:@"无法添加用户"
                                                 message:message
-                                                actions:@[ [SPKIGAlertAction actionWithTitle:@"OK" style:SPKIGAlertActionStyleCancel handler:nil] ]];
+                                                actions:@[ [SPKIGAlertAction actionWithTitle:@"好的" style:SPKIGAlertActionStyleCancel handler:nil] ]];
 }
 
 - (void)didTapAdd {
     __weak typeof(self) weakSelf = self;
     [SPKIGAlertPresenter presentTextInputAlertFromViewController:self
                                                            title:@"添加用户"
-                                                         message:@"Enter the Instagram username whose instants should be auto-saved."
+                                                         message:@"输入要自动保存其快拍的 Instagram 用户名。"
                                                      placeholder:@"用户名"
                                                      initialText:nil
                                                  autocapitalized:NO
@@ -219,7 +217,7 @@ void SPKInstantsAutoSaveConsiderSnap(id snap, NSString *username, NSString *snap
                                       if (!strongSelf)
                                           return;
                                       if (![user isKindOfClass:[NSDictionary class]] || error) {
-                                          [strongSelf presentError:[NSString stringWithFormat:@"User '%@' was not found.", username]];
+                                          [strongSelf presentError:[NSString stringWithFormat:@"未找到用户“%@”。", username]];
                                           return;
                                       }
 
@@ -243,7 +241,7 @@ void SPKInstantsAutoSaveConsiderSnap(id snap, NSString *username, NSString *snap
                                                                                       [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                                                   style:SPKIGAlertActionStyleCancel
                                                                                                                 handler:nil],
-                                                                                      [SPKIGAlertAction actionWithTitle:@"Add"
+                                                                                      [SPKIGAlertAction actionWithTitle:@"添加"
                                                                                                                   style:SPKIGAlertActionStyleDefault
                                                                                                                 handler:^{
                                                                                                                     [strongSelf addResolvedEntry:entry.copy username:resolvedUsername];
@@ -257,7 +255,7 @@ void SPKInstantsAutoSaveConsiderSnap(id snap, NSString *username, NSString *snap
         return;
     SPKAutoSaveFilterToggleEntry(self.config, entry);
     SPKNotify(kSPKNotificationInstantsAutoSaveUserRule,
-              [NSString stringWithFormat:@"Added @%@", username],
+              [NSString stringWithFormat:@"已添加 @%@", username],
               SPKInstantsAutoSaveListTitle(),
               @"circle_check_filled",
               SPKNotificationToneSuccess);

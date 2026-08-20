@@ -136,8 +136,8 @@
 #pragma mark - Subclass hooks (defaults)
 
 - (NSArray<SPKPagedSheetPage *> *)buildPages { return @[]; }
-- (NSString *)continueButtonTitle { return @"Continue"; }
-- (NSString *)finishButtonTitle { return @"Get Started"; }
+- (NSString *)continueButtonTitle { return @"继续"; }
+- (NSString *)finishButtonTitle { return @"开始使用"; }
 - (BOOL)allowsInteractiveDismiss { return NO; }
 
 #pragma mark - Presentation
@@ -189,7 +189,7 @@
     [self.view addSubview:self.primaryButton];
 
     self.skipButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [self.skipButton setTitle:@"Skip" forState:UIControlStateNormal];
+    [self.skipButton setTitle:@"跳过" forState:UIControlStateNormal];
     [self.skipButton setTitleColor:[SPKUtils SPKColor_InstagramSecondaryText] forState:UIControlStateNormal];
     self.skipButton.titleLabel.font = [UIFont systemFontOfSize:15.0 weight:UIFontWeightMedium];
     self.skipButton.translatesAutoresizingMaskIntoConstraints = NO;

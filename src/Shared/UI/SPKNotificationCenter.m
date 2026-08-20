@@ -173,101 +173,108 @@ NSString *SPKNotificationHapticDefaultsKey(NSString *identifier) {
 
 NSArray<NSDictionary *> *SPKNotificationPreferenceSections(void) {
     return @[
-        @{@"title" : @"Action Buttons",
-          @"items" : @[
-              SPKNotificationItem(kSPKNotificationDownloadLibrary, @"保存到照片", @"download"),
-              SPKNotificationItem(kSPKNotificationDownloadShare, @"分享", @"share"),
-              SPKNotificationItem(kSPKNotificationCopyDownloadLink, @"复制下载链接", @"link"),
-              SPKNotificationItem(kSPKNotificationCopyMedia, @"复制媒体", @"copy"),
-              SPKNotificationItem(kSPKNotificationDownloadGallery, @"保存到图库", @"sparkle_gallery"),
-              SPKNotificationItem(kSPKNotificationDownloadAllLibrary, @"全部保存到照片", @"download"),
-              SPKNotificationItem(kSPKNotificationDownloadAllShare, @"全部分享", @"share"),
-              SPKNotificationItem(kSPKNotificationDownloadAllGallery, @"全部保存到图库", @"sparkle_gallery"),
-              SPKNotificationItem(kSPKNotificationDownloadAllClipboard, @"复制全部媒体", @"copy"),
-              SPKNotificationItem(kSPKNotificationDownloadAllLinks, @"复制下载链接", @"link"),
-              SPKNotificationItem(kSPKNotificationExpand, @"展开", @"expand"),
-              SPKNotificationItem(kSPKNotificationViewThumbnail, @"查看缩略图", @"photo_gallery"),
-              SPKNotificationItem(kSPKNotificationCopyCaption, @"复制说明", @"caption"),
-              SPKNotificationItem(kSPKNotificationOpenTopicSettings, @"Open Topic Settings", @"settings"),
-              SPKNotificationItem(kSPKNotificationRepost, @"转发", @"repost"),
-              SPKNotificationItem(kSPKNotificationDownloadAudio, @"将音频保存到文件", @"audio_download"),
-              SPKNotificationItem(kSPKNotificationDownloadAudioShare, @"分享音频", @"share"),
-              SPKNotificationItem(kSPKNotificationDownloadAudioGallery, @"将音频保存到图库", @"sparkle_gallery"),
-              SPKNotificationItem(kSPKNotificationPlayAudio, @"播放音频", @"play"),
-              SPKNotificationItem(kSPKNotificationCopyAudioURL, @"复制音频下载链接", @"link"),
-          ]},
-        // Every auto-save toast lives here rather than under its surface: they're
-        // configured together, and the summary/pending pair isn't per-surface at all.
-        @{@"title" : @"Auto-Save",
-          @"items" : @[
-              SPKNotificationItem(kSPKNotificationStoryAutoSave, @"Story Auto-Save Started", @"story"),
-              SPKNotificationItem(kSPKNotificationDirectAutoSave, @"DM Auto-Save Started", @"messages"),
-              SPKNotificationItem(kSPKNotificationInstantsAutoSave, @"Instants Auto-Save Started", @"instants"),
-              SPKNotificationItem(kSPKNotificationAutoSavePending, @"Auto-Save Still Working", @"history"),
-              SPKNotificationItem(kSPKNotificationAutoSaveSummary, @"Auto-Save Summary", @"download"),
-              SPKNotificationItem(kSPKNotificationStoryAutoSaveUserRule, @"Story Auto-Save List Changes", @"story"),
-              SPKNotificationItem(kSPKNotificationDirectAutoSaveThreadRule, @"DM Auto-Save List Changes", @"messages"),
-              SPKNotificationItem(kSPKNotificationInstantsAutoSaveUserRule, @"Instants Auto-Save List Changes", @"instants"),
-          ]},
-        @{@"title" : @"快拍",
-          @"items" : @[
-              SPKNotificationItem(kSPKNotificationStoryMarkSeen, @"Mark Story as Seen", @"story"),
-              SPKNotificationItem(kSPKNotificationStorySeenUserRule, @"Story Seen List Changes", @"eye"),
-              SPKNotificationItem(kSPKNotificationStoryMentionsSheet, @"Open Story Mentions", @"mention"),
-          ]},
-        @{@"title" : @"消息",
-          @"items" : @[
-              SPKNotificationItem(kSPKNotificationDirectVisualMarkSeen, @"Mark Visual Message as Seen", @"view_twice"),
-              SPKNotificationItem(kSPKNotificationThreadMessagesMarkSeen, @"Mark Messages as Seen", @"messages"),
-              SPKNotificationItem(kSPKNotificationDirectThreadSeenRule, @"Chat Seen List Changes", @"eye"),
-              SPKNotificationItem(kSPKNotificationUnsentMessage, @"Unsent Message", @"undo"),
-              SPKNotificationItem(kSPKNotificationUnsentReaction, @"Removed Reaction", @"reactions"),
-          ]},
-        @{@"title" : @"Instants",
-          @"items" : @[
-              SPKNotificationItem(kSPKNotificationInstantsCaptureBlocked, @"Instant Capture Blocked", @"lock"),
-              SPKNotificationItem(kSPKNotificationInstantsUpload, @"Instant Upload Failed", @"warning"),
-          ]},
-        @{@"title" : @"个人资料",
-          @"items" : @[
-              SPKNotificationItem(kSPKNotificationProfileCopyInfo, @"Copy Profile Info", @"copy"),
-              SPKNotificationItem(kSPKNotificationProfileAnalyzerComplete, @"Profile Analyzer Complete", @"profile_analyzer"),
-              SPKNotificationItem(kSPKNotificationProfileStorySeenUserRule, @"Story Seen List Changes", @"eye"),
-              SPKNotificationItem(kSPKNotificationProfileMessagesSeenUserRule, @"Chat Seen List Changes", @"eye"),
-          ]},
-        @{@"title" : @"Comments",
-          @"items" : @[
-              SPKNotificationItem(kSPKNotificationCopyComment, @"Copy Comment", @"copy"),
-              SPKNotificationItem(kSPKNotificationCopyGIFLink, @"Copy Media Link", @"link"),
-          ]},
-        @{@"title" : @"Media",
-          @"items" : @[
-              SPKNotificationItem(kSPKNotificationMediaPreviewSavePhotos, @"保存到照片", @"download"),
-              SPKNotificationItem(kSPKNotificationMediaPreviewSaveGallery, @"保存到图库", @"sparkle_gallery"),
-              SPKNotificationItem(kSPKNotificationMediaPreviewShare, @"分享", @"share"),
-              SPKNotificationItem(kSPKNotificationMediaPreviewCopy, @"复制媒体", @"copy"),
-              SPKNotificationItem(kSPKNotificationMediaPreviewDeleteGallery, @"Delete Media", @"trash"),
-              SPKNotificationItem(kSPKNotificationMediaPreviewOpenGallery, @"Open Media", @"media"),
-              SPKNotificationItem(kSPKNotificationMediaEncodingLogs, @"编码日志", @"logs"),
-          ]},
-        @{@"title" : @"图库",
-          @"items" : @[
-              SPKNotificationItem(kSPKNotificationGalleryOpenOriginal, @"Open Original Post", @"external_link"),
-              SPKNotificationItem(kSPKNotificationGalleryOpenProfile, @"打开个人资料", @"user_circle"),
-              SPKNotificationItem(kSPKNotificationGalleryDeleteFile, @"Delete File", @"media"),
-              SPKNotificationItem(kSPKNotificationGalleryDeleteSelected, @"Delete Selected Files", @"circle_check"),
-              SPKNotificationItem(kSPKNotificationGalleryBulkDelete, @"Bulk Delete", @"trash"),
-              SPKNotificationItem(kSPKNotificationGalleryImport, @"导入媒体", @"media"),
-          ]},
-        @{@"title" : @"Settings & Tools",
-          @"items" : @[
-              SPKNotificationItem(kSPKNotificationSettingsExport, @"Export Settings", @"arrow_up"),
-              SPKNotificationItem(kSPKNotificationSettingsImport, @"Import Settings", @"arrow_down"),
-              SPKNotificationItem(kSPKNotificationSettingsClearCache, @"Clear Cache", @"trash"),
-              SPKNotificationItem(kSPKNotificationCopyDescription, @"Copy Description", @"copy"),
-              SPKNotificationItem(kSPKNotificationCopyNoteText, @"Copy Note Text", @"copy"),
-              SPKNotificationItem(kSPKNotificationShareLongPressCopyLink, @"Hold Send to Copy Link", @"link"),
-              SPKNotificationItem(kSPKNotificationFlexUnavailable, @"FLEX Unavailable", @"warning"),
+@{@"title" : @"操作按钮",
+  @"items" : @[
+      SPKNotificationItem(kSPKNotificationDownloadLibrary, @"保存到照片", @"download"),
+      SPKNotificationItem(kSPKNotificationDownloadShare, @"分享", @"share"),
+      SPKNotificationItem(kSPKNotificationCopyDownloadLink, @"复制下载链接", @"link"),
+      SPKNotificationItem(kSPKNotificationCopyMedia, @"复制媒体", @"copy"),
+      SPKNotificationItem(kSPKNotificationDownloadGallery, @"保存到图库", @"sparkle_gallery"),
+      SPKNotificationItem(kSPKNotificationDownloadAllLibrary, @"全部保存到照片", @"download"),
+      SPKNotificationItem(kSPKNotificationDownloadAllShare, @"全部分享", @"share"),
+      SPKNotificationItem(kSPKNotificationDownloadAllGallery, @"全部保存到图库", @"sparkle_gallery"),
+      SPKNotificationItem(kSPKNotificationDownloadAllClipboard, @"复制全部媒体", @"copy"),
+      SPKNotificationItem(kSPKNotificationDownloadAllLinks, @"复制下载链接", @"link"),
+      SPKNotificationItem(kSPKNotificationExpand, @"展开", @"expand"),
+      SPKNotificationItem(kSPKNotificationViewThumbnail, @"查看缩略图", @"photo_gallery"),
+      SPKNotificationItem(kSPKNotificationCopyCaption, @"复制说明", @"caption"),
+      SPKNotificationItem(kSPKNotificationOpenTopicSettings, @"打开主题设置", @"settings"),
+      SPKNotificationItem(kSPKNotificationRepost, @"转发", @"repost"),
+      SPKNotificationItem(kSPKNotificationDownloadAudio, @"将音频保存到文件", @"audio_download"),
+      SPKNotificationItem(kSPKNotificationDownloadAudioShare, @"分享音频", @"share"),
+      SPKNotificationItem(kSPKNotificationDownloadAudioGallery, @"将音频保存到图库", @"sparkle_gallery"),
+      SPKNotificationItem(kSPKNotificationPlayAudio, @"播放音频", @"play"),
+      SPKNotificationItem(kSPKNotificationCopyAudioURL, @"复制音频下载链接", @"link"),
+  ]},
+
+@{@"title" : @"自动保存",
+  @"items" : @[
+      SPKNotificationItem(kSPKNotificationStoryAutoSave, @"快拍自动保存已开始", @"story"),
+      SPKNotificationItem(kSPKNotificationDirectAutoSave, @"私信自动保存已开始", @"messages"),
+      SPKNotificationItem(kSPKNotificationInstantsAutoSave, @"Instants 自动保存已开始", @"instants"),
+      SPKNotificationItem(kSPKNotificationAutoSavePending, @"自动保存仍在进行", @"history"),
+      SPKNotificationItem(kSPKNotificationAutoSaveSummary, @"自动保存摘要", @"download"),
+      SPKNotificationItem(kSPKNotificationStoryAutoSaveUserRule, @"快拍自动保存名单已更新", @"story"),
+      SPKNotificationItem(kSPKNotificationDirectAutoSaveThreadRule, @"私信自动保存名单已更新", @"messages"),
+      SPKNotificationItem(kSPKNotificationInstantsAutoSaveUserRule, @"Instants 自动保存名单已更新", @"instants"),
+  ]},
+
+@{@"title" : @"快拍",
+  @"items" : @[
+      SPKNotificationItem(kSPKNotificationStoryMarkSeen, @"标记快拍为已看", @"story"),
+      SPKNotificationItem(kSPKNotificationStorySeenUserRule, @"快拍已看名单已更新", @"eye"),
+      SPKNotificationItem(kSPKNotificationStoryMentionsSheet, @"打开快拍提及", @"mention"),
+  ]},
+
+@{@"title" : @"消息",
+  @"items" : @[
+      SPKNotificationItem(kSPKNotificationDirectVisualMarkSeen, @"标记媒体消息为已读", @"view_twice"),
+      SPKNotificationItem(kSPKNotificationThreadMessagesMarkSeen, @"标记消息为已读", @"messages"),
+      SPKNotificationItem(kSPKNotificationDirectThreadSeenRule, @"聊天已读名单已更新", @"eye"),
+      SPKNotificationItem(kSPKNotificationUnsentMessage, @"已取消发送的消息", @"undo"),
+      SPKNotificationItem(kSPKNotificationUnsentReaction, @"已移除的表情回应", @"reactions"),
+  ]},
+
+@{@"title" : @"Instants",
+  @"items" : @[
+      SPKNotificationItem(kSPKNotificationInstantsCaptureBlocked, @"Instant 截图已被阻止", @"lock"),
+      SPKNotificationItem(kSPKNotificationInstantsUpload, @"Instant 上传失败", @"warning"),
+  ]},
+
+@{@"title" : @"个人资料",
+  @"items" : @[
+      SPKNotificationItem(kSPKNotificationProfileCopyInfo, @"复制个人资料信息", @"copy"),
+      SPKNotificationItem(kSPKNotificationProfileAnalyzerComplete, @"个人资料分析完成", @"profile_analyzer"),
+      SPKNotificationItem(kSPKNotificationProfileStorySeenUserRule, @"快拍已看名单已更新", @"eye"),
+      SPKNotificationItem(kSPKNotificationProfileMessagesSeenUserRule, @"聊天已读名单已更新", @"eye"),
+  ]},
+
+@{@"title" : @"评论",
+  @"items" : @[
+      SPKNotificationItem(kSPKNotificationCopyComment, @"复制评论", @"copy"),
+      SPKNotificationItem(kSPKNotificationCopyGIFLink, @"复制媒体链接", @"link"),
+  ]},
+
+@{@"title" : @"媒体",
+  @"items" : @[
+      SPKNotificationItem(kSPKNotificationMediaPreviewSavePhotos, @"保存到照片", @"download"),
+      SPKNotificationItem(kSPKNotificationMediaPreviewSaveGallery, @"保存到图库", @"sparkle_gallery"),
+      SPKNotificationItem(kSPKNotificationMediaPreviewShare, @"分享", @"share"),
+      SPKNotificationItem(kSPKNotificationMediaPreviewCopy, @"复制媒体", @"copy"),
+      SPKNotificationItem(kSPKNotificationMediaPreviewDeleteGallery, @"删除媒体", @"trash"),
+      SPKNotificationItem(kSPKNotificationMediaPreviewOpenGallery, @"打开媒体", @"media"),
+      SPKNotificationItem(kSPKNotificationMediaEncodingLogs, @"编码日志", @"logs"),
+  ]},
+
+@{@"title" : @"图库",
+  @"items" : @[
+      SPKNotificationItem(kSPKNotificationGalleryOpenOriginal, @"打开原帖", @"external_link"),
+      SPKNotificationItem(kSPKNotificationGalleryOpenProfile, @"打开个人资料", @"user_circle"),
+      SPKNotificationItem(kSPKNotificationGalleryDeleteFile, @"删除文件", @"media"),
+      SPKNotificationItem(kSPKNotificationGalleryDeleteSelected, @"删除选中文件", @"circle_check"),
+      SPKNotificationItem(kSPKNotificationGalleryBulkDelete, @"批量删除", @"trash"),
+      SPKNotificationItem(kSPKNotificationGalleryImport, @"导入媒体", @"media"),
+  ]},
+
+@{@"title" : @"设置与工具",
+  @"items" : @[
+      SPKNotificationItem(kSPKNotificationSettingsExport, @"导出设置", @"arrow_up"),
+      SPKNotificationItem(kSPKNotificationSettingsImport, @"导入设置", @"arrow_down"),
+      SPKNotificationItem(kSPKNotificationSettingsClearCache, @"清除缓存", @"trash"),
+      SPKNotificationItem(kSPKNotificationCopyDescription, @"复制说明", @"copy"),
+      SPKNotificationItem(kSPKNotificationCopyNoteText, @"复制备注文字", @"copy"),
+      SPKNotificationItem(kSPKNotificationShareLongPressCopyLink, @"长按发送以复制链接", @"link"),
+      SPKNotificationItem(kSPKNotificationFlexUnavailable, @"FLEX 不可用", @"warning"),
           ]},
     ];
 }
@@ -685,19 +692,33 @@ static BOOL SPKManualSeenSettingsUIVisible(void) {
         // don't advertise/enable "tap to open" — there's nothing to open.
         BOOL suppressSeenListTap = SPKManualSeenSettingsUIVisible();
         NSString *resolvedSubtitle = subtitle;
+
         if (tone == SPKNotificationToneSuccess && !suppressSeenListTap) {
             if ([identifier isEqualToString:kSPKNotificationStorySeenUserRule] ||
                 [identifier isEqualToString:kSPKNotificationProfileStorySeenUserRule]) {
+
                 BOOL manualSeenEnabled = [SPKUtils getBoolPref:@"stories_manual_seen"];
-                resolvedSubtitle = [NSString stringWithFormat:@"Tap to open %@", manualSeenEnabled ? @"excluded list" : @"included list"];
+
+                resolvedSubtitle =
+                    [NSString stringWithFormat:@"点击打开%@",
+                                               manualSeenEnabled ? @"排除名单" : @"包含名单"];
+
             } else if ([identifier isEqualToString:kSPKNotificationDirectThreadSeenRule] ||
                        [identifier isEqualToString:kSPKNotificationProfileMessagesSeenUserRule]) {
+
                 BOOL manualSeenEnabled = [SPKUtils getBoolPref:@"msgs_manual_seen"];
-                resolvedSubtitle = [NSString stringWithFormat:@"Tap to open %@", manualSeenEnabled ? @"excluded list" : @"included list"];
+
+                resolvedSubtitle =
+                    [NSString stringWithFormat:@"点击打开%@",
+                                               manualSeenEnabled ? @"排除名单" : @"包含名单"];
+
             } else if (SPKAutoSaveListViewControllerForRuleIdentifier(identifier)) {
-                resolvedSubtitle = @"Tap to open auto-save list";
+
+                resolvedSubtitle = @"点击打开自动保存名单";
             }
         }
+            
+        
 
         NSString *resolvedIconResource = SPKNotificationIconResourceForTone(iconResource, tone);
         UIImage *icon = resolvedIconResource.length
@@ -787,7 +808,7 @@ static BOOL SPKManualSeenSettingsUIVisible(void) {
             }
         }
         pill = [SPKNotificationPillView progressPill];
-        [pill updateProgressTitle:title ?: @"Downloading..." subtitle:nil];
+        [pill updateProgressTitle:title ?: @"下载中..." subtitle:nil];
         pill.onCancel = onCancel;
         __weak SPKNotificationPillView *weakPillRef = pill;
         pill.onTonePresented = ^(SPKNotificationTone tone) {

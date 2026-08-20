@@ -2431,11 +2431,11 @@ NSDictionary *spkDMCaptureNoteReactionUnsend(id reaction,
         m.reactionTargetPreview = targetPreview;
         // Human-readable body used by previews / search.
         if (emoji.length && targetPreview.length) {
-            m.text = [NSString stringWithFormat:@"Removed %@ from \"%@\"", emoji, targetPreview];
+            m.text = [NSString stringWithFormat:@"已移除 %@ 对“%@”的表情回应", emoji, targetPreview];
         } else if (emoji.length) {
-            m.text = [NSString stringWithFormat:@"Removed reaction %@", emoji];
+            m.text = [NSString stringWithFormat:@"已移除表情回应 %@", emoji];
         } else {
-            m.text = @"Removed a reaction";
+            m.text = @"已移除表情回应";
         }
         m.previewText = m.text;
         m.replyToMessageId = targetMessageId;

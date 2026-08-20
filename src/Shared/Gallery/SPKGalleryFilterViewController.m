@@ -212,7 +212,7 @@ static CGFloat const kSPKGalleryFilterChipIconPointSize = 14.0;
                                                       constant:-32],
     ]];
 
-    [self.contentStack addArrangedSubview:[self sectionTitle:@"Type"]];
+    [self.contentStack addArrangedSubview:[self sectionTitle:@"类型"]];
     [self.contentStack addArrangedSubview:[self createTypeRow]];
     [self.contentStack addArrangedSubview:[self sectionTitle:@"来源"]];
     [self.contentStack addArrangedSubview:[self createSourceGrid]];
@@ -222,7 +222,7 @@ static CGFloat const kSPKGalleryFilterChipIconPointSize = 14.0;
         [self.contentStack addArrangedSubview:self.usernameSectionTitle];
         [self.contentStack addArrangedSubview:[self createUsernameRow]];
     }
-    [self.contentStack addArrangedSubview:[self sectionTitle:@"Options"]];
+    [self.contentStack addArrangedSubview:[self sectionTitle:@"选项"]];
     [self.contentStack addArrangedSubview:[self createOptionsRow]];
 }
 
@@ -265,8 +265,8 @@ static CGFloat const kSPKGalleryFilterChipIconPointSize = 14.0;
     row.distribution = UIStackViewDistributionFillEqually;
 
     NSArray *defs = @[
-        @{@"label" : @"Images", @"resource" : @"photo", @"tag" : @(SPKGalleryMediaTypeImage)},
-        @{@"label" : @"Videos", @"resource" : @"video", @"tag" : @(SPKGalleryMediaTypeVideo)},
+        @{@"label" : @"图片", @"resource" : @"photo", @"tag" : @(SPKGalleryMediaTypeImage)},
+        @{@"label" : @"视频", @"resource" : @"video", @"tag" : @(SPKGalleryMediaTypeVideo)},
         @{@"label" : @"音频", @"resource" : @"audio", @"tag" : @(SPKGalleryMediaTypeAudio)},
     ];
     for (NSDictionary *d in defs) {
@@ -389,8 +389,8 @@ static CGFloat const kSPKGalleryFilterChipIconPointSize = 14.0;
 - (void)updateUsernameRowLabel {
     NSUInteger count = self.filterUsernames.count;
     self.usernameRowLabel.text = count > 0
-                                     ? [NSString stringWithFormat:@"%lu user%@ selected", (unsigned long)count, count == 1 ? @"" : @"s"]
-                                     : @"All users";
+                                     ? [NSString stringWithFormat:@"已选择 %lu 个用户", (unsigned long)count]
+                                     : @"全部用户";
     self.usernameRowLabel.textColor = count > 0
                                           ? [SPKUtils SPKColor_InstagramPrimaryText]
                                           : [SPKUtils SPKColor_InstagramSecondaryText];
@@ -433,7 +433,7 @@ static CGFloat const kSPKGalleryFilterChipIconPointSize = 14.0;
     [row addSubview:icon];
 
     UILabel *label = [[UILabel alloc] init];
-    label.text = @"Favorites";
+    label.text = @"收藏";
     label.font = [UIFont systemFontOfSize:kSPKGalleryFilterChipLabelPointSize weight:UIFontWeightMedium];
     label.adjustsFontSizeToFitWidth = YES;
     label.minimumScaleFactor = 0.78;
@@ -484,7 +484,7 @@ static CGFloat const kSPKGalleryFilterChipIconPointSize = 14.0;
     [row addSubview:icon];
 
     UILabel *label = [[UILabel alloc] init];
-    label.text = @"Clear filters";
+    label.text = @"清除筛选";
     label.font = [UIFont systemFontOfSize:kSPKGalleryFilterChipLabelPointSize weight:UIFontWeightMedium];
     label.adjustsFontSizeToFitWidth = YES;
     label.minimumScaleFactor = 0.78;

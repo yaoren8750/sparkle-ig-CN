@@ -105,22 +105,22 @@ static NSString *SPKGallerySortResourceSymbol(SPKGallerySortMode mode) {
 + (NSString *)labelForMode:(SPKGallerySortMode)mode {
     switch (mode) {
     case SPKGallerySortModeDateAddedDesc:
-        return @"Newest first";
+        return @"最新添加";
     case SPKGallerySortModeDateAddedAsc:
-        return @"Oldest first";
+        return @"最早添加";
     case SPKGallerySortModeNameAsc:
-        return @"Name A-Z";
+        return @"名称 A-Z";
     case SPKGallerySortModeNameDesc:
-        return @"Name Z-A";
+        return @"名称 Z-A";
     case SPKGallerySortModeSizeDesc:
-        return @"Largest first";
+        return @"最大文件";
     case SPKGallerySortModeSizeAsc:
-        return @"Smallest first";
+        return @"最小文件";
     case SPKGallerySortModeTypeAsc:
     case SPKGallerySortModeTypeDesc:
-        return @"Newest first";
+        return @"最新添加";
     }
-    return @"Newest first";
+    return @"最新添加";
 }
 
 - (instancetype)init {
@@ -140,7 +140,7 @@ static NSString *SPKGallerySortResourceSymbol(SPKGallerySortMode mode) {
 }
 
 - (void)setupNavigationBar {
-    self.title = @"Sort";
+    self.title =@"排序";
 }
 
 // Height the content needs at `width`: the stack's fitting height plus its top
@@ -178,7 +178,7 @@ static NSString *SPKGallerySortResourceSymbol(SPKGallerySortMode mode) {
                                                      constant:-20],
     ]];
 
-    [stack addArrangedSubview:[self sectionTitle:@"Order"]];
+    [stack addArrangedSubview:[self sectionTitle:@"排序方式"]];
     NSArray<NSArray<NSNumber *> *> *rows = @[
         @[ @(SPKGallerySortModeDateAddedDesc), @(SPKGallerySortModeDateAddedAsc) ],
         @[ @(SPKGallerySortModeNameAsc), @(SPKGallerySortModeNameDesc) ],
@@ -207,13 +207,13 @@ static NSString *SPKGallerySortResourceSymbol(SPKGallerySortMode mode) {
         [stack addArrangedSubview:row];
     }
 
-    [stack addArrangedSubview:[self sectionTitle:@"Grouping"]];
+    [stack addArrangedSubview:[self sectionTitle:@"分组"]];
     UIStackView *groupRow = [[UIStackView alloc] init];
     groupRow.axis = UILayoutConstraintAxisHorizontal;
     groupRow.spacing = 10;
     groupRow.distribution = UIStackViewDistributionFillEqually;
-    [groupRow addArrangedSubview:[self groupChipWithTitle:@"None" icon:@"circle_off" selected:!self.currentGroupByMediaType tag:0]];
-    [groupRow addArrangedSubview:[self groupChipWithTitle:@"Media type" icon:@"photo_gallery" selected:self.currentGroupByMediaType tag:1]];
+    [groupRow addArrangedSubview:[self groupChipWithTitle:@"不分组" icon:@"circle_off" selected:!self.currentGroupByMediaType tag:0]];
+    [groupRow addArrangedSubview:[self groupChipWithTitle:@"媒体类型" icon:@"photo_gallery" selected:self.currentGroupByMediaType tag:1]];
     [stack addArrangedSubview:groupRow];
 }
 

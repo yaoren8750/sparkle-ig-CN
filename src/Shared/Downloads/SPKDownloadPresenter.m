@@ -70,32 +70,52 @@ static NSArray<NSURL *> *SPKDownloadSucceededFileURLsForJob(SPKDownloadJob *job)
 
 - (NSString *)progressTitleForJob:(SPKDownloadJob *)job {
     if (job.items.count > 1) {
-        NSUInteger current = MIN(job.items.count, [self completedItemCount:job] + 1);
-        return [NSString stringWithFormat:@"Downloads [%lu of %lu]", (unsigned long)current, (unsigned long)job.items.count];
+        NSUInteger current =
+            MIN(job.items.count, [self completedItemCount:job] + 1);
+        return [NSString stringWithFormat:@"下载中 [%lu/%lu]",
+                                          (unsigned long)current,
+                                          (unsigned long)job.items.count];
     }
+
     SPKDownloadItem *item = job.items.firstObject;
+
     if (item.state == SPKDownloadStateFinalizing) {
-        return [NSString stringWithFormat:@"Saving to %@", SPKDownloadDestinationDisplayName(job.request.destination)];
+        return [NSString stringWithFormat:@"正在保存到 %@",
+                                          SPKDownloadDestinationDisplayName(
+                                              job.request.destination)];
     }
+
     if (item.detail.length > 0) {
-        if ([item.detail containsString:@"Merging"] || [item.detail containsString:@"Re-encoding"])
+        if ([item.detail containsString:@"合并中"] ||
+            [item.detail containsString:@"重新编码中"]) {
             return item.detail;
-        if ([item.detail containsString:@"Converting"])
+        }
+
+        if ([item.detail containsString:@"Converting"]) {
             return @"正在转换音频";
-        if ([item.detail containsString:@"Downloading video"])
-            return @"Downloading video";
-        if ([item.detail containsString:@"Downloading audio"])
-            return @"Downloading audio";
+        }
+
+        if ([item.detail containsString:@"Downloading video"]) {
+            return @"正在下载视频";
+        }
+
+        if ([item.detail containsString:@"Downloading audio"]) {
+            return @"正在下载音频";
+        }
     }
+
     switch (item.mediaKind) {
     case SPKDownloadMediaKindVideo:
-        return @"Downloading video";
+        return @"正在下载视频";
+
     case SPKDownloadMediaKindAudio:
-        return @"Downloading audio";
+        return @"正在下载音频";
+
     case SPKDownloadMediaKindImage:
-        return @"Downloading image";
+        return @"正在下载图片";
+
     default:
-        return @"Downloading";
+        return @"正在下载";
     }
 }
 
@@ -151,7 +171,7 @@ static NSArray<NSURL *> *SPKDownloadSucceededFileURLsForJob(SPKDownloadJob *job)
         formatter.includesUnit = YES;
         formatter.includesCount = YES;
         formatter.zeroPadsFractionDigits = NO;
-        bytesString = [NSString stringWithFormat:@"%@ of %@",
+        bytesString = [NSString stringWithFormat:@"%@ / %@",
                                                  [formatter stringFromByteCount:bytesWritten],
                                                  [formatter stringFromByteCount:totalBytesExpected]];
     }
@@ -171,7 +191,7 @@ static NSArray<NSURL *> *SPKDownloadSucceededFileURLsForJob(SPKDownloadJob *job)
     }
 
     if (activeCount > 1) {
-        [parts addObject:[NSString stringWithFormat:@"%lu of %lu", (unsigned long)activeIndex, (unsigned long)activeCount]];
+        [parts addObject:[NSString stringWithFormat:@"第 %lu/%lu 项", (unsigned long)activeIndex, (unsigned long)activeCount]];
     }
 
     return [parts componentsJoinedByString:@" • "];
@@ -337,27 +357,30 @@ static NSArray<NSURL *> *SPKDownloadSucceededFileURLsForJob(SPKDownloadJob *job)
             [SPKGalleryViewController presentGallery];
         };
         break;
-    case SPKDownloadDestinationShare:
-        if (job.request.finalizeAsBatchShare) {
-            NSUInteger count = [self completedItemCount:job];
-            title = count > 1
-                        ? [NSString stringWithFormat:@"Shared %lu items", (unsigned long)count]
-                        : @"Shared";
-            subtitle = @"点击打开下载";
-            self.activePill.onTapWhenCompleted = openHistory;
-        } else {
-            title = @"可以分享";
-            subtitle = nil;
-            self.activePill.onTapWhenCompleted = nil;
-        }
-        break;
-    case SPKDownloadDestinationClipboard:
-        if (job.request.finalizeAsBatchClipboard) {
-            NSUInteger count = [self completedItemCount:job];
-            title = count > 1
-                        ? [NSString stringWithFormat:@"Copied %lu items to clipboard", (unsigned long)count]
-                        : @"已复制到剪贴板";
-        } else {
+        case SPKDownloadDestinationShare:
+            if (job.request.finalizeAsBatchShare) {
+                NSUInteger count = [self completedItemCount:job];
+                title = count > 1
+                            ? [NSString stringWithFormat:@"已分享 %lu 项",
+                                                         (unsigned long)count]
+                            : @"已分享";
+                subtitle = @"点击打开下载";
+                self.activePill.onTapWhenCompleted = openHistory;
+            } else {
+                title = @"可以分享";
+                subtitle = nil;
+                self.activePill.onTapWhenCompleted = nil;
+            }
+            break;
+
+        case SPKDownloadDestinationClipboard:
+            if (job.request.finalizeAsBatchClipboard) {
+                NSUInteger count = [self completedItemCount:job];
+                title = count > 1
+                            ? [NSString stringWithFormat:@"已复制 %lu 项到剪贴板",
+                                                         (unsigned long)count]
+                            : @"已复制到剪贴板";
+            } else {
             SPKDownloadItem *first = job.items.firstObject;
             switch (first.mediaKind) {
             case SPKDownloadMediaKindVideo:
@@ -381,7 +404,7 @@ static NSArray<NSURL *> *SPKDownloadSucceededFileURLsForJob(SPKDownloadJob *job)
     default:
         if (job.items.count > 1) {
             NSUInteger count = [self completedItemCount:job];
-            title = [NSString stringWithFormat:@"%lu items saved", (unsigned long)count];
+            title = [NSString stringWithFormat:@"已保存 %lu 项", (unsigned long)count];
             subtitle = @"点击打开下载";
             self.activePill.onTapWhenCompleted = openHistory;
         } else {

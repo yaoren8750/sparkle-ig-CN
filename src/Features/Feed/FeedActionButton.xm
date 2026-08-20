@@ -704,7 +704,7 @@ static void SPKHandleFeedExpandLongPress(UIView *view, UILongPressGestureRecogni
             NSInteger index = SPKFeedCarouselPageIndexFromView(view);
             if (index < 0 || index >= (NSInteger)items.count)
                 index = 0;
-            SPKNotify(kSPKActionExpand, @"Expanded media", nil, @"expand", SPKNotificationToneForIconResource(@"expand"));
+            SPKNotify(kSPKActionExpand, @"已展开媒体", nil, @"expand", SPKNotificationToneForIconResource(@"expand"));
             [SPKFullScreenMediaPlayer showMediaItems:items
                                      startingAtIndex:index
                                             metadata:metadata
@@ -730,7 +730,7 @@ static void SPKHandleFeedExpandLongPress(UIView *view, UILongPressGestureRecogni
     if (username.length > 0)
         item.title = username;
 
-    SPKNotify(kSPKActionExpand, @"Expanded media", nil, @"expand", SPKNotificationToneForIconResource(@"expand"));
+    SPKNotify(kSPKActionExpand, @"已展开媒体", nil, @"expand", SPKNotificationToneForIconResource(@"expand"));
     [SPKFullScreenMediaPlayer showMediaItems:@[ item ]
                              startingAtIndex:0
                                     metadata:metadata

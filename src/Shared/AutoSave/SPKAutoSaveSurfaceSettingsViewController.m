@@ -28,7 +28,7 @@
                                              defaultsKey:filter.enabledKey];
     master.reloadsTableOnSwitchChange = YES; // grey out / re-enable the dependents live
 
-    SPKSetting *filterMode = [SPKSetting menuCellWithTitle:@"Filter Mode"
+    SPKSetting *filterMode = [SPKSetting menuCellWithTitle:@"筛选模式"
                                                       icon:SPKSettingsIcon(@"filter")
                                                       menu:SPKAutoSaveFilterModeMenu(filter.filterModeKey, filter.subjectPlural)];
     filterMode.enabledProvider = autoSaveEnabled;

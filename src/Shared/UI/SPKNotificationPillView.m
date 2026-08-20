@@ -256,7 +256,7 @@ typedef NS_ENUM(NSUInteger, SPKPillVisualTone) {
     ]];
 
     _titleLabel = [[UILabel alloc] init];
-    _titleLabel.text = @"Downloading...";
+    _titleLabel.text = @"下载中...";
     _titleLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.98];
     _titleLabel.font = [UIFont systemFontOfSize:13.5 weight:UIFontWeightSemibold];
     _titleLabel.numberOfLines = 1;
@@ -700,7 +700,7 @@ typedef NS_ENUM(NSUInteger, SPKPillVisualTone) {
     self.currentBytesExpected = 0;
     self.subtitleLabel.text = [self spk_progressSubtitleForProgress:self.currentProgress];
     self.subtitleLabel.hidden = (self.subtitleLabel.text.length == 0);
-    self.titleLabel.text = @"Downloading...";
+    self.titleLabel.text = @"下载中...";
     self.progressView.progress = 0.0f;
 
     self.heightConstraint.constant = self.subtitleLabel.hidden ? kDynamicPillHeight : kDynamicTallHeight;
@@ -817,7 +817,7 @@ typedef NS_ENUM(NSUInteger, SPKPillVisualTone) {
 
     BOOL hasByteTotals = (bytesWritten > 0 && totalBytesExpected > 0);
     NSString *bytesString = hasByteTotals
-                                ? [NSString stringWithFormat:@"%@ of %@",
+                                ? [NSString stringWithFormat:@"%@ / %@",
                                                              [self spk_byteCountString:bytesWritten],
                                                              [self spk_byteCountString:totalBytesExpected]]
                                 : nil;
@@ -938,7 +938,7 @@ typedef NS_ENUM(NSUInteger, SPKPillVisualTone) {
         self.isErrorState = NO;
         self.isCompleted = NO;
         self.usesAutomaticProgressSubtitle = YES;
-        self.titleLabel.text = @"Downloading...";
+        self.titleLabel.text = @"下载中...";
         self.subtitleLabel.text = [self spk_progressSubtitleForProgress:self.currentProgress];
         self.subtitleLabel.hidden = (self.subtitleLabel.text.length == 0);
         self.heightConstraint.constant = self.subtitleLabel.hidden ? kDynamicPillHeight : kDynamicTallHeight;
@@ -980,7 +980,7 @@ typedef NS_ENUM(NSUInteger, SPKPillVisualTone) {
 
     self.isCompleted = NO;
     self.isErrorState = NO;
-    self.titleLabel.text = title.length > 0 ? title : @"Downloading...";
+    self.titleLabel.text = title.length > 0 ? title :@"下载中...";
     self.usesAutomaticProgressSubtitle = (subtitle.length == 0);
     self.subtitleLabel.text = self.usesAutomaticProgressSubtitle
                                   ? [self spk_progressSubtitleForProgress:self.currentProgress]
@@ -1072,7 +1072,7 @@ typedef NS_ENUM(NSUInteger, SPKPillVisualTone) {
 
     NSString *resolvedSubtitle = subtitle;
     if (self.onRetry && resolvedSubtitle.length == 0) {
-        resolvedSubtitle = @"Tap to retry";
+        resolvedSubtitle = @"点击重试";
     }
 
     if (self.onTonePresented) {
@@ -1127,7 +1127,7 @@ typedef NS_ENUM(NSUInteger, SPKPillVisualTone) {
                     animations:^{
                         self.iconView.image = infoImage;
                         self.iconView.tintColor = [self iconTintForTone:SPKPillVisualToneInfo];
-                        self.titleLabel.text = title.length ? title : @"Info";
+                        self.titleLabel.text = title.length ? title : @"提示";
                         self.subtitleLabel.text = subtitle;
                         self.subtitleLabel.hidden = (subtitle.length == 0);
                         [self updateToastWidthForTitle:self.titleLabel.text subtitle:subtitle];

@@ -873,24 +873,24 @@ SPKMediaBuildPhotoOptions(id mediaObject, NSURL *fallbackURL,
         if (isWeb) {
             NSInteger itemLongEdge = MAX(width, height);
             if (maxWebLongEdge > 0 && itemLongEdge >= (NSInteger)(maxWebLongEdge * 0.9)) {
-                tier = @"Max";
+                tier = @"最高";
             } else if (itemLongEdge >= 1080) {
-                tier = @"High";
+                tier = @"高";
             } else if (itemLongEdge >= 720) {
-                tier = @"Medium";
+                tier = @"中";
             } else if (itemLongEdge > 0) {
-                tier = @"Low";
+                tier = @"低";
             } else {
-                tier = @"Max";
+                tier = @"最高";
             }
         } else if (maxMobileLongEdge > 0) {
             double fraction = (double)MAX(width, height) / (double)maxMobileLongEdge;
             if (fraction >= 0.9) {
-                tier = @"High";
+                tier = @"高";
             } else if (fraction >= 0.5) {
-                tier = @"Medium";
+                tier = @"中";
             } else {
-                tier = @"Low";
+                tier = @"低";
             }
         }
 
@@ -997,11 +997,11 @@ SPKMediaBuildMergedDashOptions(NSArray<SPKDashRepresentation *> *videoReps,
         option.codec = videoRep.codecs;
         option.audioCodec = bestAudio.codecs;
         option.title = SPKMediaResolutionLabel(videoRep.width, videoRep.height)
-                           ?: @"Merged video";
+                           ?: @"合并视频";
         option.subtitle =
             SPKMediaSubtitle(videoRep.width, videoRep.height,
                              videoRep.bandwidth + bestAudio.bandwidth, duration,
-                             nil, bestAudio.url ? @"video + audio" : @"video");
+                             nil, bestAudio.url ? @"视频 + 音频" : @"视频");
         option.selectable = ffmpegAvailable;
         option.qualityInfo = SPKMediaQualityInfoForOption(option);
         [options addObject:option];
@@ -1025,10 +1025,10 @@ SPKMediaBuildVideoOnlyDashOptions(NSArray<SPKDashRepresentation *> *videoReps,
         option.duration = duration;
         option.codec = videoRep.codecs;
         option.title = SPKMediaResolutionLabel(videoRep.width, videoRep.height)
-                           ?: @"Video only";
+                           ?: @"仅视频";
         option.subtitle =
             SPKMediaSubtitle(videoRep.width, videoRep.height, videoRep.bandwidth,
-                             duration, nil, @"silent");
+                             duration, nil, @"无声音");
         option.selectable = YES;
         option.qualityInfo = SPKMediaQualityInfoForOption(option);
         [options addObject:option];
@@ -1187,13 +1187,13 @@ static SPKMediaAnalysis *SPKMediaAnalyze(id mediaObject, NSURL *photoURL,
 
     NSMutableArray<SPKMediaOptionSection *> *sections = [NSMutableArray array];
     if (progressiveVideoOptions.count > 0)
-        [sections addObject:SPKMediaSection(@"Ready to Play", progressiveVideoOptions)];
+        [sections addObject:SPKMediaSection(@"可直接播放", progressiveVideoOptions)];
     if (mergedOptions.count > 0)
-        [sections addObject:SPKMediaSection(@"Video + Audio", mergedOptions)];
+        [sections addObject:SPKMediaSection(@"视频 + 音频", mergedOptions)];
     if (videoOnlyOptions.count > 0)
-        [sections addObject:SPKMediaSection(@"Video Only", videoOnlyOptions)];
+        [sections addObject:SPKMediaSection(@"仅视频", videoOnlyOptions)];
     if (audioOptions.count > 0 && includeAudioOptions)
-        [sections addObject:SPKMediaSection(@"Audio Only", audioOptions)];
+        [sections addObject:SPKMediaSection(@"仅音频", audioOptions)];
     analysis.videoSections = sections;
 
     return analysis;
@@ -1402,7 +1402,7 @@ static SPKTrimSourcePlan *SPKMediaTrimPlanFromOption(SPKMediaOption *chosen, SPK
     (void)downloadTask;
     NSURL *destination = [self cacheMoveURLForLocation:location];
     if (!destination && self.completionBlock) {
-        self.completionBlock(nil, [SPKUtils errorWithDescription:@"Failed to move downloaded media"]);
+        self.completionBlock(nil, [SPKUtils errorWithDescription:@"移动下载的媒体文件失败"]);
     } else if (self.completionBlock) {
         self.completionBlock(destination, nil);
     }
@@ -1709,7 +1709,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
     ]];
 
     self.navigationItem.rightBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:@"Save"
+        [[UIBarButtonItem alloc] initWithTitle:@"保存"
                                          style:UIBarButtonItemStyleDone
                                         target:self
                                         action:@selector(saveTapped)];
@@ -1752,7 +1752,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
 @implementation SPKMediaEncodingSettingsViewController
 
 - (instancetype)init {
-    if ((self = [super initWithTitle:@"Encoding Settings"
+    if ((self = [super initWithTitle:@"编码设置"
                             sections:[self buildSections]
                         reduceMargin:NO])) {
     }
@@ -1778,27 +1778,25 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
     [sections
         addObject:SPKTopicSection(
                       @"", @[ [SPKSetting
-                               switchCellWithTitle:@"Advanced Encoding"
+                               switchCellWithTitle:@"高级编码"
                                        defaultsKey:@"downloads_adv_encoding"] ],
-                      @"Advanced Encoding exposes codec, preset, bitrate, CRF, "
-                      @"resolution, and audio overrides. In advanced mode, the "
-                      @"selected video codec is used for DASH merges while audio "
-                      @"remains copied.")];
+                                  @"启用高级编码后，可自定义编码器、预设、码率、CRF、分辨率和音频参数。在高级模式下，所选视频编码器将用于 DASH 合并，音频则保持原样复制。"
+                     )];
 
     if ([SPKUtils getBoolPref:@"downloads_adv_encoding"]) {
         [sections addObject:SPKTopicSection(
                                 @"视频",
                                 @[
-                                    [SPKSetting menuCellWithTitle:@"Video Codec"
+                                    [SPKSetting menuCellWithTitle:@"视频编码器"
                                                          subtitle:nil
                                                              menu:[self codecMenu]],
-                                    [SPKSetting menuCellWithTitle:@"Preset"
+                                    [SPKSetting menuCellWithTitle:@"编码预设"
                                                          subtitle:nil
                                                              menu:[self presetMenu]],
-                                    [SPKSetting menuCellWithTitle:@"H.264 Profile"
+                                    [SPKSetting menuCellWithTitle:@"H.264 配置"
                                                          subtitle:nil
                                                              menu:[self profileMenu]],
-                                    [SPKSetting menuCellWithTitle:@"H.264 Level"
+                                    [SPKSetting menuCellWithTitle:@"H.264 级别"
                                                          subtitle:nil
                                                              menu:[self levelMenu]]
                                 ],
@@ -1806,7 +1804,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
 
         [sections
             addObject:SPKTopicSection(
-                          @"Quality",
+                          @"画质",
                           @[
                               [SPKSetting
                                   textFieldCellWithTitle:@"CRF"
@@ -1814,12 +1812,12 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
                                             keyboardType:UIKeyboardTypeNumberPad
                                              defaultsKey:@"downloads_encoding_crf"],
                               [SPKSetting
-                                  textFieldCellWithTitle:@"Video Bitrate"
+                                  textFieldCellWithTitle:@"视频码率"
                                              placeholder:@"自动"
                                             keyboardType:UIKeyboardTypeNumberPad
                                              defaultsKey:@"downloads_encoding_"
                                                          @"vid_bitrate_kbps"],
-                              [SPKSetting menuCellWithTitle:@"Max Resolution"
+                              [SPKSetting menuCellWithTitle:@"最高分辨率"
                                                    subtitle:nil
                                                        menu:[self maxResMenu]]
                           ],
@@ -1830,12 +1828,12 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
                           @"音频",
                           @[
                               [SPKSetting
-                                  textFieldCellWithTitle:@"Audio Bitrate"
+                                  textFieldCellWithTitle:@"音频码率"
                                              placeholder:@"128"
                                             keyboardType:UIKeyboardTypeNumberPad
                                              defaultsKey:@"downloads_encoding_"
                                                          @"audio_bitrate_kbps"],
-                              [SPKSetting menuCellWithTitle:@"Audio Channels"
+                              [SPKSetting menuCellWithTitle:@"音频声道"
                                                    subtitle:nil
                                                        menu:[self audioChannelsMenu]]
                           ],
@@ -1844,18 +1842,16 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
         [sections
             addObject:
                 SPKTopicSection(
-                    @"Advanced",
+                    @"高级",
                     @[
-                        [SPKSetting menuCellWithTitle:@"Pixel Format"
+                        [SPKSetting menuCellWithTitle:@"像素格式"
                                              subtitle:nil
                                                  menu:[self pixelFormatMenu]],
                         [SPKSetting
-                            switchCellWithTitle:@"Fast Start"
+                            switchCellWithTitle:@"快速启动"
                                     defaultsKey:@"downloads_encoding_faststart"]
                     ],
-                    @"Fast Start moves MP4 metadata to the beginning of the "
-                    @"file, allowing the video to start playing immediately "
-                    @"when shared online or streamed.")];
+                    @"快速启动会将 MP4 元数据移至文件开头，让视频在在线分享或在线播放时可以立即开始播放。")];
 
         __weak typeof(self) weakSelf = self;
         SPKSetting *resetEncoding = 
@@ -1866,8 +1862,8 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
                                         [[SPKSettingsTransferManager sharedManager]
                                             resetConfigurationGroupFromController:weakSelf
                                                                             title:@"重置编码设置"
-                                                                          message:@"This restores every advanced encoding option to its default value. Advanced Encoding stays on."
-                                                                     confirmTitle:@"Reset"
+                                                                          message:@"所有高级编码选项将恢复为默认值，高级编码仍保持开启。"
+                                                                     confirmTitle:@"重置"
                                                                             keys:@[
                                                                                 @"downloads_encoding_speed",
                                                                                 @"downloads_encoding_vid_codec",
@@ -1891,117 +1887,116 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
         [sections addObject:SPKTopicSection(@"", @[ resetEncoding ], nil)];
 
         SPKSetting *ffmpegInfo = [SPKSetting
-            linkCellWithTitle:@"About FFmpeg Encoding"
+            linkCellWithTitle:@"关于 FFmpeg 编码"
                      subtitle:@"点击了解更多"
                      imageUrl:@"https://ffmpeg.org/favicon.ico"
                           url:@"https://trac.ffmpeg.org/wiki/Encode/H.264"];
         ffmpegInfo.userInfo = @{@"remoteImageCircular" : @NO};
         [sections addObject:SPKTopicSection(@"", @[ ffmpegInfo ], nil)];
-    } else {
-        [sections
-            addObject:
+        } else {
+            [sections
+                addObject:
+                    SPKTopicSection(
+                        @"视频",
+                        @[ [SPKSetting menuCellWithTitle:@"编码速度"
+                                                  subtitle:nil
+                                                      menu:[self speedMenu]] ],
+                        @"控制 libx264 的编码强度。较慢的预设编码时间更长，但在相同画质下可以生成更小的文件。极速模式编码最快，但生成的文件会更大。")];
+        }
+
+        return sections;
+        }
+
+        - (NSArray *)searchSections {
+            SPKSetting *ffmpegInfo = [SPKSetting
+                linkCellWithTitle:@"关于 FFmpeg 编码"
+                         subtitle:@"点击了解更多"
+                         imageUrl:@"https://ffmpeg.org/favicon.ico"
+                              url:@"https://trac.ffmpeg.org/wiki/Encode/H.264"];
+            ffmpegInfo.userInfo = @{@"remoteImageCircular" : @NO};
+
+            return @[
                 SPKTopicSection(
-                    @"视频", @[ [SPKSetting menuCellWithTitle:@"Encoding Speed"
-                                                      subtitle:nil
-                                                          menu:[self speedMenu]] ],
-                    @"Controls the libx264 encoding effort. Slower presets take "
-                    @"longer but produce smaller files at the same visual quality. "
-                    @"Ultrafast is fastest but produces larger files.")];
-    }
+                    @"",
+                    @[ [SPKSetting switchCellWithTitle:@"高级编码"
+                                            defaultsKey:@"downloads_adv_encoding"] ],
+                    @"开启后可自定义编码器、预设、码率、CRF、分辨率和音频参数。高级模式下，所选视频编码器用于 DASH 合并，音频保持原始格式。"),
 
-    return sections;
-}
+                SPKTopicSection(
+                    @"视频",
+                    @[
+                        [SPKSetting menuCellWithTitle:@"编码速度"
+                                             subtitle:nil
+                                                 menu:[self speedMenu]],
+                        [SPKSetting menuCellWithTitle:@"视频编码器"
+                                             subtitle:nil
+                                                 menu:[self codecMenu]],
+                        [SPKSetting menuCellWithTitle:@"编码预设"
+                                             subtitle:nil
+                                                 menu:[self presetMenu]],
+                        [SPKSetting menuCellWithTitle:@"H.264 配置"
+                                             subtitle:nil
+                                                 menu:[self profileMenu]],
+                        [SPKSetting menuCellWithTitle:@"H.264 级别"
+                                             subtitle:nil
+                                                 menu:[self levelMenu]]
+                    ],
+                    @"控制 libx264 的编码强度。较慢的预设编码时间更长，但在相同画质下可以生成更小的文件。极速模式编码最快，但生成的文件会更大。"),
 
-- (NSArray *)searchSections {
-    SPKSetting *ffmpegInfo = [SPKSetting
-        linkCellWithTitle:@"About FFmpeg Encoding"
-                 subtitle:@"点击了解更多"
-                 imageUrl:@"https://ffmpeg.org/favicon.ico"
-                      url:@"https://trac.ffmpeg.org/wiki/Encode/H.264"];
-    ffmpegInfo.userInfo = @{@"remoteImageCircular" : @NO};
-
-    return @[
-        SPKTopicSection(
-            @"", @[ [SPKSetting switchCellWithTitle:@"Advanced Encoding"
-                                        defaultsKey:@"downloads_adv_encoding"] ],
-            @"Advanced Encoding exposes codec, preset, bitrate, CRF, resolution, "
-            @"and audio overrides. In advanced mode, the selected video codec is "
-            @"used for DASH merges while audio remains copied."),
-        SPKTopicSection(
-            @"视频",
-            @[
-                [SPKSetting menuCellWithTitle:@"Encoding Speed"
-                                     subtitle:nil
-                                         menu:[self speedMenu]],
-                [SPKSetting menuCellWithTitle:@"Video Codec"
-                                     subtitle:nil
-                                         menu:[self codecMenu]],
-                [SPKSetting menuCellWithTitle:@"Preset"
-                                     subtitle:nil
-                                         menu:[self presetMenu]],
-                [SPKSetting menuCellWithTitle:@"H.264 Profile"
-                                     subtitle:nil
-                                         menu:[self profileMenu]],
-                [SPKSetting menuCellWithTitle:@"H.264 Level"
-                                     subtitle:nil
-                                         menu:[self levelMenu]]
-            ],
-            @"Controls the libx264 encoding effort. Slower presets take longer but "
-            @"produce smaller files at the same visual quality. Ultrafast is "
-            @"fastest but produces larger files."),
-        SPKTopicSection(
-            @"Quality",
-            @[
-                [SPKSetting textFieldCellWithTitle:@"CRF"
+                SPKTopicSection(
+                    @"画质",
+                    @[
+                        [SPKSetting textFieldCellWithTitle:@"CRF"
+                                               placeholder:@"自动"
+                                              keyboardType:UIKeyboardTypeNumberPad
+                                               defaultsKey:@"downloads_encoding_crf"],
+                        [SPKSetting
+                            textFieldCellWithTitle:@"视频码率"
                                        placeholder:@"自动"
                                       keyboardType:UIKeyboardTypeNumberPad
-                                       defaultsKey:@"downloads_encoding_crf"],
-                [SPKSetting
-                    textFieldCellWithTitle:@"Video Bitrate"
-                               placeholder:@"自动"
-                              keyboardType:UIKeyboardTypeNumberPad
-                               defaultsKey:@"downloads_encoding_vid_bitrate_kbps"],
-                [SPKSetting menuCellWithTitle:@"Max Resolution"
-                                     subtitle:nil
-                                         menu:[self maxResMenu]]
-            ],
-            nil),
-        SPKTopicSection(
-            @"音频",
-            @[
-                [SPKSetting
-                    textFieldCellWithTitle:@"Audio Bitrate"
-                               placeholder:@"128"
-                              keyboardType:UIKeyboardTypeNumberPad
-                               defaultsKey:@"downloads_encoding_audio_bitrate_kbps"],
-                [SPKSetting menuCellWithTitle:@"Audio Channels"
-                                     subtitle:nil
-                                         menu:[self audioChannelsMenu]]
-            ],
-            nil),
-        SPKTopicSection(
-            @"Advanced",
-            @[
-                [SPKSetting menuCellWithTitle:@"Pixel Format"
-                                     subtitle:nil
-                                         menu:[self pixelFormatMenu]],
-                [SPKSetting switchCellWithTitle:@"Fast Start"
-                                    defaultsKey:@"downloads_encoding_faststart"]
-            ],
-            @"Fast Start moves MP4 metadata to the beginning of the file, allowing "
-            @"the video to start playing immediately when shared online or "
-            @"streamed."),
-        SPKTopicSection(@"", @[ ffmpegInfo ], nil)
-    ];
-}
+                                       defaultsKey:@"downloads_encoding_vid_bitrate_kbps"],
+                        [SPKSetting menuCellWithTitle:@"最高分辨率"
+                                             subtitle:nil
+                                                 menu:[self maxResMenu]]
+                    ],
+                    nil),
+
+                SPKTopicSection(
+                    @"音频",
+                    @[
+                        [SPKSetting
+                            textFieldCellWithTitle:@"音频码率"
+                                       placeholder:@"128"
+                                      keyboardType:UIKeyboardTypeNumberPad
+                                       defaultsKey:@"downloads_encoding_audio_bitrate_kbps"],
+                        [SPKSetting menuCellWithTitle:@"音频声道"
+                                             subtitle:nil
+                                                 menu:[self audioChannelsMenu]]
+                    ],
+                    nil),
+
+                SPKTopicSection(
+                    @"高级",
+                    @[
+                        [SPKSetting menuCellWithTitle:@"像素格式"
+                                             subtitle:nil
+                                                 menu:[self pixelFormatMenu]],
+                        [SPKSetting switchCellWithTitle:@"快速启动"
+                                            defaultsKey:@"downloads_encoding_faststart"]
+                    ],
+                    @"快速启动会将 MP4 元数据移至文件开头，让视频在在线分享或在线播放时可以立即开始播放。"),
+
+                SPKTopicSection(@"", @[ ffmpegInfo ], nil)
+            ];
+        }
 
 - (UIMenu *)speedMenu {
     return [self buildMenuForPref:@"downloads_encoding_speed"
                             items:@[
-                                @{@"value" : @"ultrafast", @"label" : @"Ultrafast"},
-                                @{@"value" : @"faster", @"label" : @"Faster"},
-                                @{@"value" : @"medium", @"label" : @"Medium"},
-                                @{@"value" : @"slower", @"label" : @"Slower"}
+                                @{@"value" : @"ultrafast", @"label" : @"极速"},
+                                @{@"value" : @"faster", @"label" : @"更快"},
+                                @{@"value" : @"medium", @"label" : @"中等"},
+                                @{@"value" : @"slower", @"label" : @"较慢"}
                             ]];
 }
 
@@ -2017,24 +2012,24 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
 - (UIMenu *)presetMenu {
     return [self buildMenuForPref:@"downloads_encoding_preset"
                             items:@[
-                                @{@"value" : @"ultrafast", @"label" : @"Ultrafast"},
-                                @{@"value" : @"superfast", @"label" : @"Superfast"},
-                                @{@"value" : @"veryfast", @"label" : @"Very Fast"},
-                                @{@"value" : @"faster", @"label" : @"Faster"},
-                                @{@"value" : @"fast", @"label" : @"Fast"},
-                                @{@"value" : @"medium", @"label" : @"Medium"},
-                                @{@"value" : @"slow", @"label" : @"Slow"},
-                                @{@"value" : @"slower", @"label" : @"Slower"},
-                                @{@"value" : @"veryslow", @"label" : @"Very Slow"}
+                                @{@"value" : @"ultrafast", @"label" : @"极速"},
+                                @{@"value" : @"superfast", @"label" : @"超快"},
+                                @{@"value" : @"veryfast", @"label" : @"非常快"},
+                                @{@"value" : @"faster", @"label" : @"更快"},
+                                @{@"value" : @"fast", @"label" : @"快"},
+                                @{@"value" : @"medium", @"label" : @"中等"},
+                                @{@"value" : @"slow", @"label" : @"慢"},
+                                @{@"value" : @"slower", @"label" : @"较慢"},
+                                @{@"value" : @"veryslow", @"label" : @"非常慢"}
                             ]];
 }
 
 - (UIMenu *)profileMenu {
     return [self buildMenuForPref:@"downloads_encoding_h264_profile"
                             items:@[
-                                @{@"value" : @"baseline", @"label" : @"Baseline"},
-                                @{@"value" : @"main", @"label" : @"Main"},
-                                @{@"value" : @"high", @"label" : @"High"}
+                                @{@"value" : @"baseline", @"label" : @"兼容"},
+                                @{@"value" : @"main", @"label" : @"标准"},
+                                @{@"value" : @"high", @"label" : @"高质量"}
                             ]];
 }
 
@@ -2052,7 +2047,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
 - (UIMenu *)maxResMenu {
     return [self buildMenuForPref:@"downloads_encoding_max_resolution"
                             items:@[
-                                @{@"value" : @"original", @"label" : @"Original"},
+                                @{@"value" : @"original", @"label" : @"原始"},
                                 @{@"value" : @"480", @"label" : @"480p"},
                                 @{@"value" : @"720", @"label" : @"720p"},
                                 @{@"value" : @"1080", @"label" : @"1080p"}
@@ -2062,16 +2057,16 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
 - (UIMenu *)audioChannelsMenu {
     return [self buildMenuForPref:@"downloads_encoding_audio_channels"
                             items:@[
-                                @{@"value" : @"original", @"label" : @"Original"},
-                                @{@"value" : @"stereo", @"label" : @"Stereo"},
-                                @{@"value" : @"mono", @"label" : @"Mono"}
+                                @{@"value" : @"original", @"label" : @"原始"},
+                                @{@"value" : @"stereo", @"label" : @"立体声"},
+                                @{@"value" : @"mono", @"label" : @"单声道"}
                             ]];
 }
 
 - (UIMenu *)pixelFormatMenu {
     return [self buildMenuForPref:@"downloads_encoding_pixel_format"
                             items:@[
-                                @{@"value" : @"default", @"label" : @"Default"},
+                                @{@"value" : @"default", @"label" : @"默认"},
                                 @{@"value" : @"yuv420p", @"label" : @"yuv420p"},
                                 @{@"value" : @"nv12", @"label" : @"nv12"}
                             ]];
@@ -2124,7 +2119,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
     self.analysis = analysis;
     self.destination = destination;
     self.selectionHandler = selectionHandler;
-    self.title = analysis.isVideo ? @"Video Quality" : @"Photo Quality";
+    self.title = analysis.isVideo ? @"视频画质" : @"照片画质";
     return self;
 }
 
@@ -2188,10 +2183,9 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
     titleForFooterInSection:(NSInteger)section {
     (void)tableView;
     SPKMediaOptionSection *infoSection = self.sections[section];
-    if ([infoSection.title isEqualToString:@"Video + Audio"] &&
+    if ([infoSection.title isEqualToString:@"视频 + 音频"] &&
         !self.analysis.ffmpegAvailable) {
-        return @"FFmpegKit is not available in the active build, so merged DASH "
-               @"rows are disabled.";
+        return @"当前版本未提供 FFmpegKit，因此已禁用合并 DASH 选项。";
     }
     return nil;
 }
@@ -2280,9 +2274,9 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
 
     if (option.primaryURL.absoluteString.length > 0) {
         NSString *title =
-            option.kind == SPKMediaOptionKindPhotoProgressive ? @"Copy Photo Download URL"
+            option.kind == SPKMediaOptionKindPhotoProgressive ? @"复制照片下载链接"
             : option.kind == SPKMediaOptionKindAudioDash      ? @"复制音频下载链接"
-                                                              : @"Copy Video Download URL";
+                                                              : @"复制视频下载链接";
         [children
             addObject:[UIAction
                           actionWithTitle:title
@@ -2298,7 +2292,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
     if (option.secondaryURL.absoluteString.length > 0) {
         [children
             addObject:[UIAction
-                          actionWithTitle:@"Copy Audio URL"
+                          actionWithTitle:@"复制音频链接 URL"
                                     image:SPKMediaIcon(@"audio",
                                                        kSPKMediaOptionIconPointSize)
                                identifier:nil
@@ -2310,7 +2304,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
 
     [children
         addObject:[UIAction
-                      actionWithTitle:@"Copy Quality Info"
+                      actionWithTitle:@"复制画质信息"
                                 image:SPKMediaIcon(@"copy",
                                                    kSPKMediaOptionIconPointSize)
                            identifier:nil
@@ -2322,7 +2316,7 @@ static NSString *SPKMediaCodecBadge(NSString *codec) {
     if (option.kind == SPKMediaOptionKindPhotoProgressive) {
         [children
             addObject:[UIAction
-                          actionWithTitle:@"View Image"
+                          actionWithTitle:@"查看图片"
                                     image:SPKMediaIcon(@"photo",
                                                        kSPKMediaOptionIconPointSize)
                                identifier:nil
@@ -2439,10 +2433,10 @@ SPKMediaCopyLocalFileToPasteboard(NSURL *fileURL, NSError **errorOut,
         notificationIdentifier.length > 0 ? notificationIdentifier : nil;
     if (!fileURL) {
         if (errorOut) {
-            *errorOut = [SPKUtils errorWithDescription:@"Nothing to copy"];
+            *errorOut = [SPKUtils errorWithDescription:@"没有可复制的内容"];
         }
         if (showToast && identifier.length > 0) {
-            SPKNotify(identifier, @"Nothing to copy", nil, @"error_filled",
+            SPKNotify(identifier, @"没有可复制的内容", nil, @"error_filled",
                       SPKNotificationToneError);
         }
         return nil;
@@ -2488,10 +2482,10 @@ SPKMediaCopyLocalFileToPasteboard(NSURL *fileURL, NSError **errorOut,
 
     if (errorOut) {
         *errorOut =
-            [SPKUtils errorWithDescription:@"Unable to read the selected file."];
+            [SPKUtils errorWithDescription:@"无法读取所选文件。"];
     }
     if (showToast && identifier.length > 0) {
-        SPKNotify(identifier, @"Copy failed", @"Unable to read the selected file.",
+        SPKNotify(identifier, @"复制失败", @"无法读取所选文件。",
                   @"error_filled", SPKNotificationToneError);
     }
     return nil;
@@ -2726,22 +2720,22 @@ static void SPKMediaPerformOptionDownload(
             return;
         }
         audioJob = [[SPKMediaSingleDownloadJob alloc] init];
-        report(0.46f, @"Downloading audio", 0, 0);
+        report(0.46f, @"正在下载音频", 0, 0);
         [audioJob startWithURL:secondary
             defaultExtension:@"m4a"
             progress:^(double jobProgress, int64_t bytesWritten,
                        int64_t totalBytesExpected) {
-                report((float)(0.46 + (jobProgress * 0.22)), @"Downloading audio",
+                report((float)(0.46 + (jobProgress * 0.22)), @"正在下载音频",
                        bytesWritten, totalBytesExpected);
             }
             completion:^(NSURL *audioFileURL, NSError *error) {
                 if (error || !audioFileURL) {
-                    fail(@"Audio download failed",
+                    fail(@"音频下载失败",
                          error.localizedDescription
-                             ?: @"Unable to download DASH audio");
+                             ?: @"无法下载 DASH 音频");
                     return;
                 }
-                report(0.72f, @"Merging video and audio", 0, 0);
+                report(0.72f, @"正在合并视频和音频", 0, 0);
                 [SPKMediaFFmpeg mergeVideoFileURL:videoFileURL
                     audioFileURL:audioFileURL
                     preferredBasename:basename
@@ -2751,15 +2745,15 @@ static void SPKMediaPerformOptionDownload(
                     sourceBitrate:bandwidth
                     progress:^(double mergeProgress, NSString *stage) {
                         NSString *title = [stage isEqualToString:@"re-encoding"]
-                                              ? @"Re-encoding"
-                                              : @"Merging video and audio";
+                                              ? @"正在重新编码"
+                                              : @"正在合并视频和音频";
                         report((float)(0.72 + (mergeProgress * 0.2)), title, 0, 0);
                     }
                     completion:^(NSURL *outputURL, NSError *error) {
                         if (error || !outputURL) {
-                            fail(@"Merge failed",
+                            fail(@"合并失败",
                                  error.localizedDescription
-                                     ?: @"Unable to merge video and audio");
+                                     ?: @"无法合并视频和音频");
                             return;
                         }
                         finishFile(outputURL);
@@ -2772,28 +2766,28 @@ static void SPKMediaPerformOptionDownload(
 
     if (optionKind == SPKMediaOptionKindAudioDash) {
         audioJob = [[SPKMediaSingleDownloadJob alloc] init];
-        report(0.1f, @"Downloading audio", 0, 0);
+        report(0.1f, @"正在下载音频", 0, 0);
         [audioJob startWithURL:primaryURL
             defaultExtension:@"m4a"
             progress:^(double jobProgress, int64_t bytesWritten,
                        int64_t totalBytesExpected) {
-                report((float)(0.1 + (jobProgress * 0.65)), @"Downloading audio",
+                report((float)(0.1 + (jobProgress * 0.65)), @"正在下载音频",
                        bytesWritten, totalBytesExpected);
             }
             completion:^(NSURL *audioFileURL, NSError *error) {
                 if (error || !audioFileURL) {
-                    fail(@"Audio download failed",
+                    fail(@"音频下载失败",
                          error.localizedDescription
-                             ?: @"Unable to download DASH audio");
+                             ?: @"无法下载 DASH 音频");
                     return;
                 }
-                report(0.8f, @"Finalizing file", 0, 0);
+                report(0.8f, @"正在处理文件", 0, 0);
                 [SPKMediaFFmpeg extractAudioFileURL:audioFileURL
                     preferredBasename:basename
                     progress:^(double extractProgress, NSString *stage) {
                         NSString *title = [stage isEqualToString:@"re-encoding"]
-                                              ? @"Re-encoding"
-                                              : @"Finalizing file";
+                                              ? @"正在重新编码"
+                                              : @"正在处理文件";
                         report((float)(0.8 + (extractProgress * 0.15)), title, 0, 0);
                     }
                     completion:^(NSURL *outputURL, NSError *error) {
@@ -2820,18 +2814,18 @@ static void SPKMediaPerformOptionDownload(
     double videoDownloadSpan =
         secondary ? 0.28 : (transcodeVideoOnly ? 0.33 : 0.7);
     videoJob = [[SPKMediaSingleDownloadJob alloc] init];
-    report(0.12f, @"Downloading video", 0, 0);
+    report(0.12f, @"正在下载视频", 0, 0);
     [videoJob startWithURL:primaryURL
         defaultExtension:@"mp4"
         progress:^(double jobProgress, int64_t bytesWritten,
                    int64_t totalBytesExpected) {
             report((float)(0.12 + (jobProgress * videoDownloadSpan)),
-                   @"Downloading video", bytesWritten, totalBytesExpected);
+                   @"正在下载视频", bytesWritten, totalBytesExpected);
         }
         completion:^(NSURL *videoFileURL, NSError *error) {
             if (error || !videoFileURL) {
-                fail(@"Video download failed",
-                     error.localizedDescription ?: @"Unable to download video");
+                fail(@"视频下载失败",
+                     error.localizedDescription ?: @"无法下载视频");
                 return;
             }
             if (optionKind == SPKMediaOptionKindVideoDashOnly) {
@@ -2839,7 +2833,7 @@ static void SPKMediaPerformOptionDownload(
                     finishFile(videoFileURL);
                     return;
                 }
-                report(0.46f, @"Re-encoding video", 0, 0);
+                report(0.46f, @"正在重新编码视频", 0, 0);
                 [SPKMediaFFmpeg mergeVideoFileURL:videoFileURL
                     audioFileURL:nil
                     preferredBasename:basename
@@ -2851,12 +2845,12 @@ static void SPKMediaPerformOptionDownload(
                         // Surface the true FFmpeg stage (Re-encoding / Normalizing /
                         // Finalizing) rather than a generic label.
                         report((float)(0.46 + (mergeProgress * 0.49)),
-                               stage.length > 0 ? stage : @"Re-encoding video", 0, 0);
+                               stage.length > 0 ? stage : @"正在重新编码视频", 0, 0);
                     }
                     completion:^(NSURL *outputURL, NSError *mergeError) {
                         if (mergeError || !outputURL) {
-                            fail(@"Processing failed", mergeError.localizedDescription
-                                                           ?: @"Unable to process video");
+                            fail(@"处理失败", mergeError.localizedDescription
+                                                           ?: @"无法处理视频");
                             return;
                         }
                         finishFile(outputURL);

@@ -434,7 +434,7 @@ static NSTimeInterval const kPlayerControlOverlayInsetAnimationDuration = 0.25;
                                                                 if ([strongSelf.delegate respondsToSelector:@selector(mediaContent:didFailWithError:)]) {
                                                                     NSError *resolvedError = error ?: [NSError errorWithDomain:@"SPKFullScreenVideoViewController"
                                                                                                                           code:-2
-                                                                                                                      userInfo:@{NSLocalizedDescriptionKey : @"Playback failed"}];
+                                                                                                                      userInfo:@{NSLocalizedDescriptionKey : @"播放失败"}];
                                                                     [strongSelf.delegate mediaContent:strongSelf didFailWithError:resolvedError];
                                                                 }
                                                                 return;
@@ -511,7 +511,7 @@ static NSTimeInterval const kPlayerControlOverlayInsetAnimationDuration = 0.25;
                 if ([self.delegate respondsToSelector:@selector(mediaContent:didFailWithError:)]) {
                     NSError *err = self->_playerItem.error ?: [NSError errorWithDomain:@"SPKFullScreenVideoViewController"
                                                                                   code:-1
-                                                                              userInfo:@{NSLocalizedDescriptionKey : @"Playback failed"}];
+                                                                              userInfo:@{NSLocalizedDescriptionKey : @"播放失败"}];
                     [self.delegate mediaContent:self didFailWithError:err];
                 }
             }

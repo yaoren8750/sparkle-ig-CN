@@ -57,48 +57,56 @@
                                                      subtitle:@""
                                                          icon:SPKSettingsIcon(@"settings")
                                                        action:^{
-                                                           self.includeSettings = !self.includeSettings;
-                                                           [self rebuildSections];
-                                                           [self updateActionEnabled];
-                                                       }];
+        self.includeSettings = !self.includeSettings;
+        [self rebuildSections];
+        [self updateActionEnabled];
+    }];
     settingsRow.userInfo = @{@"checkmarked" : @(self.includeSettings)};
-
+    
     SPKSetting *galleryRow = [SPKSetting buttonCellWithTitle:@"图库"
                                                     subtitle:@""
                                                         icon:SPKSettingsIcon(@"sparkle_gallery")
                                                       action:^{
-                                                          self.includeGallery = !self.includeGallery;
-                                                          [self rebuildSections];
-                                                          [self updateActionEnabled];
-                                                      }];
+        self.includeGallery = !self.includeGallery;
+        [self rebuildSections];
+        [self updateActionEnabled];
+    }];
     galleryRow.userInfo = @{@"checkmarked" : @(self.includeGallery)};
-
+    
     SPKSetting *deletedMessagesRow = [SPKSetting buttonCellWithTitle:@"已删除消息"
                                                             subtitle:@""
                                                                 icon:SPKSettingsIcon(@"channels")
                                                               action:^{
-                                                                  self.includeDeletedMessages = !self.includeDeletedMessages;
-                                                                  [self rebuildSections];
-                                                                  [self updateActionEnabled];
-                                                              }];
+        self.includeDeletedMessages = !self.includeDeletedMessages;
+        [self rebuildSections];
+        [self updateActionEnabled];
+    }];
     deletedMessagesRow.userInfo = @{@"checkmarked" : @(self.includeDeletedMessages)};
-
+    
     SPKSetting *profileAnalyzerRow = [SPKSetting buttonCellWithTitle:@"个人资料分析"
                                                             subtitle:@""
                                                                 icon:SPKSettingsIcon(@"profile_analyzer")
                                                               action:^{
-                                                                  self.includeProfileAnalyzer = !self.includeProfileAnalyzer;
-                                                                  [self rebuildSections];
-                                                                  [self updateActionEnabled];
-                                                              }];
-    profileAnalyzerRow.userInfo = @{@"checkmarked" : @(self.includeProfileAnalyzer)};
-
+        self.includeProfileAnalyzer = !self.includeProfileAnalyzer;
+        [self rebuildSections];
+        [self updateActionEnabled];
+    }];
+    profileAnalyzerRow.userInfo = @{
+        @"checkmarked" : @(self.includeProfileAnalyzer)
+    };
+    
     NSString *footer = self.importMode
-                           ? @"Preferences are restored, replacing your current values for the imported scope. "
-                             @"Gallery, Deleted Messages, and Profile Analyzer data are merged in — existing items are never deleted. "
-                             @"A restart prompt appears only when preferences change."
-                           : nil;
-    NSArray *sections = @[ SPKTopicSection(@"", @[ settingsRow, galleryRow, deletedMessagesRow, profileAnalyzerRow ], footer) ];
+    ? @"正在恢复偏好设置，将替换当前导入范围内的设置值。图库、已删除消息和个人资料分析数据将进行合并——现有项目不会被删除。仅当偏好设置发生变化时才会提示重启。"
+    : nil;
+    
+    NSArray *sections = @[
+        SPKTopicSection(
+        @"",
+        @[ settingsRow, galleryRow, deletedMessagesRow, profileAnalyzerRow ],
+        footer
+        )
+    ];
+    
     [self replaceSections:sections];
 }
 
@@ -155,33 +163,44 @@
     resetAllSettings.iconTintColor = [SPKUtils SPKColor_InstagramDestructive];
 
     NSArray *sections = @[
-        SPKTopicSection(@"Storage", @[
-            [SPKSetting navigationCellWithTitle:@"Storage Usage"
+        SPKTopicSection(@"存储", @[
+            [SPKSetting navigationCellWithTitle:@"存储使用情况"
                                        subtitle:@""
                                            icon:SPKSettingsIcon(@"info")
                                  viewController:[SPKStorageUsageViewController new]]
         ],
-                        @"See how much on-device space each Sparkle feature uses."),
-        SPKTopicSection(@"Backup & Transfer", @[
-            SPKSettingApplyIconTint([SPKSetting navigationCellWithTitle:@"Export"
-                                                               subtitle:@""
-                                                                   icon:SPKSettingsIcon(@"arrow_up")
-                                                         viewController:[[SPKSettingsTransferSelectionViewController alloc] initWithImportMode:NO]],
-                                    [SPKUtils SPKColor_InstagramPrimaryText]),
-            SPKSettingApplyIconTint([SPKSetting navigationCellWithTitle:@"Import"
-                                                               subtitle:@""
-                                                                   icon:SPKSettingsIcon(@"arrow_down")
-                                                         viewController:[[SPKSettingsTransferSelectionViewController alloc] initWithImportMode:YES]],
-                                    [SPKUtils SPKColor_InstagramPrimaryText])
+                        @"查看 Sparkle 各项功能占用的设备存储空间。"),
+
+        SPKTopicSection(@"备份与传输", @[
+            SPKSettingApplyIconTint(
+                [SPKSetting navigationCellWithTitle:@"导出"
+                                           subtitle:@""
+                                               icon:SPKSettingsIcon(@"arrow_up")
+                                     viewController:
+                                         [[SPKSettingsTransferSelectionViewController alloc]
+                                             initWithImportMode:NO]],
+                [SPKUtils SPKColor_InstagramPrimaryText]
+            ),
+
+            SPKSettingApplyIconTint(
+                [SPKSetting navigationCellWithTitle:@"导入"
+                                           subtitle:@""
+                                               icon:SPKSettingsIcon(@"arrow_down")
+                                     viewController:
+                                         [[SPKSettingsTransferSelectionViewController alloc]
+                                             initWithImportMode:YES]],
+                [SPKUtils SPKColor_InstagramPrimaryText]
+            )
         ],
-                        @"Choose to export or import settings, Gallery media, Deleted Messages, and Profile Analyzer data."),
-        SPKTopicSection(@"Reset", @[
+                        @"选择导出或导入设置、图库媒体、已删除消息和个人资料分析数据。"),
+
+        SPKTopicSection(@"重置", @[
             resetAllSettings
         ],
-                        @"Restore every preference to its default value.")
+                        @"将所有偏好设置恢复为默认值。")
     ];
 
-    return SPKTopicNavigationSetting(@"Data & Settings", @"cloud", 24.0, sections);
-}
+    return SPKTopicNavigationSetting(@"数据与设置", @"cloud", 24.0, sections);
+    }
 
-@end
+    @end

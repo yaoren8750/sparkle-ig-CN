@@ -781,7 +781,7 @@ NSString *SPKFileNameForMedia(NSURL *fileURL,
         if (error) {
             *error = [NSError errorWithDomain:@"SPKGallery"
                                          code:2
-                                     userInfo:@{NSLocalizedDescriptionKey : @"Replacement file does not exist"}];
+                                     userInfo:@{NSLocalizedDescriptionKey : @"替换文件不存在"}];
         }
         return NO;
     }
@@ -1147,14 +1147,14 @@ NSString *SPKFileNameForMedia(NSURL *fileURL,
 - (NSString *)openOriginalActionTitle {
     switch ((SPKGallerySource)self.source) {
     case SPKGallerySourceStories:
-        return @"Open Story";
+        return @"打开快拍";
     case SPKGallerySourceReels:
-        return @"Open Reel";
+        return @"打开 Reels";
     case SPKGallerySourceFeed:
     case SPKGallerySourceProfile:
-        return @"Open Post";
+        return @"打开帖子";
     default:
-        return @"Open Original Post";
+        return @"打开原始帖子";
     }
 }
 
@@ -1169,18 +1169,18 @@ NSString *SPKFileNameForMedia(NSURL *fileURL,
     case SPKGallerySourceProfile:
         return @"个人资料";
     case SPKGallerySourceDMs:
-        return @"DMs";
+        return @"私信";
     case SPKGallerySourceThumbnail:
-        return @"Thumb";
+        return @"缩略图";
     case SPKGallerySourceInstants:
         return @"Instants";
     case SPKGallerySourceAudioPage:
-        return @"Audio Page";
+        return @"音频页面";
     case SPKGallerySourceComments:
-        return @"Comments";
+        return @"评论";
     case SPKGallerySourceOther:
     default:
-        return @"Other";
+        return @"其他";
     }
 }
 
@@ -1189,24 +1189,24 @@ NSString *SPKFileNameForMedia(NSURL *fileURL,
     case SPKGallerySourceFeed:
         return @"动态";
     case SPKGallerySourceStories:
-        return @"Story";
+        return @"快拍";
     case SPKGallerySourceReels:
         return @"Reel";
     case SPKGallerySourceProfile:
         return @"个人资料";
     case SPKGallerySourceDMs:
-        return @"DMs";
+        return @"私信";
     case SPKGallerySourceThumbnail:
-        return @"Thumb";
+        return @"缩略图";
     case SPKGallerySourceInstants:
         return @"Instant";
     case SPKGallerySourceAudioPage:
-        return @"Audio Page";
+        return @"音频页面";
     case SPKGallerySourceComments:
-        return @"Comment";
+        return @"评论";
     case SPKGallerySourceOther:
     default:
-        return @"Other";
+        return @"其他";
     }
 }
 

@@ -371,7 +371,7 @@ typedef NS_ENUM(NSUInteger, SPKDownloadsHistoryRowKind) {
     self.chipBar = [[SPKChipBar alloc] initWithFrame:CGRectZero];
     self.chipBar.translatesAutoresizingMaskIntoConstraints = NO;
     self.chipBar.delegate = self;
-    [self.chipBar setItems:@[ @"All", @"Active", @"Queued", @"Failed", @"Recent" ]
+    [self.chipBar setItems:@[ @"全部", @"进行中", @"排队中", @"失败", @"最近" ]
                    symbols:@[ @"download", @"play", @"clock", @"error", @"circle_check" ]
            selectedSymbols:@[ @"download_filled", @"play_filled", @"clock_filled", @"error_filled", @"circle_check_filled" ]];
     self.chipBar.selectedIndex = 0;
@@ -603,25 +603,30 @@ typedef NS_ENUM(NSUInteger, SPKDownloadsHistoryRowKind) {
     self.emptyStateIcon.image = [SPKAssetUtils instagramIconNamed:@"empty" pointSize:96 renderingMode:UIImageRenderingModeAlwaysTemplate];
     switch ([self currentFilter]) {
     case SPKDownloadHistoryFilterFailed:
-        self.emptyStateTitle.text = @"No failed downloads";
-        self.emptyStateSubtitle.text = @"Any download jobs that fail will show up here.";
+        self.emptyStateTitle.text = @"没有失败的下载";
+        self.emptyStateSubtitle.text = @"下载失败的任务会显示在这里。";
         break;
+
     case SPKDownloadHistoryFilterActive:
-        self.emptyStateTitle.text = @"No active downloads";
-        self.emptyStateSubtitle.text = @"Currently running download tasks will appear here.";
+        self.emptyStateTitle.text = @"没有进行中的下载";
+        self.emptyStateSubtitle.text = @"正在下载的任务会显示在这里。";
         break;
+
     case SPKDownloadHistoryFilterQueued:
-        self.emptyStateTitle.text = @"Nothing queued";
-        self.emptyStateSubtitle.text = @"Downloads waiting in the queue will be listed here.";
+        self.emptyStateTitle.text = @"没有排队中的下载";
+        self.emptyStateSubtitle.text = @"等待下载的任务会显示在这里。";
         break;
+
     case SPKDownloadHistoryFilterRecent:
-        self.emptyStateTitle.text = @"No recent downloads";
-        self.emptyStateSubtitle.text = @"Recently finished or cancelled downloads will show here.";
+        self.emptyStateTitle.text = @"没有最近的下载";
+        self.emptyStateSubtitle.text = @"最近完成或取消的下载会显示在这里。";
         break;
+
     default:
-        self.emptyStateTitle.text = @"No downloads yet";
-        self.emptyStateSubtitle.text = @"Start downloading media from feeds, reels, or stories to build your history.";
+        self.emptyStateTitle.text = @"暂无下载";
+        self.emptyStateSubtitle.text = @"从动态、Reels 或快拍中下载媒体，即可在这里查看下载记录。";
         break;
+    
     }
 }
 
@@ -630,7 +635,7 @@ typedef NS_ENUM(NSUInteger, SPKDownloadsHistoryRowKind) {
 - (void)clearFinished {
     [SPKIGAlertPresenter presentAlertFromViewController:self
                                                   title:@"清除已完成的下载"
-                                                message:@"Removes finished entries and their staged preview copies. Active and queued downloads are kept; media saved to Photos or the Gallery is not affected."
+                                                message:@"清除已完成的下载记录及其预览副本。进行中和排队中的下载不会受到影响；已保存到照片或图库的媒体也不会被删除。"
                                                 actions:@[
                                                     [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                 style:SPKIGAlertActionStyleCancel
@@ -654,13 +659,13 @@ typedef NS_ENUM(NSUInteger, SPKDownloadsHistoryRowKind) {
 
     // Navigation actions (top)
     NSMutableArray<UIAction *> *nav = [NSMutableArray array];
-    [nav addObject:[UIAction actionWithTitle:@"Open Gallery"
+    [nav addObject:[UIAction actionWithTitle:@"打开图库"
                                        image:[SPKAssetUtils menuIconNamed:@"sparkle_gallery"]
                                   identifier:nil
                                      handler:^(__unused UIAction *a) {
                                          [SPKGalleryViewController presentGallery];
                                      }]];
-    [nav addObject:[UIAction actionWithTitle:@"Open Photos App"
+    [nav addObject:[UIAction actionWithTitle:@"打开照片"
                                        image:[SPKAssetUtils menuIconNamed:@"photo_gallery"]
                                   identifier:nil
                                      handler:^(__unused UIAction *a) {
@@ -671,7 +676,7 @@ typedef NS_ENUM(NSUInteger, SPKDownloadsHistoryRowKind) {
     // Destructive actions (bottom — inline section keeps them visually grouped last)
     NSMutableArray<UIAction *> *destructive = [NSMutableArray array];
 
-    UIAction *clearAction = [UIAction actionWithTitle:@"Clear Finished"
+    UIAction *clearAction = [UIAction actionWithTitle:@"清除已完成"
                                                 image:[SPKAssetUtils menuIconNamed:@"trash"]
                                            identifier:nil
                                               handler:^(__unused UIAction *a) {
@@ -688,7 +693,7 @@ typedef NS_ENUM(NSUInteger, SPKDownloadsHistoryRowKind) {
         }
     }
     if (hasActive) {
-        UIAction *cancelAll = [UIAction actionWithTitle:@"Cancel All Active"
+        UIAction *cancelAll = [UIAction actionWithTitle:@"取消所有正在下载的任务"
                                                   image:[SPKAssetUtils menuIconNamed:@"xmark"]
                                              identifier:nil
                                                 handler:^(__unused UIAction *a) {
@@ -867,7 +872,7 @@ static void SPKApplyStatusBadge(SPKDownloadHistoryCell *cell, SPKDownloadState s
         [parts addObject:[NSString stringWithFormat:@"%d%%", pct]];
     }
     if (job.items.count > 1) {
-        [parts addObject:[NSString stringWithFormat:@"%lu items", (unsigned long)job.items.count]];
+        [parts addObject:[NSString stringWithFormat:@"%lu 个项目", (unsigned long)job.items.count]];
     } else {
         SPKDownloadItem *first = job.items.firstObject;
         int64_t size = first.totalBytesExpected > 0 ? first.totalBytesExpected : first.bytesWritten;
@@ -981,10 +986,10 @@ static void SPKApplyStatusBadge(SPKDownloadHistoryCell *cell, SPKDownloadState s
         [parts addObject:@"音频"];
         break;
     case SPKDownloadMediaKindImage:
-        [parts addObject:@"Photo"];
+        [parts addObject:@"照片"];
         break;
     default:
-        [parts addObject:[NSString stringWithFormat:@"Item %ld", (long)(item.index + 1)]];
+        [parts addObject:[NSString stringWithFormat:@"第 %ld 项", (long)(item.index + 1)]];
         break;
     }
     if (item.state == SPKDownloadStateRunning || item.state == SPKDownloadStateFinalizing) {
@@ -1046,9 +1051,10 @@ static void SPKApplyStatusBadge(SPKDownloadHistoryCell *cell, SPKDownloadState s
 
     // Failed/interrupted → show error alert with Retry + Dismiss
     if (item.state == SPKDownloadStateFailed || item.state == SPKDownloadStateInterrupted) {
-        NSString *title = item.state == SPKDownloadStateFailed ? @"Download Failed" : @"Download Interrupted";
+        NSString *title = item.state == SPKDownloadStateFailed ? @"下载失败"
+        : @"下载中断";
         NSString *message = item.error.localizedDescription ?: item.detail ?
-                                                                           : @"An unknown error occurred.";
+                                                                           : @"发生未知错误。";
         NSString *jobID = row.job.jobID;
         NSString *itemID = item.itemID;
         BOOL isChild = (row.kind == SPKDownloadsHistoryRowKindChild);
@@ -1056,7 +1062,7 @@ static void SPKApplyStatusBadge(SPKDownloadHistoryCell *cell, SPKDownloadState s
                                                       title:title
                                                     message:message
                                                     actions:@[
-                                                        [SPKIGAlertAction actionWithTitle:@"Dismiss"
+                                                        [SPKIGAlertAction actionWithTitle:@"关闭"
                                                                                     style:SPKIGAlertActionStyleCancel
                                                                                   handler:nil],
                                                         [SPKIGAlertAction actionWithTitle:@"重试"

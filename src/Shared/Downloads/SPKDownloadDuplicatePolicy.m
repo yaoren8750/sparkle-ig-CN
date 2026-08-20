@@ -95,8 +95,7 @@ static SPKGalleryFile *SPKExistingGalleryFile(SPKGallerySaveMetadata *metadata, 
                                                          (int)mediaType, metadata.sourceMediaPK];
         } else {
             predicate = [NSPredicate predicateWithFormat:@"mediaType == %d", (int)mediaType];
-        }
-        // "Already in the Gallery" has to mean the Gallery the user can actually see.
+        }        // "Already in the Gallery" has to mean the Gallery the user can actually see.
         // With per-account filtering on, another account's copy is invisible to them, so
         // counting it as a duplicate would silently make the media unsavable.
         NSPredicate *accountScope = SPKGalleryAccountScopePredicate();
@@ -171,20 +170,20 @@ static BOOL SPKPresentSingleDuplicateAlert(SPKDownloadDuplicateDestination desti
                                            void (^continuation)(SPKDownloadDuplicateDecision)) {
     if (!SPKHasDuplicate(destination, metadata, mediaType))
         return NO;
-    NSString *message = [NSString stringWithFormat:@"This %@ has previously been downloaded to %@.",
+    NSString *message = [NSString stringWithFormat:@"此%@之前已下载到%@。",
                                                    SPKMediaTypeLabel(mediaType),
                                                    SPKDestinationLabel(destination)];
     [SPKIGAlertPresenter presentAlertFromViewController:presenter
-                                                  title:@"Duplicate Download Detected"
+                                                  title:@"检测到重复下载"
                                                 message:message
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Download Anyway"
+                                                    [SPKIGAlertAction actionWithTitle:@"仍然下载"
                                                                                 style:SPKIGAlertActionStyleDefault
                                                                               handler:^{
                                                                                   if (continuation)
                                                                                       continuation(SPKDownloadDuplicateDecisionDownloadAgain);
                                                                               }],
-                                                    [SPKIGAlertAction actionWithTitle:@"Delete Existing and Download"
+                                                    [SPKIGAlertAction actionWithTitle:@"删除现有文件并下载"
                                                                                 style:SPKIGAlertActionStyleDestructive
                                                                               handler:^{
                                                                                   if (continuation)
@@ -206,18 +205,18 @@ static BOOL SPKPresentBulkDuplicateAlert(NSUInteger duplicateCount,
                                          void (^continuation)(SPKDownloadBulkDuplicateDecision)) {
     if (duplicateCount == 0 || !continuation)
         return NO;
-    NSString *message = [NSString stringWithFormat:@"%lu of %lu items were already downloaded.",
+    NSString *message = [NSString stringWithFormat:@"%lu / %lu 个项目已下载。",
                                                    (unsigned long)duplicateCount, (unsigned long)totalCount];
     [SPKIGAlertPresenter presentAlertFromViewController:presenter ?: topMostController()
-                                                  title:@"Duplicate Downloads"
+                                                  title:@"检测到重复下载"
                                                 message:message
                                                 actions:@[
-                                                    [SPKIGAlertAction actionWithTitle:@"Skip Existing"
+                                                    [SPKIGAlertAction actionWithTitle:@"跳过已存在的"
                                                                                 style:SPKIGAlertActionStyleDefault
                                                                               handler:^{
                                                                                   continuation(SPKDownloadBulkDuplicateDecisionSkipExisting);
                                                                               }],
-                                                    [SPKIGAlertAction actionWithTitle:@"Download All Anyway"
+                                                    [SPKIGAlertAction actionWithTitle:@"仍然全部下载"
                                                                                 style:SPKIGAlertActionStyleDefault
                                                                               handler:^{
                                                                                   continuation(SPKDownloadBulkDuplicateDecisionDownloadAllAnyway);

@@ -23,7 +23,7 @@
 @implementation SPKTrimFilesExporter
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
     if (self.done)
-        self.done(YES, @"Saved to Files");
+        self.done(YES, @"已保存到文件");
     self.selfRef = nil;
 }
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller {
@@ -73,10 +73,10 @@
             // filename/attribution), but should sort as the newest item — the
             // edit happened just now.
             [saved markAddedNow];
-            done(YES, (mediaType == SPKGalleryMediaTypeImage) ? @"Frame saved to Gallery" : (mediaType == SPKGalleryMediaTypeAudio) ? @"Audio saved to Gallery"
-                                                                                                                                    : @"Trimmed clip saved to Gallery");
+            done(YES, (mediaType == SPKGalleryMediaTypeImage) ? @"帧已保存到图库" : (mediaType == SPKGalleryMediaTypeAudio) ? @"音频已保存到图库"
+                                                                                                                                    : @"裁剪片段已保存到图库");
         } else {
-            done(NO, error.localizedDescription ?: @"Could not save the trimmed file.");
+            done(NO, error.localizedDescription ?: @"无法保存裁剪后的文件");
         }
     };
 
@@ -96,12 +96,12 @@
     SPKTrimStoreBlock replaceStore = ^(NSURL *rendered, void (^done)(BOOL, NSString *)) {
         NSError *error = nil;
         BOOL ok = [originFile replaceMediaWithFileURL:rendered mediaType:mediaType error:&error];
-        done(ok, ok ? @"Original replaced" : (error.localizedDescription ?: @"Could not replace the original."));
+        done(ok, ok ? @"已替换原文件" : (error.localizedDescription ?: @"无法替换原文件。"));
     };
 
-    NSString *title = (result.mode == SPKTrimResultModeFrameOnly) ? @"Save Photo" : (result.mode == SPKTrimResultModeTrimmedAudio) ? @"Save Audio"
-                                                                                                                                   : @"Save Trimmed Clip";
-    SPKIGAlertAction *copy = [SPKIGAlertAction actionWithTitle:@"Save as Copy"
+    NSString *title = (result.mode == SPKTrimResultModeFrameOnly) ? @"保存照片" : (result.mode == SPKTrimResultModeTrimmedAudio) ? @"保存音频"
+                                                                                                                                   : @"保存裁剪片段";
+    SPKIGAlertAction *copy = [SPKIGAlertAction actionWithTitle:@"另存为副本"
                                                          style:SPKIGAlertActionStyleDefault
                                                        handler:^{
                                                            [self renderResult:result
@@ -113,7 +113,7 @@
                                                                  }
                                                                    completion:completion];
                                                        }];
-    SPKIGAlertAction *replace = [SPKIGAlertAction actionWithTitle:@"Replace Original"
+    SPKIGAlertAction *replace = [SPKIGAlertAction actionWithTitle:@"替换原文件"
                                                             style:SPKIGAlertActionStyleDestructive
                                                           handler:^{
                                                               [self renderResult:result
@@ -134,7 +134,7 @@
 
     BOOL presented = [SPKIGAlertPresenter presentActionSheetFromViewController:presenter
                                                                          title:title
-                                                                       message:@"Do you want to replace the original file or save a copy?"
+                                                                       message:@"要替换原文件还是保存副本？"
                                                                        actions:@[ replace, copy, cancel ]];
     if (!presented) {
         [self renderResult:result
@@ -158,8 +158,8 @@
              completion:(void (^)(BOOL))completion {
     NSURL *tempURL = [self writeEditedImageToTemp:image];
     if (!tempURL) {
-        SPKNotify(@"spk.photoedit.save", @"Couldn't Save",
-                  @"The edited image could not be encoded.", @"error_filled",
+        SPKNotify(@"spk.photoedit.save", @"保存失败",
+                  @"无法编码编辑后的图片。", @"error_filled",
                   SPKNotificationToneError);
         if (completion)
             completion(NO);
@@ -189,8 +189,8 @@
               completion:(void (^)(BOOL))completion {
     NSURL *tempURL = [self writeEditedImageToTemp:image];
     if (!tempURL) {
-        SPKNotify(@"spk.photoedit.save", @"Couldn't Save",
-                  @"The edited image could not be encoded.", @"error_filled",
+        SPKNotify(@"spk.photoedit.save", @"保存失败",
+                  @"无法编码编辑后的图片。", @"error_filled",
                   SPKNotificationToneError);
         if (completion)
             completion(NO);
@@ -246,7 +246,7 @@
                                                      metadata:metadata
                                                    completion:^(BOOL ok, NSError *error) {
                                                        dispatch_async(dispatch_get_main_queue(), ^{
-                                                           done(ok, ok ? @"已保存到照片" : (error.localizedDescription ?: @"Could not save to Photos."));
+                                                           done(ok, ok ? @"已保存到照片" : (error.localizedDescription ?: @"无法保存到照片。"));
                                                        });
                                                    }];
         };
@@ -259,9 +259,9 @@
                 NSData *data = [NSData dataWithContentsOfURL:rendered options:NSDataReadingMappedIfSafe error:nil];
                 if (data) {
                     [UIPasteboard generalPasteboard].items = @[ @{UTTypeMovie.identifier : data} ];
-                    done(YES, @"Copied clip to clipboard");
+                    done(YES, @"片段已复制到剪贴板");
                 } else {
-                    done(NO, @"Could not copy the clip.");
+                    done(NO, @"无法复制片段。");
                 }
             } else if (isAudio) {
                 NSData *data = [NSData dataWithContentsOfURL:rendered options:NSDataReadingMappedIfSafe error:nil];
@@ -269,15 +269,15 @@
                     [UIPasteboard generalPasteboard].items = @[ @{UTTypeAudio.identifier : data} ];
                     done(YES, @"音频已复制到剪贴板");
                 } else {
-                    done(NO, @"Could not copy the audio.");
+                    done(NO, @"无法复制音频。");
                 }
             } else {
                 UIImage *image = [UIImage imageWithContentsOfFile:rendered.path];
                 if (image) {
                     [[UIPasteboard generalPasteboard] setImage:image];
-                    done(YES, @"Copied frame to clipboard");
+                    done(YES, @"帧已复制到剪贴板");
                 } else {
-                    done(NO, @"Could not copy the frame.");
+                    done(NO, @"无法复制帧。");
                 }
             }
         };
@@ -285,7 +285,7 @@
         store = ^(NSURL *rendered, SPKTrimStoreCompletion done) {
             UIViewController *host = presenter ?: topMostController();
             if (!host) {
-                done(NO, @"Could not present the Files picker.");
+                done(NO, @"无法打开文件选择器。");
                 return;
             }
             SPKTrimFilesExporter *exporter = [SPKTrimFilesExporter new];
@@ -310,14 +310,14 @@
         store = ^(NSURL *rendered, SPKTrimStoreCompletion done) {
             UIViewController *host = presenter ?: topMostController();
             if (!host) {
-                done(NO, @"Could not present share sheet.");
+                done(NO, @"无法打开分享面板。");
                 return;
             }
             UIActivityViewController *vc = [[UIActivityViewController alloc] initWithActivityItems:@[ rendered ]
                                                                              applicationActivities:nil];
             vc.completionWithItemsHandler = ^(UIActivityType _Nullable type, BOOL completed,
                                               NSArray *_Nullable items, NSError *_Nullable err) {
-                done(YES, completed ? @"Shared" : nil);
+                done(YES, completed ? @"已分享" : nil);
             };
             if (vc.popoverPresentationController) {
                 vc.popoverPresentationController.sourceView = host.view;
@@ -338,10 +338,10 @@
                                                              metadata:metadata
                                                                 error:&error];
             if (saved)
-                done(YES, (mediaType == SPKGalleryMediaTypeImage) ? @"Frame saved to Gallery" : (mediaType == SPKGalleryMediaTypeAudio) ? @"Audio saved to Gallery"
-                                                                                                                                        : @"Trimmed clip saved to Gallery");
+                done(YES, (mediaType == SPKGalleryMediaTypeImage) ? @"帧已保存到图库" : (mediaType == SPKGalleryMediaTypeAudio) ? @"音频已保存到图库"
+                                                                                                                                        : @"裁剪片段已保存到图库");
             else
-                done(NO, error.localizedDescription ?: @"Could not save to Gallery.");
+                done(NO, error.localizedDescription ?: @"无法保存到图库。");
         };
     }
 
@@ -388,7 +388,7 @@
                              ? result.preferredBasename
                              : [NSString stringWithFormat:@"SPKTrim-%@", NSUUID.UUID.UUIDString];
     NSString *title = progressTitle.length > 0 ? progressTitle
-                                               : (isFrameOnly ? @"Extracting frame..." : (isAudio ? @"Trimming audio..." : @"Trimming..."));
+                                               : (isFrameOnly ? @"正在提取帧..." : (isAudio ? @"正在裁剪音频..." : @"正在裁剪..."));
 
     // Continue an in-flight pill (e.g. from a preceding download) instead of
     // stacking a second notification.
@@ -425,7 +425,7 @@
         if (!renderedURL) {
             // The reason goes in the subtitle so the pill always leads with what
             // failed; an encoder message is too long to read as a title.
-            [pill showErrorWithTitle:@"Trim failed" subtitle:error.localizedDescription icon:nil];
+            [pill showErrorWithTitle:@"裁剪失败" subtitle:error.localizedDescription icon:nil];
             if (completion)
                 completion(NO);
             return;
@@ -433,11 +433,11 @@
         store(renderedURL, ^(BOOL ok, NSString *message) {
             [[NSFileManager defaultManager] removeItemAtURL:renderedURL error:nil];
             if (ok) {
-                [pill showSuccessWithTitle:message subtitle:(onSuccessTap ? @"Tap to view" : nil)icon:nil];
+                [pill showSuccessWithTitle:message subtitle:(onSuccessTap ? @"点击查看" : nil)icon:nil];
                 if (onSuccessTap)
                     pill.onTapWhenCompleted = onSuccessTap;
             } else {
-                [pill showError:message ?: @"Save failed"];
+                [pill showError:message ?: @"保存失败"];
             }
             if (completion)
                 completion(ok);
@@ -526,7 +526,7 @@
         if (completion) {
             completion(nil, [NSError errorWithDomain:@"Sparkle.TrimSave"
                                                 code:1
-                                            userInfo:@{NSLocalizedDescriptionKey : @"Could not extract the selected frame."}]);
+                                            userInfo:@{NSLocalizedDescriptionKey : @"无法提取所选帧。"}]);
         }
         return;
     }
@@ -562,10 +562,10 @@
             onConfirm();
         return;
     }
-    SPKIGAlertAction *keep = [SPKIGAlertAction actionWithTitle:@"Continue"
+    SPKIGAlertAction *keep = [SPKIGAlertAction actionWithTitle:@"继续"
                                                          style:SPKIGAlertActionStyleCancel
                                                        handler:nil];
-    SPKIGAlertAction *stop = [SPKIGAlertAction actionWithTitle:@"Stop"
+    SPKIGAlertAction *stop = [SPKIGAlertAction actionWithTitle:@"停止"
                                                          style:SPKIGAlertActionStyleDestructive
                                                        handler:^{
                                                            if (onConfirm)

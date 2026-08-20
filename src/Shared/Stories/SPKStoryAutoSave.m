@@ -34,7 +34,7 @@ SPKAutoSaveFilterConfig *SPKStoryAutoSaveFilterConfig(void) {
         config.includedKey = @"stories_auto_save_included";
         config.identityField = @"pk";
         config.sortField = @"用户名";
-        config.subjectPlural = @"Users";
+        config.subjectPlural = @"用户";
         config.ruleNotificationIdentifier = kSPKNotificationStoryAutoSaveUserRule;
     });
     return config;
@@ -180,7 +180,7 @@ NSString *SPKStoryAutoSaveCurrentUserActionTitle(SPKStoryContext *context) {
     NSString *pk = nil;
     if (!SPKStoryAutoSaveResolveCurrentUser(context, NULL, &pk))
         return nil;
-    return SPKStoryAutoSaveAppliesToCurrentUser(context) ? @"Stop Auto-Saving Stories" : @"Auto-Save Stories";
+    return SPKStoryAutoSaveAppliesToCurrentUser(context) ? @"停止自动保存快拍" : @"自动保存快拍";
 }
 
 NSString *SPKStoryAutoSaveCurrentUserConfirmationTitle(SPKStoryContext *context) {
@@ -193,8 +193,8 @@ NSString *SPKStoryAutoSaveCurrentUserConfirmationMessage(SPKStoryContext *contex
     if (!SPKStoryAutoSaveResolveCurrentUser(context, &username, &pk))
         return nil;
     return SPKStoryAutoSaveAppliesToUser(pk)
-               ? [NSString stringWithFormat:@"Do you want to stop auto-saving stories from @%@?", username]
-               : [NSString stringWithFormat:@"Do you want to auto-save every story from @%@?", username];
+               ? [NSString stringWithFormat:@"要停止自动保存 @%@ 的快拍吗？", username]
+               : [NSString stringWithFormat:@"要自动保存 @%@ 的所有快拍吗？", username];
 }
 
 BOOL SPKStoryToggleAutoSaveCurrentUser(SPKStoryContext *context, NSString **notificationTitle, NSString **notificationSubtitle) {
@@ -222,11 +222,13 @@ BOOL SPKStoryToggleAutoSaveCurrentUser(SPKStoryContext *context, NSString **noti
 
     if (notificationTitle) {
         *notificationTitle = appliedBefore
-                                 ? [NSString stringWithFormat:@"Auto-save off for @%@", username]
-                                 : [NSString stringWithFormat:@"Auto-save on for @%@", username];
+                                 ? [NSString stringWithFormat:@"已为 @%@ 关闭自动保存", username]
+                                 : [NSString stringWithFormat:@"已为 @%@ 开启自动保存", username];
     }
+
     if (notificationSubtitle)
         *notificationSubtitle = SPKStoryAutoSaveListTitle();
+
     return YES;
 }
 
@@ -242,16 +244,15 @@ BOOL SPKStoryToggleAutoSaveCurrentUser(SPKStoryContext *context, NSString **noti
         BOOL allUsers = SPKStoryAutoSaveAllUsersMode();
         self.showsAddButton = YES;
         self.infoText = allUsers
-                            ? @"Filter Mode is All Users, so every story you watch is saved except from users in this "
-                              @"list. Stories you already have are skipped, so re-watching never saves one twice."
-                            : @"Filter Mode is Selected Users, so only stories from users in this list are saved. "
-                              @"Stories you already have are skipped, so re-watching never saves one twice.";
-        self.emptyTitle = @"No users yet";
+                            ? @"筛选模式为“所有用户”，因此你观看的所有快拍都会自动保存，但此列表中的用户除外。已经保存过的快拍会跳过，重复观看不会再次保存。"
+                            : @"筛选模式为“指定用户”，因此只会自动保存此列表中用户的快拍。已经保存过的快拍会跳过，重复观看不会再次保存。";
+        self.emptyTitle = @"暂无用户";
         self.emptySubtitle = allUsers
-                                 ? @"Add users whose stories should never be auto-saved."
-                                 : @"Add users whose stories should be saved automatically as you watch them.";
+                                 ? @"添加不希望自动保存其快拍的用户。"
+                                 : @"添加希望在观看时自动保存其快拍的用户。";
     }
     return self;
+
 }
 
 - (NSString *)removalDisplayNameForEntry:(NSDictionary *)entry {
@@ -271,7 +272,7 @@ BOOL SPKStoryToggleAutoSaveCurrentUser(SPKStoryContext *context, NSString **noti
 
         SPKUserListItem *item = [SPKUserListItem new];
         item.pk = pk;
-        item.title = username.length ? [@"@" stringByAppendingString:username] : @"Unknown user";
+        item.title = username.length ? [@"@" stringByAppendingString:username] : @"未知用户";
         item.subtitle = fullName.length ? fullName : nil;
         item.avatarURLString = profilePicUrl;
         item.representedObject = entry;
@@ -284,14 +285,14 @@ BOOL SPKStoryToggleAutoSaveCurrentUser(SPKStoryContext *context, NSString **noti
     [SPKIGAlertPresenter presentAlertFromViewController:self
                                                   title:@"无法添加用户"
                                                 message:message
-                                                actions:@[ [SPKIGAlertAction actionWithTitle:@"OK" style:SPKIGAlertActionStyleCancel handler:nil] ]];
+                                                actions:@[ [SPKIGAlertAction actionWithTitle:@"确定" style:SPKIGAlertActionStyleCancel handler:nil] ]];
 }
 
 - (void)didTapAdd {
     __weak typeof(self) weakSelf = self;
     [SPKIGAlertPresenter presentTextInputAlertFromViewController:self
                                                            title:@"添加用户"
-                                                         message:@"Enter the Instagram username whose stories should be auto-saved."
+                                                         message:@"输入要自动保存其快拍的 Instagram 用户名。"
                                                      placeholder:@"用户名"
                                                      initialText:nil
                                                  autocapitalized:NO
@@ -316,13 +317,13 @@ BOOL SPKStoryToggleAutoSaveCurrentUser(SPKStoryContext *context, NSString **noti
                                       if (!strongSelf)
                                           return;
                                       if (![user isKindOfClass:[NSDictionary class]] || error) {
-                                          [strongSelf presentError:[NSString stringWithFormat:@"User '%@' was not found.", username]];
+                                          [strongSelf presentError:[NSString stringWithFormat:@"未找到用户“%@”。", username]];
                                           return;
                                       }
 
                                       NSString *pk = SPKStringFromValue(user[@"pk"] ?: user[@"id"]);
                                       if (pk.length == 0) {
-                                          [strongSelf presentError:@"Could not resolve this user's Instagram ID."];
+                                          [strongSelf presentError:@"无法获取该用户的 Instagram ID。"];
                                           return;
                                       }
                                       NSString *resolvedUsername = SPKStringFromValue(user[@"用户名"]) ?: username;
@@ -340,7 +341,7 @@ BOOL SPKStoryToggleAutoSaveCurrentUser(SPKStoryContext *context, NSString **noti
                                                                                       [SPKIGAlertAction actionWithTitle:@"取消"
                                                                                                                   style:SPKIGAlertActionStyleCancel
                                                                                                                 handler:nil],
-                                                                                      [SPKIGAlertAction actionWithTitle:@"Add"
+                                                                                      [SPKIGAlertAction actionWithTitle:@"添加"
                                                                                                                   style:SPKIGAlertActionStyleDefault
                                                                                                                 handler:^{
                                                                                                                     [strongSelf addResolvedUserPK:pk username:resolvedUsername fullName:fullName profilePicUrl:profilePicUrl];
@@ -354,7 +355,7 @@ BOOL SPKStoryToggleAutoSaveCurrentUser(SPKStoryContext *context, NSString **noti
         return;
     SPKStoryToggleAutoSaveForPK(pk, username, fullName, profilePicUrl);
     SPKNotify(kSPKNotificationStoryAutoSaveUserRule,
-              [NSString stringWithFormat:@"Added @%@", username],
+              [NSString stringWithFormat:@"已添加 @%@", username],
               SPKStoryAutoSaveListTitle(),
               @"circle_check_filled",
               SPKNotificationToneSuccess);

@@ -60,7 +60,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryDeleteSection) {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = self.mode == SPKGalleryDeletePageModeRoot ? @"Delete Files" : @"Delete by User";
+    self.title = self.mode == SPKGalleryDeletePageModeRoot ? @"删除文件" : @"按用户删除";
     self.view.backgroundColor = [SPKUtils SPKColor_InstagramGroupedBackground];
     self.tableView.backgroundColor = [SPKUtils SPKColor_InstagramGroupedBackground];
     self.tableView.separatorColor = [SPKUtils SPKColor_InstagramSeparator];
@@ -93,63 +93,71 @@ typedef NS_ENUM(NSInteger, SPKGalleryDeleteSection) {
     }
 
     self.sections = @[
-        @[ [self actionWithTitle:@"Delete All Files" iconName:@"trash" predicate:nil successTitle:@"All files deleted"] ],
+        @[ [self actionWithTitle:@"删除所有文件"
+                        iconName:@"trash"
+                       predicate:nil
+                    successTitle:@"已删除所有文件"] ],
         @[
-            [self actionWithTitle:@"Delete All Images"
+            [self actionWithTitle:@"删除所有图片"
                          iconName:@"photo"
                         predicate:[NSPredicate predicateWithFormat:@"mediaType == %d", SPKGalleryMediaTypeImage]
-                     successTitle:@"Images deleted"],
-            [self actionWithTitle:@"Delete All Videos"
+                     successTitle:@"已删除所有图片"],
+            [self actionWithTitle:@"删除所有视频"
                          iconName:@"video"
                         predicate:[NSPredicate predicateWithFormat:@"mediaType == %d", SPKGalleryMediaTypeVideo]
-                     successTitle:@"Videos deleted"],
-            [self actionWithTitle:@"Delete All Audio"
+                     successTitle:@"已删除所有视频"],
+            [self actionWithTitle:@"删除所有音频"
                          iconName:@"audio"
                         predicate:[NSPredicate predicateWithFormat:@"mediaType == %d", SPKGalleryMediaTypeAudio]
-                     successTitle:@"Audio deleted"]
+                     successTitle:@"已删除所有音频"]
         ],
         @[
-            [self actionWithTitle:@"Delete Feed Posts"
+            [self actionWithTitle:@"删除动态帖子"
                          iconName:@"feed"
                         predicate:[NSPredicate predicateWithFormat:@"source == %d", SPKGallerySourceFeed]
-                     successTitle:@"Feed posts deleted"],
-            [self actionWithTitle:@"Delete Stories"
+                     successTitle:@"已删除动态帖子"],
+            [self actionWithTitle:@"删除快拍"
                          iconName:@"story"
                         predicate:[NSPredicate predicateWithFormat:@"source == %d", SPKGallerySourceStories]
-                     successTitle:@"Stories deleted"],
-            [self actionWithTitle:@"Delete Reels"
+                     successTitle:@"已删除快拍"],
+            [self actionWithTitle:@"删除 Reels"
                          iconName:@"reels"
                         predicate:[NSPredicate predicateWithFormat:@"source == %d", SPKGallerySourceReels]
-                     successTitle:@"Reels deleted"],
-            [self actionWithTitle:@"Delete Thumbnails"
+                     successTitle:@"已删除 Reels"],
+            [self actionWithTitle:@"删除缩略图"
                          iconName:@"photo_gallery"
                         predicate:[NSPredicate predicateWithFormat:@"source == %d", SPKGallerySourceThumbnail]
-                     successTitle:@"Thumbnails deleted"],
-            [self actionWithTitle:@"Delete DM Media"
+                     successTitle:@"已删除缩略图"],
+            [self actionWithTitle:@"删除私信媒体"
                          iconName:@"messages"
                         predicate:[NSPredicate predicateWithFormat:@"source == %d", SPKGallerySourceDMs]
-                     successTitle:@"DM media deleted"],
-            [self actionWithTitle:@"Delete Profile Pictures"
+                     successTitle:@"已删除私信媒体"],
+            [self actionWithTitle:@"删除头像"
                          iconName:@"user_circle"
                         predicate:[NSPredicate predicateWithFormat:@"source == %d", SPKGallerySourceProfile]
-                     successTitle:@"Profile pictures deleted"],
-            [self actionWithTitle:@"Delete Instants"
+                     successTitle:@"已删除头像"],
+            [self actionWithTitle:@"删除即时动态"
                          iconName:@"instants"
                         predicate:[NSPredicate predicateWithFormat:@"source == %d", SPKGallerySourceInstants]
-                     successTitle:@"Instants deleted"],
-            [self actionWithTitle:@"Delete Audio Page Media"
+                     successTitle:@"已删除即时动态"],
+            [self actionWithTitle:@"删除音乐页面媒体"
                          iconName:@"audio_page"
                         predicate:[NSPredicate predicateWithFormat:@"source == %d", SPKGallerySourceAudioPage]
-                     successTitle:@"Audio page media deleted"],
-            [self actionWithTitle:@"Delete Comment Media"
+                     successTitle:@"已删除音乐页面媒体"],
+            [self actionWithTitle:@"删除评论媒体"
                          iconName:@"comment"
                         predicate:[NSPredicate predicateWithFormat:@"source == %d", SPKGallerySourceComments]
-                     successTitle:@"Comment media deleted"]
+                     successTitle:@"已删除评论媒体"]
         ],
         @[]
     ];
 
-    SPKGalleryDeleteAction *usersAction = [self actionWithTitle:@"Delete by User" iconName:@"users" predicate:nil successTitle:nil];
+    SPKGalleryDeleteAction *usersAction =
+        [self actionWithTitle:@"按用户删除"
+                     iconName:@"users"
+                    predicate:nil
+                 successTitle:nil];
+
     usersAction.navigatesToUsers = YES;
     self.sections = @[
         self.sections[0],
@@ -185,7 +193,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryDeleteSection) {
     for (__unused NSDictionary *row in rows) {
         userCount += 1;
     }
-    counts[@"Delete by User"] = @(userCount);
+    counts[@"按用户删除"] = @(userCount);
     self.countCache = counts;
 }
 
@@ -202,7 +210,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryDeleteSection) {
         if (!item) {
             item = [SPKGalleryDeleteUserItem new];
             item.username = username.length > 0 ? username : nil;
-            item.displayName = username.length > 0 ? username : @"Unknown User";
+            item.displayName = username.length > 0 ? username : @"未知用户";
             items[key] = item;
         }
         item.count += 1;
@@ -221,11 +229,11 @@ typedef NS_ENUM(NSInteger, SPKGalleryDeleteSection) {
     case SPKGalleryDeleteSectionGlobal:
         return nil;
     case SPKGalleryDeleteSectionType:
-        return @"Delete by Type";
+        return @"按类型删除";
     case SPKGalleryDeleteSectionSource:
-        return @"Delete by Source";
+        return @"按来源删除";
     case SPKGalleryDeleteSectionUser:
-        return @"Delete by User";
+        return @"按用户删除";
     }
     return nil;
 }
@@ -281,8 +289,8 @@ typedef NS_ENUM(NSInteger, SPKGalleryDeleteSection) {
         NSPredicate *predicate = item.username.length > 0
                                      ? [NSPredicate predicateWithFormat:@"sourceUsername == %@", item.username]
                                      : [NSPredicate predicateWithFormat:@"sourceUsername == nil OR sourceUsername == ''"];
-        NSString *title = [NSString stringWithFormat:@"Delete %@?", item.displayName];
-        [self confirmDeleteWithTitle:title predicate:predicate successTitle:@"User files deleted"];
+        NSString *title = [NSString stringWithFormat:@"确定删除%@？", item.displayName];
+        [self confirmDeleteWithTitle:title predicate:predicate successTitle:@"已删除该用户的文件"];
         return;
     }
 
@@ -294,7 +302,7 @@ typedef NS_ENUM(NSInteger, SPKGalleryDeleteSection) {
         return;
     }
 
-    [self confirmDeleteWithTitle:action.title predicate:action.predicate successTitle:action.successTitle ?: @"Files deleted"];
+    [self confirmDeleteWithTitle:action.title predicate:action.predicate successTitle:action.successTitle ?: @"已删除文件"];
 }
 
 - (void)confirmDeleteWithTitle:(NSString *)title predicate:(nullable NSPredicate *)predicate successTitle:(NSString *)successTitle {
@@ -303,11 +311,11 @@ typedef NS_ENUM(NSInteger, SPKGalleryDeleteSection) {
     req.predicate = predicate;
     NSArray<SPKGalleryFile *> *files = [ctx executeFetchRequest:req error:nil] ?: @[];
     if (files.count == 0) {
-        SPKNotify(kSPKNotificationGalleryBulkDelete, @"No files to delete", nil, @"error_filled", SPKNotificationToneError);
+        SPKNotify(kSPKNotificationGalleryBulkDelete, @"没有可删除的文件", nil, @"error_filled", SPKNotificationToneError);
         return;
     }
 
-    NSString *message = [NSString stringWithFormat:@"This will permanently remove %ld file%@.", (long)files.count, files.count == 1 ? @"" : @"s"];
+    NSString *message = [NSString stringWithFormat:@"这将永久删除 %ld 个文件。", (long)files.count];
     [SPKIGAlertPresenter presentAlertFromViewController:self
                                                   title:title
                                                 message:message

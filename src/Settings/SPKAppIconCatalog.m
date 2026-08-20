@@ -8,7 +8,7 @@ static NSString *const kSPKAppIconSelectionDefaultsKey = @"general_app_icon_iden
 
 static NSString *SPKAppIconDisplayNameFromIdentifier(NSString *identifier, BOOL primary) {
     if (primary || identifier.length == 0) {
-        return @"Default";
+        return @"默认";
     }
 
     NSMutableString *displayName = [[identifier stringByReplacingOccurrencesOfString:@"_" withString:@" "] mutableCopy];
@@ -105,7 +105,7 @@ static UIImage *SPKAppIconImageNamed(NSString *name) {
     } else {
         SPKAppIconItem *fallback = [[SPKAppIconItem alloc] init];
         fallback.identifier = kSPKAppIconPrimaryIdentifier;
-        fallback.displayName = @"Default";
+        fallback.displayName = @"默认";
         fallback.iconFiles = @[ @"Prod60x60", @"Icon-60-Prod", @"Prod" ];
         fallback.isPrimary = YES;
         [items addObject:fallback];

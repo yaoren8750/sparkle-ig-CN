@@ -444,12 +444,12 @@ static NSArray<UIMenuElement *> *SPKDirectSeenButtonMenuChildren(id source) {
     [children addObject:logAction];
 
     UIImage *settingsImage = [SPKAssetUtils menuIconNamed:@"settings"];
-    UIAction *settingsAction = [UIAction actionWithTitle:@"Messages Settings"
+    UIAction *settingsAction = [UIAction actionWithTitle:@"消息设置"
                                                    image:settingsImage
                                               identifier:nil
                                                  handler:^(__unused UIAction *action) {
-                                                     SPKNotify(kSPKNotificationOpenTopicSettings, @"Opened settings", nil, @"settings", SPKNotificationToneForIconResource(@"settings"));
-                                                     [SPKUtils showSettingsForTopicTitle:@"Messages"];
+                                                     SPKNotify(kSPKNotificationOpenTopicSettings, @"已打开设置", nil, @"settings", SPKNotificationToneForIconResource(@"settings"));
+                                                     [SPKUtils showSettingsForTopicTitle:@"消息"];
                                                  }];
     [children addObject:settingsAction];
 

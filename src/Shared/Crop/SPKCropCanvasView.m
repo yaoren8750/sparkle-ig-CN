@@ -29,9 +29,9 @@ SPKCropAspect SPKCropAspectPresetAtIndex(NSInteger index) {
 NSString *SPKCropAspectTitle(SPKCropAspect aspect) {
     switch (aspect) {
     case SPKCropAspectOriginal:
-        return @"Original";
+        return @"原始";
     case SPKCropAspectFreeform:
-        return @"Free";
+        return @"自由";
     case SPKCropAspectSquare:
         return @"1:1";
     case SPKCropAspectPortrait23:
@@ -137,9 +137,9 @@ UIView *SPKCropMakeToolRow(id target, SEL rotateLeft, SEL flip, SEL rotateRight)
                                               pointSize:24.0
                                           renderingMode:UIImageRenderingModeAlwaysTemplate];
     NSArray<UIButton *> *buttons = @[
-        SPKCropToolButton(rotateLeftIcon, @"Rotate Left", target, rotateLeft),
-        SPKCropToolButton(mirror, @"Flip", target, flip),
-        SPKCropToolButton(rotateRightIcon, @"Rotate Right", target, rotateRight),
+        SPKCropToolButton(rotateLeftIcon, @"向左旋转", target, rotateLeft),
+        SPKCropToolButton(mirror, @"翻转", target, flip),
+        SPKCropToolButton(rotateRightIcon, @"向右旋转", target, rotateRight),
     ];
     UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:buttons];
     stack.axis = UILayoutConstraintAxisHorizontal;

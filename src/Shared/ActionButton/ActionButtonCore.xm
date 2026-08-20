@@ -421,11 +421,11 @@ static NSString *SPKDownloadURLNounForActionSource(SPKActionButtonSource source)
 
 static NSString *SPKCopiedDownloadURLTitleForSource(SPKActionButtonSource source, BOOL plural) {
     NSString *noun = SPKDownloadURLNounForActionSource(source);
-    NSString *urlWord = plural ? @"URLs" : @"URL";
+ 
     if ([noun isEqualToString:@"Media"]) {
-        return [NSString stringWithFormat:@"Download %@ copied", urlWord];
+        return [NSString stringWithFormat:@"下载链接已复制"];
     }
-    return [NSString stringWithFormat:@"%@ download %@ copied", noun, urlWord];
+    return [NSString stringWithFormat:@"%@下载链接已复制", noun];
 }
 
 static NSString *SPKProfileStringValue(id value) {
@@ -1038,9 +1038,9 @@ static NSString *SPKActionButtonDisplayTitleForContext(NSString *identifier,
     if ([identifier isEqualToString:kSPKActionCopyMedia]) {
         BOOL isVideo = (currentEntry.videoURL != nil);
         if (isVideo) {
-            return (context.source == SPKActionButtonSourceReels) ? @"Copy Reel" : @"Copy Video";
+            return (context.source == SPKActionButtonSourceReels) ? @"复制 Reels" : @"复制视频";
         }
-        return @"Copy Photo";
+        return @"复制照片";
     }
     return SPKActionDescriptorDisplayTitle(identifier, context.settingsTitle);
 }
@@ -2538,7 +2538,7 @@ static SPKGallerySaveMetadata *SPKThumbnailMetadataFromEntryMetadata(SPKGalleryS
 
 static void SPKShowExtractedVideoCover(NSURL *videoURL, SPKGallerySaveMetadata *metadata, SPKActionButtonContext *context) {
     if (!videoURL) {
-        SPKNotify(kSPKNotificationViewThumbnail, @"Cover unavailable", nil, @"error_filled", SPKNotificationToneError);
+        SPKNotify(kSPKNotificationViewThumbnail, @"封面不可用", nil, @"error_filled", SPKNotificationToneError);
         return;
     }
 
@@ -2552,7 +2552,7 @@ static void SPKShowExtractedVideoCover(NSURL *videoURL, SPKGallerySaveMetadata *
         CGImageRef imageRef = [generator copyCGImageAtTime:CMTimeMakeWithSeconds(0.0, 600) actualTime:NULL error:&error];
         if (!imageRef) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                SPKNotify(kSPKNotificationViewThumbnail, @"Cover unavailable", error.localizedDescription ?: @"", @"error_filled", SPKNotificationToneError);
+                SPKNotify(kSPKNotificationViewThumbnail, @"封面不可用", error.localizedDescription ?: @"", @"error_filled", SPKNotificationToneError);
             });
             return;
         }
@@ -2599,7 +2599,7 @@ static void SPKPerformBatchDownloadWithQualityPrompt(NSArray<SPKResolvedMediaEnt
             NSString *topPK = SPKMediaPKForMediaObject(media);
             if (topPK.length > 0 && ![SPKMediaQualityManager hasWebPhotoCandidatesFetchedForPK:topPK]) {
                 if (SPKNotificationIsEnabled(identifier)) {
-                    [[SPKNotificationCenter shared] beginTransientProgressWithTitle:@"Fetching 4K candidates..." onCancel:nil];
+                    [[SPKNotificationCenter shared] beginTransientProgressWithTitle:@"正在获取 4K 资源…" onCancel:nil];
                 }
                 [SPKInstagramAPI fetchWebMediaInfoForPK:topPK completion:^(NSDictionary *response, NSError *error) {
                     [SPKMediaQualityManager markWebPhotoCandidatesFetchedForPK:topPK];
@@ -2638,8 +2638,8 @@ static void SPKPerformBatchDownloadWithQualityPrompt(NSArray<SPKResolvedMediaEnt
         [actions addObject:[SPKIGAlertAction actionWithTitle:@"Cancel" style:SPKIGAlertActionStyleCancel handler:nil]];
 
         [SPKIGAlertPresenter presentActionSheetFromViewController:presenter
-                                                             title:@"Batch Download Quality"
-                                                           message:[NSString stringWithFormat:@"Select quality for all %lu items:", (unsigned long)selectedEntries.count]
+                                                             title:@"批量下载画质"
+                                                           message:[NSString stringWithFormat:@"为全部 %lu 个项目选择画质:", (unsigned long)selectedEntries.count]
                                                            actions:actions];
         return;
     }
@@ -2654,14 +2654,14 @@ static BOOL SPKExecuteBulkChildAction(NSString *identifier,
                                       id media) {
     NSArray<SPKResolvedMediaEntry *> *downloadableEntries = SPKDownloadableEntries(entries);
     if (downloadableEntries.count < 2) {
-        SPKNotify(identifier, @"No bulk media available", nil, @"error_filled", SPKNotificationToneError);
+        SPKNotify(identifier, @"没有可用的批量媒体", nil, @"error_filled", SPKNotificationToneError);
         return YES;
     }
 
     if ([identifier isEqualToString:kSPKActionDownloadAllLinks]) {
         NSArray<NSString *> *bulkLinks = SPKBulkDownloadLinksFromEntries(downloadableEntries, media);
         if (bulkLinks.count == 0) {
-            SPKNotify(identifier, @"No links available", nil, @"error_filled", SPKNotificationToneError);
+            SPKNotify(identifier, @"没有可用的链接", nil, @"error_filled", SPKNotificationToneError);
             return YES;
         }
         [UIPasteboard generalPasteboard].string = [bulkLinks componentsJoinedByString:@"\n"];
@@ -2722,7 +2722,7 @@ static BOOL SPKExecuteCommonAction(NSString *identifier,
                                                            allowVideoFallback:YES];
         }
         if (!audioItem) {
-            SPKNotify(identifier, @"No audio available", nil, @"error_filled", SPKNotificationToneError);
+            SPKNotify(identifier, @"没有可用的音频", nil, @"error_filled", SPKNotificationToneError);
             return YES;
         }
         if (audioItem.artist.length == 0)
@@ -2759,7 +2759,7 @@ static BOOL SPKExecuteCommonAction(NSString *identifier,
                                                                        source:SPKAudioSourceForActionSource(context.source)];
         }
         if (!audioItem) {
-            SPKNotify(identifier, @"No audio available", nil, @"error_filled", SPKNotificationToneError);
+            SPKNotify(identifier, @"没有可用的音频", nil, @"error_filled", SPKNotificationToneError);
             return YES;
         }
         if (audioItem.artist.length == 0)
@@ -2805,7 +2805,7 @@ static BOOL SPKExecuteCommonAction(NSString *identifier,
         [identifier isEqualToString:kSPKActionDownloadShare] ||
         [identifier isEqualToString:kSPKActionDownloadGallery]) {
         if (!currentURL) {
-            SPKNotify(identifier, @"No downloadable media", nil, @"error_filled", SPKNotificationToneError);
+            SPKNotify(identifier, @"没有可下载的媒体", nil, @"error_filled", SPKNotificationToneError);
             return YES;
         }
 
@@ -2851,7 +2851,7 @@ static BOOL SPKExecuteCommonAction(NSString *identifier,
             bestURL = SPKBestDownloadURLForMediaObject(mediaForCopy);
         }
         if (!bestURL) {
-            SPKNotify(identifier, @"No link available", nil, @"error_filled", SPKNotificationToneError);
+            SPKNotify(identifier, @"没有可用的链接", nil, @"error_filled", SPKNotificationToneError);
             return YES;
         }
 
@@ -2877,7 +2877,7 @@ static BOOL SPKExecuteCommonAction(NSString *identifier,
         }
 
         if (!currentURL && !currentEntry.photoURL) {
-            SPKNotify(identifier, @"Nothing to copy", nil, @"error_filled", SPKNotificationToneForIconResource(@"error_filled"));
+            SPKNotify(identifier, @"没有可复制的内容", nil, @"error_filled", SPKNotificationToneForIconResource(@"error_filled"));
             return YES;
         }
 
@@ -2886,7 +2886,7 @@ static BOOL SPKExecuteCommonAction(NSString *identifier,
             UIImage *image = imageData ? [UIImage imageWithData:imageData] : nil;
             if (image) {
                 [[UIPasteboard generalPasteboard] setImage:image];
-                SPKNotify(identifier, @"Copied photo to clipboard", nil, @"copy_filled", SPKNotificationToneForIconResource(@"copy_filled"));
+                SPKNotify(identifier, @"已复制照片到剪贴板", nil, @"copy_filled", SPKNotificationToneForIconResource(@"copy_filled"));
             }
             return YES;
         }
@@ -2894,9 +2894,9 @@ static BOOL SPKExecuteCommonAction(NSString *identifier,
         NSData *data = [NSData dataWithContentsOfURL:currentURL];
         if (data) {
             [[UIPasteboard generalPasteboard] setData:data forPasteboardType:@"public.mpeg-4"];
-            SPKNotify(identifier, @"Copied video to clipboard", nil, @"copy_filled", SPKNotificationToneForIconResource(@"copy_filled"));
+            SPKNotify(identifier, @"已复制视频到剪贴板", nil, @"copy_filled", SPKNotificationToneForIconResource(@"copy_filled"));
         } else {
-            SPKNotify(identifier, @"Nothing to copy", nil, @"error_filled", SPKNotificationToneForIconResource(@"error_filled"));
+            SPKNotify(identifier, @"没有可复制的内容", nil, @"error_filled", SPKNotificationToneForIconResource(@"error_filled"));
         }
         return YES;
     }
@@ -2911,14 +2911,14 @@ static BOOL SPKExecuteCommonAction(NSString *identifier,
         }
         NSArray<SPKMediaItem *> *playerItems = SPKPlayerItemsFromEntries(previewEntries, context.source, username, media);
         if (playerItems.count == 0) {
-            SPKNotify(identifier, @"No media to expand", nil, @"error_filled", SPKNotificationToneError);
+            SPKNotify(identifier, @"没有可展开的媒体", nil, @"error_filled", SPKNotificationToneError);
             return YES;
         }
 
         NSInteger previewIndex = SPKPreviewIndexForEntry(currentEntry, previewEntries,
                                                          SPKResolveCurrentIndexForContext(context));
         NSInteger clampedIndex = SPKClampedIndex(previewIndex, (NSInteger)playerItems.count);
-        SPKNotify(identifier, @"Expanded media", nil, @"expand", SPKNotificationToneForIconResource(@"expand"));
+        SPKNotify(identifier, @"已展开媒体", nil, @"expand", SPKNotificationToneForIconResource(@"expand"));
         [SPKFullScreenMediaPlayer showMediaItems:playerItems
                                  startingAtIndex:clampedIndex
                                         metadata:meta
@@ -2965,19 +2965,19 @@ static BOOL SPKExecuteCommonAction(NSString *identifier,
         } else {
             SPKShowExtractedVideoCover(currentEntry.videoURL, thumbnailMeta, context);
         }
-        SPKNotify(identifier, @"Opened thumbnail", nil, @"photo_gallery", SPKNotificationToneForIconResource(@"photo_gallery"));
+        SPKNotify(identifier, @"已打开缩略图", nil, @"photo_gallery", SPKNotificationToneForIconResource(@"photo_gallery"));
         return YES;
     }
 
     if ([identifier isEqualToString:kSPKActionCopyCaption]) {
         NSString *caption = context.captionResolver ? context.captionResolver(context, media, entries, resolvedIndex) : nil;
         if (caption.length == 0) {
-            SPKNotify(identifier, @"No caption available", nil, @"error_filled", SPKNotificationToneError);
+            SPKNotify(identifier, @"没有可用的说明文字", nil, @"error_filled", SPKNotificationToneError);
             return YES;
         }
 
         [UIPasteboard generalPasteboard].string = caption;
-        SPKNotify(identifier, @"Caption copied", nil, @"copy_filled", SPKNotificationToneForIconResource(@"copy_filled"));
+        SPKNotify(identifier, @"说明已复制", nil, @"copy_filled", SPKNotificationToneForIconResource(@"copy_filled"));
         return YES;
     }
 
@@ -2988,7 +2988,7 @@ static BOOL SPKExecuteCommonAction(NSString *identifier,
             return YES;
         }
 
-        SPKNotify(identifier, @"Opened settings", nil, @"settings", SPKNotificationToneForIconResource(@"settings"));
+        SPKNotify(identifier, @"设置已打开", nil, @"settings", SPKNotificationToneForIconResource(@"settings"));
         [SPKUtils showSettingsForTopicTitle:settingsTitle];
         return YES;
     }
@@ -3230,7 +3230,7 @@ BOOL SPKExecuteActionIdentifier(NSString *identifier, SPKActionButtonContext *co
             SPKNotify(identifier, @"Settings unavailable", nil, @"error_filled", SPKNotificationToneError);
             return YES;
         }
-        SPKNotify(identifier, @"Opened settings", nil, @"settings", SPKNotificationToneForIconResource(@"settings"));
+        SPKNotify(identifier, @"设置已打开", nil, @"settings", SPKNotificationToneForIconResource(@"settings"));
         [SPKUtils showSettingsForTopicTitle:settingsTitle];
         return YES;
     }
@@ -3255,7 +3255,7 @@ BOOL SPKExecuteActionIdentifier(NSString *identifier, SPKActionButtonContext *co
                 SPKPausePlaybackForPreviewContext(context);
             }
             if (SPKNotificationIsEnabled(identifier)) {
-                [[SPKNotificationCenter shared] beginTransientProgressWithTitle:@"Fetching 4K candidates..." onCancel:nil];
+                [[SPKNotificationCenter shared] beginTransientProgressWithTitle:@"正在获取 4K 资源…" onCancel:nil];
             }
             [SPKInstagramAPI fetchWebMediaInfoForPK:topPK completion:^(NSDictionary *response, NSError *error) {
                 [SPKMediaQualityManager markWebPhotoCandidatesFetchedForPK:topPK];
@@ -3459,10 +3459,10 @@ static NSArray<UIMenuElement *> *SPKBuildBulkMenuChildren(SPKActionButtonConfigu
     // Each bulk entry sits in its own inline group so they read as separate rows
     // divided by separator lines. Download All / Copy All carry the download / copy
     // icons (not the generic "more" icon).
-    UIMenuElement *downloadAll = SPKBulkActionMenuElementForContext(context, bulkEntries, bulkUsername, bulkMedia, configuredBulkDownloadIdentifiers, @"Download All", kSPKActionDownloadAllLibrary);
+    UIMenuElement *downloadAll = SPKBulkActionMenuElementForContext(context, bulkEntries, bulkUsername, bulkMedia, configuredBulkDownloadIdentifiers, @"全部下载", kSPKActionDownloadAllLibrary);
     if (downloadAll)
         [children addObject:[UIMenu menuWithTitle:@"" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:@[ downloadAll ]]];
-    UIMenuElement *copyAll = SPKBulkActionMenuElementForContext(context, bulkEntries, bulkUsername, bulkMedia, configuredBulkCopyIdentifiers, @"Copy All", kSPKActionDownloadAllClipboard);
+    UIMenuElement *copyAll = SPKBulkActionMenuElementForContext(context, bulkEntries, bulkUsername, bulkMedia, configuredBulkCopyIdentifiers, @"全部复制", kSPKActionDownloadAllClipboard);
     if (copyAll)
         [children addObject:[UIMenu menuWithTitle:@"" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:@[ copyAll ]]];
 
@@ -3490,7 +3490,7 @@ static NSArray<UIMenuElement *> *SPKBuildBulkMenuChildren(SPKActionButtonConfigu
         }
     }
     if (destinations.count > 0) {
-        UIAction *selectMediaAction = [UIAction actionWithTitle:@"Select Media"
+        UIAction *selectMediaAction = [UIAction actionWithTitle:@"选择媒体"
                                                           image:[SPKAssetUtils menuIconNamed:@"circle_check"]
                                                      identifier:nil
                                                         handler:^(__unused UIAction *action) {
