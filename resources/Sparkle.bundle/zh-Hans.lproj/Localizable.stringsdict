@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld file</string>
+			<string>%ld 个文件</string>
 			<key>other</key>
-			<string>%ld files</string>
+			<string>%ld 个文件</string>
 		</dict>
 	</dict>
 	<key>COMMON_ITEM_COUNT</key>
@@ -29,9 +29,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld item</string>
+			<string>%ld 个项目</string>
 			<key>other</key>
-			<string>%ld items</string>
+			<string>%ld 个项目</string>
 		</dict>
 	</dict>
 	<key>COMMON_MESSAGE_COUNT</key>
@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld message</string>
+			<string>%ld 条消息</string>
 			<key>other</key>
-			<string>%ld messages</string>
+			<string>%ld 条消息</string>
 		</dict>
 	</dict>
 	<key>COMMON_OTHER_COUNT</key>
@@ -61,9 +61,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld other</string>
+			<string>%ld 个其他项目</string>
 			<key>other</key>
-			<string>%ld others</string>
+			<string>%ld 个其他项目</string>
 		</dict>
 	</dict>
 	<key>COMMON_PARTICIPANT_COUNT</key>
@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld participant</string>
+			<string>%ld 位参与者</string>
 			<key>other</key>
-			<string>%ld participants</string>
+			<string>%ld 位参与者</string>
 		</dict>
 	</dict>
 	<key>COMMON_SENDER_COUNT</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld sender</string>
+			<string>%ld 位发送者</string>
 			<key>other</key>
-			<string>%ld senders</string>
+			<string>%ld 位发送者</string>
 		</dict>
 	</dict>
 	<key>COMMON_USER_COUNT</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld user</string>
+			<string>%ld 位用户</string>
 			<key>other</key>
-			<string>%ld users</string>
+			<string>%ld 位用户</string>
 		</dict>
 	</dict>
 </dict>
