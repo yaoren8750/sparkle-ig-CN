@@ -29,9 +29,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld 个项目</string>
+			<string>%ld 项</string>
 			<key>other</key>
-			<string>%ld 个项目</string>
+			<string>%ld 项</string>
 		</dict>
 	</dict>
 	<key>COMMON_MESSAGE_COUNT</key>
@@ -61,9 +61,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%ld 个其他项目</string>
+			<string>另外 %ld 人</string>
 			<key>other</key>
-			<string>%ld 个其他项目</string>
+			<string>另外 %ld 人</string>
 		</dict>
 	</dict>
 	<key>COMMON_PARTICIPANT_COUNT</key>
