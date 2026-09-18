@@ -108,8 +108,10 @@ static NSArray<SPKSetting *> *SPKGeneralMediaPreviewRows(void) {
                                                              action:^(void) {
                                                                  unsigned long long freedBytes = [SPKUtils cleanCacheReturningFreedBytes];
                                                                  NSString *subtitle = freedBytes > 0
-                                                                                          ? [NSString stringWithFormat:@"Freed %@", [NSByteCountFormatter stringFromByteCount:(long long)freedBytes countStyle:NSByteCountFormatterCountStyleFile]]
-                                                                                          : SPKL(@"SETTINGS_GENERAL_CACHE_ALREADY_EMPTY_TEXT");
+    ? [NSString stringWithFormat:SPKL(@"SETTINGS_GENERAL_CACHE_FREED_FORMAT"),
+       [NSByteCountFormatter stringFromByteCount:(long long)freedBytes
+                                        countStyle:NSByteCountFormatterCountStyleFile]]
+    : SPKL(@"SETTINGS_GENERAL_CACHE_ALREADY_EMPTY_TEXT");
                                                                  SPKNotify(kSPKNotificationSettingsClearCache, SPKL(@"SETTINGS_GENERAL_CACHE_CLEARED_TEXT"), subtitle, @"circle_check_filled", SPKNotificationToneForIconResource(@"circle_check_filled"));
                                                              }];
     clearCacheSetting.tintColor = [SPKUtils SPKColor_InstagramDestructive];
