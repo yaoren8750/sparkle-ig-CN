@@ -40,7 +40,9 @@ concurrency:
 jobs:
     build:
         name: Build Sparkle
-        runs-on: macos-latest
+        # resources/sparkle.icon uses Icon Composer 27 features (refractivity),
+        # which the Xcode 26 ictool on macos-latest refuses to open.
+        runs-on: xcode-27
         permissions:
             contents: write
 

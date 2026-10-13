@@ -7,6 +7,7 @@
 #import "SPKStrings.h"
 #import "../../InstagramHeaders.h"
 #import "../../Networking/SPKInstagramAPI.h"
+#import "../../Shared/Account/SPKAccountManager.h"
 #import "../../Shared/Stories/SPKStoryMentions.h"
 #import "../../Shared/UI/SPKFollowButton.h"
 #import "../../Shared/UI/SPKMediaChrome.h"
@@ -27,6 +28,15 @@ static void SPKStoryMentionsEnsureSessionCaches(void) {
         SPKStoryMentionsFriendshipStatusCache = [NSMutableDictionary dictionary];
         SPKStoryMentionsAvatarCache = [[NSCache alloc] init];
         SPKStoryMentionsAvatarCache.countLimit = 128;
+
+        // Friendship status is relative to the viewing account, so nothing
+        // cached for one account may be shown to another.
+        [[NSNotificationCenter defaultCenter] addObserverForName:SPKAccountDidChangeNotification
+                                                          object:nil
+                                                           queue:[NSOperationQueue mainQueue]
+                                                      usingBlock:^(__unused NSNotification *note) {
+            [SPKStoryMentionsFriendshipStatusCache removeAllObjects];
+        }];
     });
 }
 

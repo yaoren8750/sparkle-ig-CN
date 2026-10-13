@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="popup.css">
+    <script src="popup.js" defer></script>
+</head>
+<body>
+    <header>
+        <img src="images/icon-256.png" alt="">
+        <div class="title">Sparkle</div>
+        <div class="subtitle">Instagram links from Safari, opened in the app.</div>
+    </header>
+
+    <section>
+        <label class="row">
+            <span>
+                <span class="name">Show Banner</span>
+                <span class="hint">A bar with an Open button on Instagram pages.</span>
+            </span>
+            <input type="checkbox" id="banner" checked>
+        </label>
+        <label class="row">
+            <span>
+                <span class="name">Offer the App Automatically</span>
+                <span class="hint">Ask once when an Instagram page loads.</span>
+            </span>
+            <input type="checkbox" id="auto" checked>
+        </label>
+    </section>
+
+    <p class="footer">Closing the banner hides it in that tab only. Turn it off here to hide it everywhere.</p>
+</body>
+</html>

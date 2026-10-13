@@ -212,6 +212,20 @@ static BOOL hooked_profileGridUseVariableAspectRatio(id self, SEL _cmd, id launc
     return orig_profileGridUseVariableAspectRatio(self, _cmd, launcherSet);
 }
 
+// IG 451 dropped the gating service's Objective-C entry point, so the gate is
+// also held off where it lands: the flag on the section controller itself.
+static BOOL (*orig_thumbnailUsesVariableAspectRatio)(id, SEL);
+static BOOL hooked_thumbnailUsesVariableAspectRatio(id self, SEL _cmd) {
+    if (SPKSquareProfileGridEnabled())
+        return NO;
+    return orig_thumbnailUsesVariableAspectRatio(self, _cmd);
+}
+
+static void (*orig_thumbnailSetUsesVariableAspectRatio)(id, SEL, BOOL);
+static void hooked_thumbnailSetUsesVariableAspectRatio(id self, SEL _cmd, BOOL uses) {
+    orig_thumbnailSetUsesVariableAspectRatio(self, _cmd, SPKSquareProfileGridEnabled() ? NO : uses);
+}
+
 // Returns the square grid glyph for a tall grid tab icon, or nil when the image
 // is some other tab's icon. The asset name Instagram tags on the image is the
 // signal, so one check covers the per-tab segment classes and the shared
@@ -287,6 +301,14 @@ extern void SPKInstallSquareGridHooksIfEnabled(void) {
                            @selector(profileGridUseVariableAspectRatioWithLauncherSet:),
                            (IMP)hooked_profileGridUseVariableAspectRatio,
                            (IMP *)&orig_profileGridUseVariableAspectRatio);
+        SPKHookInstanceMethod("IGMediaThumbnailSectionController",
+                              @selector(usesVariableAspectRatio),
+                              (IMP)hooked_thumbnailUsesVariableAspectRatio,
+                              (IMP *)&orig_thumbnailUsesVariableAspectRatio);
+        SPKHookInstanceMethod("IGMediaThumbnailSectionController",
+                              @selector(setUsesVariableAspectRatio:),
+                              (IMP)hooked_thumbnailSetUsesVariableAspectRatio,
+                              (IMP *)&orig_thumbnailSetUsesVariableAspectRatio);
         // Posts tab segment: its own Swift class on newer builds, one shared
         // segment class for every profile tab on older builds.
         SPKHookInstanceMethod("_TtC15IGProfilePluginP33_8E4C0B5300E00051E8F92B34A684A10523IGProfileGridTabSegment",

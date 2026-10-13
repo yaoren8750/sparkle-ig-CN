@@ -60,5 +60,6 @@ headers/
 plans/
 .cache/
 modules/*
-!modules/OpenInstagramSafariExtension.appex/
+!modules/OpenInSparkleSafariExtension.appex/
+!modules/SafariExtensionHandler/
 !modules/SPKSideloadFix/

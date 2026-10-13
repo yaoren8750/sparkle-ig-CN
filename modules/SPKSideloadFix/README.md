@@ -47,6 +47,36 @@ XPC listener name from that identity. Rewriting it prevents SpringBoard from
 connecting to the notification extension, causing startup timeouts, unchanged
 notification content, and duplicate or delayed banners.
 
+## App hand-off routing
+
+Every Instagram copy on a device registers the same URL schemes, and iOS does
+not define which app receives a scheme that several claim. Instagram's share
+extension finishes a feed, story or reel share by opening `instagram://` or
+`instagram-secure-share://`, so with another copy installed the share can open
+the wrong app, which cannot read the media: that sits in this install's group
+container.
+
+`build.sh` registers one extra scheme in the app that no other copy has
+(`sparkle-ig`, with the bundle ID appended for `--bundle-id` builds).
+`src/AppHandoff.xm` uses it in both directions:
+
+- In an extension process, any URL using one of the app's own schemes is
+  wrapped as `<scheme>://redirect?url=<encoded original>` on its way through
+  `UIApplication` or `NSExtensionContext`.
+- In the app process, `UIOpenURLContext` hands Instagram the original URL
+  again, so its routing runs unchanged on warm and cold opens.
+- A wrapped `https` link (what the Safari extension sends) is delivered as a
+  universal link: a browsing activity in the scene connection options on a
+  cold launch, `scene:continueUserActivity:` on a warm one.
+
+A wrapper is only honoured when it carries one of the app's own schemes or an
+Instagram web address, so the extra scheme opens nothing the stock schemes and
+universal links could not already open. Without the registered scheme (a
+jailbroken install, a `--no-ext` build) the whole file stays inert.
+
+UIKit is reached through the runtime only. This library is loaded into
+extensions that never link UIKit, and it must not make them load it.
+
 Build with:
 
 ```sh

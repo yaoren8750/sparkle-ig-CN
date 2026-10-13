@@ -100,14 +100,7 @@ typedef NS_ENUM(NSInteger, SPKCatalogRowAction) { SPKCatalogRowInstall, SPKCatal
                                                image:[SPKAssetUtils menuIconNamed:@"link"]
                                           identifier:nil
                                              handler:^(__unused UIAction *action) { [weakSelf presentURLImport]; }];
-    UIAction *exportAction = [UIAction actionWithTitle:SPKL(@"LANGUAGE_PACK_EXPORT_TITLE")
-                                                 image:[SPKAssetUtils menuIconNamed:@"share"]
-                                            identifier:nil
-                                               handler:^(__unused UIAction *action) { [weakSelf exportTemplate]; }];
-    // Exporting starts a translation rather than installing one, so it sits in its own group.
-    UIMenu *exportSection = [UIMenu menuWithTitle:@"" image:nil identifier:nil
-                                          options:UIMenuOptionsDisplayInline children:@[ exportAction ]];
-    return [UIMenu menuWithTitle:@"" children:@[ filesAction, linkAction, exportSection ]];
+    return [UIMenu menuWithTitle:@"" children:@[ filesAction, linkAction ]];
 }
 
 - (void)presentURLImport {
@@ -184,24 +177,6 @@ typedef NS_ENUM(NSInteger, SPKCatalogRowAction) { SPKCatalogRowInstall, SPKCatal
     [self rebuildSections];  // an imported language may now be listed as installed
     if (failures.count > 0)
         [self presentError:[failures componentsJoinedByString:@"\n"]];
-}
-
-- (void)exportTemplate {
-    NSError *error = nil;
-    NSString *archive = [SPKLanguagePackManager exportArchiveForLanguage:@"en" error:&error];
-    if (archive.length == 0) {
-        // Exporting failed, so the alert must not claim an import did.
-        [self presentError:error.localizedDescription ?: SPKL(@"LANGUAGE_PACK_ERROR_GENERIC")
-                     title:SPKL(@"LANGUAGE_PACK_EXPORT_ERROR_TITLE")];
-        return;
-    }
-    UIActivityViewController *share =
-        [[UIActivityViewController alloc] initWithActivityItems:@[ [NSURL fileURLWithPath:archive] ]
-                                         applicationActivities:nil];
-    share.popoverPresentationController.sourceView = self.view;
-    share.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX(self.view.bounds),
-                                                                CGRectGetMidY(self.view.bounds), 1.0, 1.0);
-    [self presentViewController:share animated:YES completion:nil];
 }
 
 /// Shared by every route that ends with a pack on disk.

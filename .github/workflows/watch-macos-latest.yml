@@ -1,0 +1,47 @@
+name: Watch macos-latest for Xcode 27
+
+# buildapp.yml is pinned to the xcode-27 preview image because the app icon
+# previews need Icon Composer 27. Once macos-latest ships it, this opens one
+# issue as the reminder to switch back, and can then be deleted.
+
+on:
+    workflow_dispatch:
+    schedule:
+        - cron: "0 9 * * 1"
+
+jobs:
+    watch:
+        name: Check Icon Composer on macos-latest
+        # Forks that enable Actions would otherwise run this weekly too.
+        if: github.repository == 'efibalogh/sparkle-ig'
+        runs-on: macos-latest
+        permissions:
+            issues: write
+
+        steps:
+            - name: Check for the iOS 27 design generation
+              env:
+                GH_TOKEN: ${{ github.token }}
+                TITLE: "macos-latest now has Xcode 27: switch buildapp.yml back"
+              run: |
+                xcodebuild -version
+                ictool="$(xcode-select -p)/../Applications/Icon Composer.app/Contents/Executables/ictool"
+                if ! "$ictool" --help 2>&1 | grep -q -- '--design-generation'; then
+                  echo "Icon Composer on macos-latest still lacks the iOS 27 design; nothing to do."
+                  exit 0
+                fi
+
+                existing="$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "in:title \"$TITLE\"" --json number --jq 'length')"
+                if [ "$existing" != "0" ]; then
+                  echo "Reminder issue already exists."
+                  exit 0
+                fi
+
+                gh issue create --repo "$GITHUB_REPOSITORY" --assignee "$GITHUB_REPOSITORY_OWNER" --title "$TITLE" --body "$(cat <<EOF
+                macos-latest now ships $(xcodebuild -version | head -n 1), whose Icon Composer renders the iOS 27 design.
+
+                - Set \`runs-on\` in \`.github/workflows/buildapp.yml\` back to \`macos-latest\`.
+                - Dispatch the IPA workflow once and check the in-app icon previews.
+                - Delete \`.github/workflows/watch-macos-latest.yml\`.
+                EOF
+                )"

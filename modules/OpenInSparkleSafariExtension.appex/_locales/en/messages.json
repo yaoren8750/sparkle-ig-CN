@@ -1,0 +1,22 @@
+{
+    "extension_name": {
+        "message": "Open in Sparkle",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Opens instagram.com links in the app, with an Open button on every Instagram page.",
+        "description": "Description of what the extension does."
+    },
+    "banner_title": {
+        "message": "Open in Sparkle",
+        "description": "Title of the banner shown on Instagram pages."
+    },
+    "banner_open": {
+        "message": "Open",
+        "description": "Banner button that opens the current page in the app."
+    },
+    "banner_dismiss": {
+        "message": "Stay in Safari",
+        "description": "Accessibility label of the banner's close button."
+    }
+}

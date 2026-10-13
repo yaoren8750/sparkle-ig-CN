@@ -22,6 +22,16 @@ static inline BOOL SPKHideMetaAIGlobal(void) {
     return [SPKUtils getBoolPref:@"general_hide_meta_ai_global"];
 }
 
+// Drops the gen-AI rows from a Direct message long-press menu.
+// 31: Restyle
+// 41: Make AI image
+static NSArray *SPKHideMetaAIDirectMenuOptions(NSArray *options) {
+    if (!SPKHideMetaAIDirect() || ![options isKindOfClass:NSArray.class])
+        return options;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"NOT (SELF IN %@)", @[ @(31), @(41) ]];
+    return [options filteredArrayUsingPredicate:predicate];
+}
+
 %group SPKHideMetaAIHooks
 
 // Direct
@@ -170,7 +180,9 @@ static inline BOOL SPKHideMetaAIGlobal(void) {
     return %orig(arg1, arg2, arg3, [self patchConfig:config], arg5, arg6, arg7);
 }
 
-- (id)_initializeWithLayoutSpecProvider:(id)arg1
+// Returns void on 410, so the result is passed through untyped: declared as an
+// object, ARC would retain whatever the return register happens to hold.
+- (void *)_initializeWithLayoutSpecProvider:(id)arg1
                             userSession:(id)arg2
                         userLauncherSet:(id)arg3
                                  config:(IGDirectComposerConfig *)config
@@ -259,15 +271,21 @@ return [config copy];
                                launcherSet:(id)arg8
                                userSession:(id)arg9
                                 tapHandler:(id)arg10 {
-    // 31: Restyle
-    // 41: Make AI image
-    NSArray *newOptions = options;
-    if (SPKHideMetaAIDirect()) {
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"NOT (SELF IN %@)", @[ @(31), @(41) ]];
-        newOptions = [options filteredArrayUsingPredicate:predicate];
-    }
+    return %orig(SPKHideMetaAIDirectMenuOptions(options), arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+}
 
-    return %orig([newOptions copy], arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+// IG 448 renamed the launcherSet: argument to mobileConfig: with the same shape.
++ (id)menuConfigurationWithEligibleOptions:(id)options
+                          messageViewModel:(id)arg2
+                               contentType:(id)arg3
+                                 isSticker:(_Bool)arg4
+                            isMusicSticker:(_Bool)arg5
+                          directNuxManager:(id)arg6
+                       sessionUserDefaults:(id)arg7
+                              mobileConfig:(id)arg8
+                               userSession:(id)arg9
+                                tapHandler:(id)arg10 {
+    return %orig(SPKHideMetaAIDirectMenuOptions(options), arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
 }
 %end
 
@@ -413,10 +431,32 @@ return [config copy];
 
     return %orig;
 }
+
+// IG 451 added a trailing floatsAsCenteredPill: to this initializer.
+- (id)initWithLauncherSet:(id)arg1 hasSearchPrefix:(BOOL)arg2 floatsAsCenteredPill:(BOOL)arg3 {
+    if (SPKHideMetaAIComments()) {
+        SPKLog(@"General", @"[Sparkle] Hiding meta ai: suggested ai searches comment carousel");
+
+        return nil;
+    }
+
+    return %orig;
+}
 %end
 
 %hook _TtC34IGCommentThreadAICarouselPillSwift30IGCommentThreadAICarouselSwift
 - (id)initWithLauncherSet:(id)arg1 hasSearchPrefix:(BOOL)arg2 {
+    if (SPKHideMetaAIComments()) {
+        SPKLog(@"General", @"[Sparkle] Hiding meta ai: suggested ai searches comment carousel");
+
+        return nil;
+    }
+
+    return %orig;
+}
+
+// IG 451 added a trailing floatsAsCenteredPill: to this initializer.
+- (id)initWithLauncherSet:(id)arg1 hasSearchPrefix:(BOOL)arg2 floatsAsCenteredPill:(BOOL)arg3 {
     if (SPKHideMetaAIComments()) {
         SPKLog(@"General", @"[Sparkle] Hiding meta ai: suggested ai searches comment carousel");
 
@@ -472,20 +512,48 @@ return [config copy];
 }
 %end
 
-// "Imagine background" in story editor vertical action bar
+// "Imagine background" and the Restyle button in the story editor action bar.
+// Both toolbar classes take the full button array before layout, so dropping an
+// entry there lets the remaining tools close the gap. Entries are either the
+// button itself or a labeled wrapper around it, depending on the setter.
+static NSArray *SPKCreationToolbarButtonsWithoutAI(id buttons) {
+    if (!SPKHideMetaAICreation() || ![buttons isKindOfClass:NSArray.class])
+        return buttons;
+
+    static NSSet<NSString *> *hiddenIdentifiers;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        hiddenIdentifiers = [NSSet setWithObjects:@"contextual-background", @"ai-modify", nil];
+    });
+
+    return [(NSArray *)buttons filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary *bindings) {
+                                   id button = obj;
+                                   if (![button isKindOfClass:UIView.class])
+                                       button = [obj respondsToSelector:@selector(button)] ? [(IGCreationActionBarLabeledButton *)obj button] : nil;
+                                   if (![button isKindOfClass:UIView.class])
+                                       return YES;
+                                   NSString *identifier = ((UIView *)button).accessibilityIdentifier;
+                                   return !(identifier && [hiddenIdentifiers containsObject:identifier]);
+                               }]];
+}
+
 %hook _TtC17IGCreationOSSwift19IGCreationHeaderBar
+- (void)setButtons:(id)buttons {
+    %orig(SPKCreationToolbarButtonsWithoutAI(buttons));
+}
+
 - (void)setButtons:(id)buttons maxItems:(NSInteger)max {
-    NSArray *filteredObjs = buttons;
+    %orig(SPKCreationToolbarButtonsWithoutAI(buttons), max);
+}
+%end
 
-    if (SPKHideMetaAICreation()) {
-        filteredObjs = [filteredObjs filteredArrayUsingPredicate:
-                                         [NSPredicate predicateWithBlock:^BOOL(IGCreationActionBarLabeledButton *obj, NSDictionary *bindings) {
-                                             return !(
-                                                 obj.button && [((IGCreationActionBarButton *)obj.button).accessibilityIdentifier isEqualToString:@"contextual-background"]);
-                                         }]];
-    }
+%hook _TtC17IGCreationOSSwift35IGCreationVerticalScrollableToolbar
+- (void)setButtons:(id)buttons {
+    %orig(SPKCreationToolbarButtonsWithoutAI(buttons));
+}
 
-    %orig(filteredObjs, max);
+- (void)setButtons:(id)buttons numDynamicButtons:(NSInteger)count {
+    %orig(SPKCreationToolbarButtonsWithoutAI(buttons), count);
 }
 %end
 
@@ -709,13 +777,21 @@ static BOOL SPKHasShortcutManager(void) {
             UIView *viewToRemove = self;
             UIView *wrapper = self.superview;
             if ([wrapper isKindOfClass:UIView.class]) {
-                NSUInteger controlSiblings = 0;
+                // Lift only to a wrapper that holds nothing but this button. Text
+                // inputs are not controls, so counting controls alone would also
+                // remove a container that hosts a text field beside the button.
+                BOOL hostsOnlyThisButton = YES;
                 for (UIView *sub in wrapper.subviews) {
-                    if ([sub isKindOfClass:UIControl.class])
-                        controlSiblings++;
+                    if (sub == self)
+                        continue;
+                    if ([sub isKindOfClass:UIControl.class] || [sub isKindOfClass:UIScrollView.class] ||
+                        [sub conformsToProtocol:@protocol(UITextInput)] || sub.subviews.count > 0) {
+                        hostsOnlyThisButton = NO;
+                        break;
+                    }
                 }
-                if (controlSiblings <= 1)
-                    viewToRemove = wrapper; // wrapper hosts only this button
+                if (hostsOnlyThisButton)
+                    viewToRemove = wrapper;
             }
             SPKLog(@"General", @"[Sparkle] Hiding DM Restyle button (410), removing %@", [viewToRemove class]);
             self.hidden = YES;

@@ -804,6 +804,14 @@ static BOOL SPKShouldHideTabBarForSingleTab(void) {
     NSArray *filtered = filterSurfacesArray(surfaces);
     return %orig(filtered, controller, haptics, set);
 }
+
+// Instagram rebuilds its own surface list whenever it repopulates the tab bar
+// and, on finding it differs from the filtered one, hands the fresh list to the
+// coordinator here. Left unfiltered, hidden tabs come back in the swipe while
+// staying out of the bar.
+- (void)updateSurfaces:(id)surfaces {
+    %orig(filterSurfacesArray(surfaces));
+}
 %end
 
 %hook IGTabBarController

@@ -4,7 +4,7 @@
 
 # Sparkle for Instagram
 
-`v1.4.0` · Tested on versions **448.0.0** and **410.1.0**
+`v1.5.1` · Tested on versions **451.0.0** and **410.1.0**
 
 [📣 IPA Releases](https://t.me/sparkle_ig) · [💬 Chat & Support](https://t.me/+f-Xo21HnfCY3NmE0) · [📦 Jailbreak Repo](https://efibalogh.github.io/sparkle-ig/) · [📥 DEB Releases](https://github.com/efibalogh/sparkle-ig/releases/latest) · [🐛 Issues](https://github.com/efibalogh/sparkle-ig/issues/new/choose) · [❤️ Support](https://ko-fi.com/sparkle_ig)
 
@@ -78,7 +78,7 @@ For the full list of features, check out [`FEATURES.md`](FEATURES.md).
 - **Custom app font**:
   - Import your own `.otf`/`.ttf` font and use it across Instagram and Sparkle, matched per weight and previewed face by face before you pick it.
 - **Language packs**:
-  - Sparkle ships in English. Other languages are community translations you install from the Translate button in Sparkle Settings, as a language pack, and remove again with a swipe. Anything a pack does not translate falls back to English. Dates use the selected language's ordering, punctuation, and month names while respecting the device's 12/24-hour clock. Built-in Action Button section names follow the selected language; names you customize remain exactly as entered. A language ships with Sparkle, no pack needed, once a native speaker has reviewed it. See [Help translate](#help-translate).
+  - Sparkle ships in English, Japanese, and Polish. Other languages are community translations you install from the Translate button in Sparkle Settings, as a language pack, and remove again with a swipe. Anything a pack does not translate falls back to English. Dates use the selected language's ordering, punctuation, and month names while respecting the device's 12/24-hour clock. Built-in Action Button section names follow the selected language; names you customize remain exactly as entered. A language ships with Sparkle, no pack needed, once a native speaker has reviewed it. See [Help translate](#help-translate).
 - **Confirmations**:
   - Optional "are you sure?" guards for accidental likes, follows, reposts, calls, comments, and more.
 - **Link detection and routing**:
@@ -99,6 +99,7 @@ For the full list of features, check out [`FEATURES.md`](FEATURES.md).
 1. Grab the latest **pre-injected IPA** from the [Telegram channel](https://t.me/sparkle_ig).
 2. Install the IPA with your sideloading tool of choice.
    - Use the **`_no-ext`** build for **AltStore / SideStore / LiveContainer** (or if you don't want to have app extensions).
+   - Builds that keep the extensions also work beside other Instagram copies: sharing from another app's share sheet and the **Open in Sparkle** Safari extension both open Sparkle, not whichever copy iOS happens to pick. Turn the Safari extension on under Settings > Apps > Safari > Extensions; it adds an **Open** banner to Instagram pages.
 
 > [!NOTE]
 > Sparkle uses Instagram's bundled image assets everywhere. The distributed IPA is a full (un-thinned) build (it contains icons for all screen sizes), so the higher-quality in-app icons render crisply on every device. If you build your own from an IPA that was already thinned to a smaller device, some icon scales may be missing. See [Building from source](#building-from-source).
@@ -136,7 +137,7 @@ You can build from source locally, or fork the repo and run the **Build and Pack
 
 By default, **long-press the Home tab** or the **Profile settings button** to open Sparkle Settings. You can also enable *Show Settings on App Launch*. If you hide the Home tab, the long-press automatically moves to another visible tab so Settings is always reachable.
 
-Tap the **Translate** button in the top-right of Sparkle Settings for the language sheet. English is the only language Sparkle ships; **Add a Language** opens the published list, where one tap installs a translation; its more menu imports a pack from Files or a link and exports the English strings a translation starts from. A swipe removes an installed pack. Installed packs refresh themselves when a release publishes newer ones, so the screens a release adds arrive translated rather than in English; it checks after each Sparkle update, only for languages you already have, and never replaces a pack you imported from a file. **Check for Updates** runs the same check on demand. Importing only makes a language available; switching to it is a separate tap. A System Default row that follows Instagram appears once a pack is installed. A restart applies the choice across every Instagram account. Anything untranslated falls back to English.
+Tap the **Translate** button in the top-right of Sparkle Settings for the language sheet. Sparkle ships English, Japanese, and Polish; **Add a Language** opens the published list, where one tap installs a translation; its more menu imports a pack from Files or a link. The share button at the top of the language sheet (**Export Strings**) shares any listed language as a zip: English to start a translation, another language to correct it. A swipe removes an installed pack. Installed packs refresh themselves when a release publishes newer ones, so the screens a release adds arrive translated rather than in English; it checks after each Sparkle update, only for languages you already have, and never replaces a pack you imported from a file. **Check for Updates** runs the same check on demand. Importing only makes a language available; switching to it is a separate tap. A System Default row follows Instagram. A restart applies the choice across every Instagram account. Anything untranslated falls back to English.
 
 ## Screenshots
 
@@ -211,23 +212,11 @@ Sideload builds hand the same `.deb` to Cyan. Cyan hoists every framework inside
 ./build.sh ipa --release --flex
 ```
 
-Icons, the Safari extension, extension stripping, FLEX, bundle-ID changes, and `SPKSideloadFix` remain explicit IPA stages. Launch and FFmpeg operations still need on-device testing for each release.
+Icons, the Safari extension, extension stripping, FLEX, bundle-ID changes, and `SPKSideloadFix` remain explicit IPA stages. The Safari extension's small native executable is compiled from `modules/SafariExtensionHandler` while it is embedded, which needs Xcode's command line tools. Embedding it also registers a URL scheme of Sparkle's own in the app (`sparkle-ig`, with the bundle ID appended when `--bundle-id` is used). `SPKSideloadFix` routes the share extension's hand-off and the Safari extension's links through it, because every Instagram copy on a device registers the stock schemes and iOS does not say which one receives them. That routing needs `--patch`. Launch and FFmpeg operations still need on-device testing for each release.
 
-### Recompiling the Liquid Glass app icons
+### Liquid Glass app icon
 
-The app icons are pre-compiled into `resources/sparkle_icons/` to keep IPA packaging fast. If you change the source `.icon` bundles in `resources/`, recompile them with `actool` before building:
-
-```zsh
-mkdir -p resources/compiled_sparkle resources/compiled_sparkle_dark resources/compiled_sparkle_neutral
-
-xcrun actool resources/sparkle.icon         --compile resources/compiled_sparkle         --platform iphoneos --minimum-deployment-target 15.0 --app-icon sparkle         --output-partial-info-plist resources/sparkle_partial.plist         --target-device iphone --target-device ipad
-xcrun actool resources/sparkle-dark.icon    --compile resources/compiled_sparkle_dark    --platform iphoneos --minimum-deployment-target 15.0 --app-icon sparkle-dark    --output-partial-info-plist resources/sparkle_dark_partial.plist    --target-device iphone --target-device ipad
-xcrun actool resources/sparkle-neutral.icon --compile resources/compiled_sparkle_neutral --platform iphoneos --minimum-deployment-target 15.0 --app-icon sparkle-neutral --output-partial-info-plist resources/sparkle_neutral_partial.plist --target-device iphone --target-device ipad
-
-mkdir -p resources/sparkle_icons
-cp resources/compiled_sparkle/*.png resources/compiled_sparkle_dark/*.png resources/compiled_sparkle_neutral/*.png resources/sparkle_icons/
-rm -rf resources/compiled_sparkle resources/compiled_sparkle_dark resources/compiled_sparkle_neutral resources/*_partial.plist
-```
+The Sparkle app icon is the Icon Composer package `resources/sparkle.icon`. Sideload builds compile it with `actool` and splice it into Instagram's own `Assets.car` with `tools/splice-glass-icons.sh`, which adds Sparkle's icon and rendered picker previews (default, dark and clear) while leaving every Instagram asset untouched. It needs Xcode 26 or later with Icon Composer installed; edit the `.icon` package directly, there is nothing to precompile.
 
 ## Contributing
 
@@ -241,7 +230,7 @@ Contributions are greatly appreciated! Feel free to open a pull request.
 
 ### Help translate
 
-Sparkle ships English only. The 24 catalogs in `translations/` were produced by machine translation and no native speaker has reviewed them, which is why they are a starting point rather than something users are given by default. Expect unnatural phrasing, terms that should have stayed in English, and help text that describes the wrong setting.
+Sparkle ships English plus the languages native speakers have reviewed: Japanese and Polish. The 23 catalogs in `translations/` were produced by machine translation and most have not been reviewed (Vietnamese is partly reviewed), which is why they are a starting point rather than something users are given by default. Expect unnatural phrasing, terms that should have stayed in English, and help text that describes the wrong setting.
 
 If you read one of these languages, correcting it is the single most useful contribution you can make, and it needs no build: edit `translations/<locale>.lproj/Localizable.strings`, run `tools/lint-i18n.py --locale <locale>`, open a pull request. **A reviewed language ships with Sparkle.** Until then, anyone can install it from the language sheet with **Add a Language**, and you can test your own work from that screen's more menu with **Import from Files**.
 
@@ -266,7 +255,7 @@ Sparkle takes a lot of time to develop and maintain as Instagram changes constan
 - [**Ryuk** • RyukGram](https://github.com/faroukbmiled): code, inspiration, and help.
 - [**@n3d1117** • InstaSane](https://github.com/n3d1117/InstaSane): the Following-feed mode.
 - [**@asdfzxcvbn** • zxPluginsInject / ipapatch / cyan](https://github.com/asdfzxcvbn): tooling and fixes for sideloaded installs.
-- [**@BillyCurtis** • OpenInstagramSafariExtension](https://github.com/BillyCurtis/OpenInstagramSafariExtension): open Instagram links in Safari in the sideloaded IPA.
+- [**@BillyCurtis** • OpenInstagramSafariExtension](https://github.com/BillyCurtis/OpenInstagramSafariExtension): the original idea behind the Open in Sparkle Safari extension.
 - **@grxphxnx**: helped quickstart Sparkle's multi-language support.
 
 ## Official builds

@@ -41,7 +41,7 @@ static NSDictionary<NSString *, NSString *> *SPKLangNames(void) {
         @"en":@"English", @"ar":@"العربية", @"de":@"Deutsch", @"el":@"Ελληνικά",
         @"es-ES":@"Español", @"fr":@"Français", @"hi":@"हिन्दी", @"it":@"Italiano",
         @"ja":@"日本語", @"ko":@"한국어", @"lt":@"Lietuvių", @"pt-BR":@"Português (Brasil)", @"ru":@"Русский",
-        @"ro":@"Română",
+        @"pl":@"Polski", @"ro":@"Română",
         @"tr":@"Türkçe", @"uk":@"Українська", @"vi":@"Tiếng Việt", @"zh-Hans":@"简体中文",
         @"zh-Hant":@"繁體中文", @"fa":@"فارسی", @"th":@"ไทย", @"fil":@"Filipino",
         // Named here rather than left to the endonym fallback, which gets these three wrong:
@@ -138,9 +138,9 @@ NSString *SPKLanguageDisplayName(NSString *code) {
         [languageRows addObject:row];
     }
 
-    // One row, not four. Downloading a published language is the answer almost every time; a file,
-    // a link, and the English template belong to whoever is building a translation, and they live in
-    // that screen's own more menu rather than as three rows nobody else needs to read past.
+    // One row, not three. Downloading a published language is the answer almost every time; a file
+    // and a link belong to whoever is building a translation, and they live in that screen's own
+    // more menu rather than as two rows nobody else needs to read past.
     // No icon on this row or the update toggle below it: the language rows above carry none, and a
     // glyph on the only row in its own titled section is decoration the section header already does.
     SPKSetting *addRow = [SPKSetting buttonCellWithTitle:SPKL(@"LANGUAGE_PACK_ADD_TITLE")
@@ -295,6 +295,64 @@ NSString *SPKLanguageDisplayName(NSString *code) {
         [NSUserDefaults.standardUserDefaults synchronize];
         [SPKUtils showRestartConfirmation];
     }
+}
+
+#pragma mark - Exporting strings
+
+// The base class rebuilds the bar from its own override point, so anything added from viewDidLoad
+// is wiped before the screen is shown. Let it place its items, then add ours after them.
+- (void)setupNavigationItems {
+    [super setupNavigationItems];
+    // It stores the group under trailingItemGroups on iOS 16+ and clears rightBarButtonItems while
+    // doing so, so both have to be consulted or ours would replace its items instead of following.
+    NSMutableArray<UIBarButtonItem *> *trailing = [NSMutableArray array];
+    if (@available(iOS 16.0, *)) {
+        for (UIBarButtonItemGroup *group in self.navigationItem.trailingItemGroups)
+            [trailing addObjectsFromArray:group.barButtonItems ?: @[]];
+    }
+    if (trailing.count == 0)
+        [trailing addObjectsFromArray:self.navigationItem.rightBarButtonItems ?: @[]];
+    [trailing addObject:SPKMediaChromeTopBarMenuButtonItem(@"share", [self exportMenu],
+                                                            SPKL(@"LANGUAGE_PACK_EXPORT_TITLE"))];
+    SPKMediaChromeSetTrailingTopBarItems(self.navigationItem, trailing);
+}
+
+/// English is the template a new translation starts from; every other language listed is the
+/// file a correction to it starts from. Languages name themselves, so the rows need no grammar.
+- (UIMenu *)exportMenu {
+    __weak typeof(self) weakSelf = self;
+    // Built when the menu opens, so a pack installed or removed since is reflected straight away.
+    UIDeferredMenuElement *languages =
+        [UIDeferredMenuElement elementWithUncachedProvider:^(void (^completion)(NSArray<UIMenuElement *> *)) {
+            NSMutableArray<UIMenuElement *> *actions = [NSMutableArray array];
+            for (NSString *code in [SPKStrings supportedLanguages]) {
+                [actions addObject:[UIAction actionWithTitle:SPKLanguageDisplayName(code)
+                                                       image:nil
+                                                  identifier:nil
+                                                     handler:^(__unused UIAction *action) {
+                                                         [weakSelf exportStringsForLanguage:code];
+                                                     }]];
+            }
+            completion(actions);
+        }];
+    return [UIMenu menuWithTitle:SPKL(@"LANGUAGE_PACK_EXPORT_TITLE") children:@[ languages ]];
+}
+
+- (void)exportStringsForLanguage:(NSString *)code {
+    NSError *error = nil;
+    NSString *archive = [SPKLanguagePackManager exportArchiveForLanguage:code error:&error];
+    if (archive.length == 0) {
+        [self presentErrorWithTitle:SPKL(@"LANGUAGE_PACK_EXPORT_ERROR_TITLE")
+                            message:error.localizedDescription ?: SPKL(@"LANGUAGE_PACK_ERROR_GENERIC")];
+        return;
+    }
+    UIActivityViewController *share =
+        [[UIActivityViewController alloc] initWithActivityItems:@[ [NSURL fileURLWithPath:archive] ]
+                                         applicationActivities:nil];
+    share.popoverPresentationController.sourceView = self.view;
+    share.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX(self.view.bounds),
+                                                                CGRectGetMidY(self.view.bounds), 1.0, 1.0);
+    [self presentViewController:share animated:YES completion:nil];
 }
 
 #pragma mark - Adding a language

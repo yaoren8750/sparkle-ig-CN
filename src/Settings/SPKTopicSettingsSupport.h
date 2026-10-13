@@ -25,6 +25,7 @@ SPKSetting *SPKTopicNavigationSetting(NSString *title, NSString *iconName, CGFlo
 SPKSetting *SPKActionButtonDefaultActionNavigationSetting(SPKActionButtonSource source);
 SPKSetting *SPKActionButtonConfigurationNavigationSetting(SPKActionButtonSource source, NSString *topicTitle, NSArray<NSString *> *supportedActions, NSArray<SPKActionMenuSection *> *defaultSections);
 UIMenu *SPKReelsTapControlMenu(void);
+UIMenu *SPKReelsAutoScrollDefaultMenu(void);
 /// "Keep Speed For" choices for a playback controls scope key (`stories_playback_speed_scope`, ...).
 UIMenu *SPKPlaybackSpeedScopeMenu(NSString *defaultsKey);
 UIMenu *SPKMainFeedModeMenu(void);
@@ -38,6 +39,7 @@ UIMenu *SPKSwipeCloseCommentsDirectionMenu(void);
 UIMenu *SPKLinkOpeningModeMenu(void);
 UIMenu *SPKCacheAutoClearMenu(void);
 UIMenu *SPKNotificationProgressSubtitleStyleMenu(void);
+UIMenu *SPKNotificationStyleMenu(void);
 UIMenu *SPKNotificationPillPositionMenu(void);
 UIMenu *SPKMediaVideoQualityMenu(void);
 UIMenu *SPKMediaPhotoQualityMenu(void);

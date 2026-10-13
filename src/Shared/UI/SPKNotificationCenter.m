@@ -66,6 +66,7 @@ SPK_NOTIF_CONST(kSPKNotificationDirectVisualMarkSeen, "direct_visual_mark_seen")
 SPK_NOTIF_CONST(kSPKNotificationThreadMessagesMarkSeen, "thread_messages_mark_seen");
 SPK_NOTIF_CONST(kSPKNotificationDirectThreadSeenRule, "direct_thread_seen_rule");
 SPK_NOTIF_CONST(kSPKNotificationDirectHiddenChat, "direct_hidden_chat");
+SPK_NOTIF_CONST(kSPKNotificationShareSheetPin, "share_sheet_pin");
 SPK_NOTIF_CONST(kSPKNotificationDirectAutoSave, "direct_auto_save");
 SPK_NOTIF_CONST(kSPKNotificationDirectAutoSaveThreadRule, "toggle_direct_auto_save_thread_rule");
 SPK_NOTIF_CONST(kSPKNotificationUnsentMessage, "unsent_message");
@@ -120,6 +121,7 @@ NSString *const kSPKNotificationPillGlowEnabledKey = @"notifs_pill_glow";
 NSString *const kSPKNotificationPillLiquidGlassEnabledKey = @"notifs_pill_liquid_glass";
 NSString *const kSPKNotificationProgressSubtitleStyleKey = @"notifs_progress_subtitle_style";
 NSString *const kSPKNotificationPillPositionKey = @"notifs_pill_position";
+NSString *const kSPKNotificationStyleKey = @"notifs_style";
 
 static CGFloat const kSPKNotificationStackSpacing = 8.0;
 static CGFloat const kSPKNotificationTopMargin = 8.0;
@@ -127,7 +129,11 @@ static CGFloat const kSPKNotificationTopMargin = 8.0;
 // toolbar above it that the safe area doesn't cover. Lift bottom pills further so
 // they float clear of that chrome instead of overlapping it.
 static CGFloat const kSPKNotificationBottomMargin = 60.0;
+// Where Instagram presents its own toast: bottom edge 57pt above the safe area
+// (measured on 448 over the feed, 91pt from the bottom of an 874pt screen).
+static CGFloat const kSPKNotificationInstagramBottomMargin = 57.0;
 static NSTimeInterval const kSPKNotificationInsertDuration = 0.55;
+static NSTimeInterval const kSPKNotificationInstagramFadeInDuration = 0.15;
 static NSTimeInterval const kSPKNotificationDefaultPillDuration = 1.5;
 static NSTimeInterval const kSPKNotificationMinPillDuration = 0.5;
 static NSTimeInterval const kSPKNotificationMaxPillDuration = 5.0;
@@ -292,6 +298,7 @@ NSArray<NSDictionary *> *SPKNotificationPreferenceSections(void) {
               SPKNotificationItem(kSPKNotificationCopyDescription, SPKL(@"UI_NOTIFICATION_CENTER_COPY_DESCRIPTION_TEXT"), @"copy"),
               SPKNotificationItem(kSPKNotificationCopyNoteText, SPKL(@"MESSAGES_NOTES_COPY_NOTE_TEXT_TITLE"), @"copy"),
               SPKNotificationItem(kSPKNotificationShareLongPressCopyLink, SPKL(@"GENERAL_BEHAVIOR_HOLD_SEND_COPY_LINK_TITLE"), @"link"),
+              SPKNotificationItem(kSPKNotificationShareSheetPin, SPKL(@"UI_NOTIFICATION_CENTER_SHARE_SHEET_PIN_TEXT"), @"pin"),
               SPKNotificationItem(kSPKNotificationFlexUnavailable, SPKL(@"UI_NOTIFICATION_CENTER_FLEX_UNAVAILABLE_TEXT"), @"warning"),
           ]},
     ];
@@ -324,6 +331,7 @@ NSDictionary<NSString *, id> *SPKNotificationDefaultPreferences(void) {
         kSPKNotificationPillDurationKey : @(kSPKNotificationDefaultPillDuration),
         kSPKNotificationProgressSubtitleStyleKey : @"both",
         kSPKNotificationPillPositionKey : @"top",
+        kSPKNotificationStyleKey : @"pill",
     } mutableCopy];
     for (NSDictionary *section in SPKNotificationPreferenceSections()) {
         for (NSDictionary *item in section[@"items"] ?: @[]) {
@@ -349,6 +357,27 @@ NSTimeInterval SPKNotificationPillDuration(void) {
     if (duration <= 0.0)
         duration = kSPKNotificationDefaultPillDuration;
     return MIN(kSPKNotificationMaxPillDuration, MAX(kSPKNotificationMinPillDuration, duration));
+}
+
+BOOL SPKNotificationUsesInstagramStyle(void) {
+    return [[SPKUtils getStringPref:kSPKNotificationStyleKey] isEqualToString:@"instagram"];
+}
+
+UIImage *SPKNotificationIconNamed(NSString *iconResource, BOOL instagramStyle) {
+    if (iconResource.length == 0)
+        return nil;
+    NSString *name = iconResource;
+    if (instagramStyle) {
+        NSString *base = [name hasSuffix:@"_filled"] ? [name substringToIndex:name.length - @"_filled".length] : name;
+        NSString *outline = [base stringByAppendingString:@"_outline"];
+        if ([SPKAssetUtils resolvedInstagramIconNameForName:outline].length > 0)
+            name = outline;
+        else if (base.length < name.length && [SPKAssetUtils resolvedInstagramIconNameForName:base].length > 0)
+            name = base;
+    }
+    return [SPKAssetUtils instagramIconNamed:name
+                                   pointSize:instagramStyle ? kSPKNotificationInstagramIconSize : 16.0
+                               renderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
 void SPKNotificationTriggerHaptic(NSString *identifier, SPKNotificationTone tone) {
@@ -553,7 +582,8 @@ static BOOL SPKManualSeenSettingsUIVisible(void) {
 
 - (CGFloat)offsetForIndex:(NSUInteger)index {
     BOOL isBottom = [[SPKUtils getStringPref:kSPKNotificationPillPositionKey] isEqualToString:@"bottom"];
-    CGFloat offset = isBottom ? kSPKNotificationBottomMargin : kSPKNotificationTopMargin;
+    CGFloat bottomMargin = SPKNotificationUsesInstagramStyle() ? kSPKNotificationInstagramBottomMargin : kSPKNotificationBottomMargin;
+    CGFloat offset = isBottom ? bottomMargin : kSPKNotificationTopMargin;
     for (NSUInteger i = 0; i < index && i < self.visible.count; i++) {
         SPKNotificationPillView *pill = self.visible[i].pill;
         CGFloat height = CGRectGetHeight(pill.bounds);
@@ -623,13 +653,27 @@ static BOOL SPKManualSeenSettingsUIVisible(void) {
     CGFloat entranceY = isBottom ? 24.0 : -24.0;
     pill.transform = CGAffineTransformConcat(CGAffineTransformMakeTranslation(0.0, entranceY), CGAffineTransformMakeScale(0.88, 0.88));
     anchor.constant = isBottom ? -[self offsetForIndex:self.visible.count - 1] : [self offsetForIndex:self.visible.count - 1];
+    // Instagram's toast is glass, and glass doesn't show a tint change while its fade
+    // runs: a download that finishes inside the entrance only turned green once the
+    // spring had settled. Its fade is kept short so the result shows almost at once;
+    // the slide and scale keep the spring.
+    if (pill.instagramSkin) {
+        [UIView animateWithDuration:kSPKNotificationInstagramFadeInDuration
+                              delay:0
+                            options:UIViewAnimationOptionCurveEaseOut
+                         animations:^{
+                             pill.alpha = 1.0;
+                         }
+                         completion:nil];
+    }
     [UIView animateWithDuration:kSPKNotificationInsertDuration
                           delay:0
          usingSpringWithDamping:0.78
           initialSpringVelocity:0.85
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^{
-                         pill.alpha = 1.0;
+                         if (!pill.instagramSkin)
+                             pill.alpha = 1.0;
                          pill.transform = CGAffineTransformIdentity;
                          [self relayoutAnimated:NO];
                      }
@@ -740,9 +784,7 @@ static BOOL SPKManualSeenSettingsUIVisible(void) {
         }
 
         NSString *resolvedIconResource = SPKNotificationIconResourceForTone(iconResource, tone);
-        UIImage *icon = resolvedIconResource.length
-                            ? [SPKAssetUtils instagramIconNamed:resolvedIconResource pointSize:16.0 renderingMode:UIImageRenderingModeAlwaysTemplate]
-                            : nil;
+        UIImage *icon = SPKNotificationIconNamed(resolvedIconResource, SPKNotificationUsesInstagramStyle());
         SPKNotificationPillView *pill = [SPKNotificationPillView toastPillWithTitle:title subtitle:resolvedSubtitle icon:icon tone:tone];
 
         if (offersListTap) {

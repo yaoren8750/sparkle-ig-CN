@@ -12,12 +12,13 @@ RESOURCE_STAMP="$ROOT_DIR/packages/.sparkle-dev-resources-hash"
 TWEAK_DESTINATION="Documents/Tweaks/Sparkle"
 
 usage() {
-    echo 'Usage: ./build-dev.sh [--strings|--no-strings|--bundle] [true]'
+    echo 'Usage: ./build-dev.sh [--strings|--no-strings|--bundle] [--push-only] [true]'
     echo
     echo '  (no flag)      push the dylib, and the localizations only when they changed'
     echo '  --strings      always push the localizations'
     echo '  --no-strings   never push the localizations'
     echo '  --bundle       push the complete Sparkle.bundle, FFmpeg frameworks included'
+    echo '  --push-only    open LiveContainer after the push instead of the dev launcher'
     echo '  true           build a full dev IPA instead (./build.sh ipa --dev --release)'
     echo
     echo 'Base IPAs: ./build.sh ipa --bundle  (optional: --flex, --no-ext, --patch)'
@@ -54,12 +55,14 @@ push_resource_bundle() {
 
 RESOURCE_MODE=auto
 FULL_IPA=0
+PUSH_ONLY=0
 
 while [ $# -gt 0 ]; do
     case "$1" in
         --strings) RESOURCE_MODE=always ;;
         --no-strings) RESOURCE_MODE=never ;;
         --bundle) RESOURCE_MODE=full ;;
+        --push-only) PUSH_ONLY=1 ;;
         true) FULL_IPA=1 ;;
         -h|--help)
             usage
@@ -120,6 +123,10 @@ case "$RESOURCE_MODE" in
         ;;
 esac
 
-# Launch Sparkle on iPhone
+# Launch Sparkle on iPhone, or just LiveContainer when the dev launcher is skipped
 sleep 1
-pymobiledevice3 developer dvt launch --kill-existing --tunnel $PYMOBILEDEVICE3_UDID $DEVLAUNCHER_APPID
+if [ "$PUSH_ONLY" -eq 1 ]; then
+    pymobiledevice3 developer dvt launch --kill-existing --tunnel $PYMOBILEDEVICE3_UDID $LIVECONTAINER_APPID
+else
+    pymobiledevice3 developer dvt launch --kill-existing --tunnel $PYMOBILEDEVICE3_UDID $DEVLAUNCHER_APPID
+fi

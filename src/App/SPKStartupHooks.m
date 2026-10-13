@@ -16,6 +16,7 @@ FOUNDATION_EXPORT void SPKInstallStoriesActionButtonHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallStoryAudioToggleHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallStoryPlaybackControlsHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallHideAudioUnavailableToastHooksIfEnabled(void);
+FOUNDATION_EXPORT void SPKInstallHideMetaAIStoryCameraHooksIfNeeded(void);
 FOUNDATION_EXPORT void SPKInstallStoryAutoSaveHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallDirectAutoSaveHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallMessagesActionButtonHooksIfEnabled(void);
@@ -31,6 +32,7 @@ FOUNDATION_EXPORT void SPKInstallConfirmSendHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallSharedLinkCleanupHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallBrowserLinkRoutingHooksIfNeeded(void);
 FOUNDATION_EXPORT void SPKInstallShareLongPressCopyHooksIfNeeded(void);
+FOUNDATION_EXPORT void SPKInstallShareSheetPinsHooksIfNeeded(void);
 FOUNDATION_EXPORT void SPKInstallHideMetaAIHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallAccountSwitchHooksIfNeeded(void);
 FOUNDATION_EXPORT void SPKInstallAdBlockingEarlyHooksIfEnabled(void);
@@ -65,10 +67,11 @@ FOUNDATION_EXPORT void SPKInstallPostCommentConfirmHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallSwipeCloseCommentsHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallCommentActionsHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallHideCommentGiftsButtonHooksIfEnabled(void);
+FOUNDATION_EXPORT void SPKInstallHideCommentEmojiBarHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallCommentComposerGalleryUploadHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallHideStoryTrayHooksIfEnabled(void);
-FOUNDATION_EXPORT void SPKInstallHideThreadsHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallHideRepostButtonHooksIfEnabled(void);
+FOUNDATION_EXPORT void SPKInstallHideVisualSearchButtonHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallDisableHomeButtonRefreshHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallDisableStorySeenHooksIfNeeded(void);
 FOUNDATION_EXPORT void SPKInstallStickerInteractConfirmHooksIfEnabled(void);
@@ -80,6 +83,7 @@ FOUNDATION_EXPORT void SPKInstallReelsPlaybackHooksIfNeeded(void);
 FOUNDATION_EXPORT void SPKInstallReelsPlaybackControlsHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallReelsStopLoopingHooksIfNeeded(void);
 FOUNDATION_EXPORT void SPKInstallDisableScrollingReelsHooksIfEnabled(void);
+FOUNDATION_EXPORT void SPKInstallReelsAutoScrollDefaultHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallFollowIndicatorHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallProfileAnalyzerVisitTrackerHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallDisableDMStorySeenHooksIfNeeded(void);
@@ -119,6 +123,7 @@ FOUNDATION_EXPORT void SPKInstallHideDirectCallButtonsHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallHideFlagButtonHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallFixDuplicateNotificationsHooksIfNeeded(void);
 FOUNDATION_EXPORT void SPKInstallOpenPostNativePushHooksIfNeeded(void);
+FOUNDATION_EXPORT void SPKInstallEditsShareFallbackHooksIfNeeded(void);
 FOUNDATION_EXPORT void SPKInstallDisableAppIconGestureHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallUnlockStoryPreviewHooksIfEnabled(void);
 FOUNDATION_EXPORT void SPKInstallUnlockMessagePreviewHooksIfEnabled(void);
@@ -182,6 +187,9 @@ void SPKInstallLaunchCriticalHooks(void) {
     // that first upload carry the real position.
     SPK_INSTALL(SPKInstallFakeLocationHooksIfNeeded);
     SPK_INSTALL(SPKInstallStoryAdBlockingHooksIfEnabled);
+    // A share from Edits can be the URL that cold-launches the app, and that URL
+    // is delivered while the first scene connects.
+    SPK_INSTALL(SPKInstallEditsShareFallbackHooksIfNeeded);
     SPK_INSTALL(SPKInstallNavigationHooksIfNeeded);
     SPK_INSTALL(SPKInstallSettingsShortcutsHooksIfNeeded);
 }
@@ -203,10 +211,10 @@ void SPKInstallFeedSurfaceHooksIfNeeded(void) {
     SPK_INSTALL(SPKInstallSwipeCloseCommentsHooksIfEnabled);
     SPK_INSTALL(SPKInstallCommentActionsHooksIfEnabled);
     SPK_INSTALL(SPKInstallHideCommentGiftsButtonHooksIfEnabled);
+    SPK_INSTALL(SPKInstallHideCommentEmojiBarHooksIfEnabled);
     SPK_INSTALL(SPKInstallCommentComposerGalleryUploadHooksIfEnabled);
     SPK_INSTALL(SPKInstallHideStoryTrayHooksIfEnabled);
     SPK_INSTALL(SPKInstallHideRecentHighlightsHooksIfEnabled);
-    SPK_INSTALL(SPKInstallHideThreadsHooksIfEnabled);
     SPK_INSTALL(SPKInstallHideRepostButtonHooksIfEnabled);
     SPK_INSTALL(SPKInstallDisableHomeButtonRefreshHooksIfEnabled);
     SPK_INSTALL(SPKInstallCopyDescriptionHooksIfEnabled);
@@ -227,6 +235,7 @@ void SPKInstallStorySurfaceHooksIfNeeded(void) {
     SPK_INSTALL(SPKInstallStoryAudioToggleHooksIfEnabled);
     SPK_INSTALL(SPKInstallStoryPlaybackControlsHooksIfEnabled);
     SPK_INSTALL(SPKInstallHideAudioUnavailableToastHooksIfEnabled);
+    SPK_INSTALL(SPKInstallHideMetaAIStoryCameraHooksIfNeeded);
     SPK_INSTALL(SPKInstallStoryAutoSaveHooksIfEnabled);
     SPK_INSTALL(SPKInstallSeenButtonHooksIfNeeded);
     SPK_INSTALL(SPKInstallHideMetaAIHooksIfEnabled);
@@ -258,7 +267,9 @@ void SPKInstallReelsSurfaceHooksIfNeeded(void) {
     SPK_INSTALL(SPKInstallRepostDateHooksIfEnabled);
     SPK_INSTALL(SPKInstallHideReelsViewerCommentBarHooksIfEnabled);
     SPK_INSTALL(SPKInstallDisableScrollingReelsHooksIfEnabled);
+    SPK_INSTALL(SPKInstallReelsAutoScrollDefaultHooksIfEnabled);
     SPK_INSTALL(SPKInstallHideRepostButtonHooksIfEnabled);
+    SPK_INSTALL(SPKInstallHideVisualSearchButtonHooksIfEnabled);
     SPK_INSTALL(SPKInstallHideMetricsHooksIfEnabled);
     SPK_INSTALL(SPKInstallTappableTextLinksHooksIfEnabled);
 }
@@ -350,6 +361,7 @@ void SPKInstallGeneralUIHooksIfNeeded(void) {
     // Installed regardless of the setting: the mode is read on every browser launch.
     SPK_INSTALL(SPKInstallBrowserLinkRoutingHooksIfNeeded);
     SPK_INSTALL(SPKInstallShareLongPressCopyHooksIfNeeded);
+    SPK_INSTALL(SPKInstallShareSheetPinsHooksIfNeeded);
     SPK_INSTALL(SPKInstallHideMetaAIHooksIfEnabled);
     SPK_INSTALL(SPKInstallNoSuggestedUsersHooksIfEnabled);
     SPK_INSTALL(SPKInstallOpenLinkFromClipboardHooksIfEnabled);

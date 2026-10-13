@@ -50,18 +50,18 @@
         backgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
         backgroundImageView.clipsToBounds = YES;
 
-        UIImage *bgImage = [UIImage imageNamed:@"ig-gradient-background"];
+        UIImage *bgImage = [UIImage imageNamed:@"Prod_Assets/Mask_group_02"];
         if (!bgImage) {
             NSString *frameworkPath = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"Frameworks/FBSharedFramework.framework"];
             NSBundle *frameworkBundle = [NSBundle bundleWithPath:frameworkPath];
             bgImage = [UIImage imageNamed:@"ig-gradient-background" inBundle:frameworkBundle compatibleWithTraitCollection:nil];
+            if (bgImage) {
+                // Flip/mirror the fallback horizontally to match the IG icon gradient layout
+                bgImage = [UIImage imageWithCGImage:bgImage.CGImage scale:bgImage.scale orientation:UIImageOrientationUpMirrored];
+            }
         }
 
-        if (bgImage) {
-            // Flip/mirror the image horizontally to match the IG icon gradient layout
-            UIImage *flippedImage = [UIImage imageWithCGImage:bgImage.CGImage scale:bgImage.scale orientation:UIImageOrientationUpMirrored];
-            backgroundImageView.image = flippedImage;
-        }
+        backgroundImageView.image = bgImage;
         [_glowView addSubview:backgroundImageView];
 
         _logoView = [[SPKBrandLogoView alloc] initWithFrame:self.bounds];

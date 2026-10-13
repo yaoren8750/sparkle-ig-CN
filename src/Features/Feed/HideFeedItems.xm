@@ -52,6 +52,17 @@ static Class SPKInFeedStoriesTrayModelClass(void) {
     return cls;
 }
 
+// Swift class on every supported version; its runtime name is mangled, so a
+// plain objc_getClass() on the dotted spelling can miss it.
+static Class SPKThreadsInFeedModelClass(void) {
+    static Class cls;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        cls = SPKResolveIGClass(@"IGThreadsInFeedModels.IGThreadsInFeedModel", nil);
+    });
+    return cls;
+}
+
 static void SPKStoryAdBlockingLogClassAvailability(void) {
     for (NSString *className in @[
              @"IGStoryAdPool",
@@ -89,10 +100,19 @@ static NSArray *removeItemsInList(NSArray *list, SPKFeedFilterSurface surface) {
             }
         }
 
-        // Remove suggested reels (carousel)
+        // Remove suggested reels
         if (isFeed && [SPKUtils getBoolPref:@"feed_hide_suggested_reels"]) {
+            // Carousel
             if ([obj isKindOfClass:%c(IGFeedScrollableClipsModel)]) {
                 SPKLog(@"General", @"[Sparkle] Hiding suggested reels carousel");
+
+                continue;
+            }
+
+            // Single reels: newer builds place suggested reels inline as
+            // recommended IGMedia items instead of the carousel.
+            if ([obj isKindOfClass:%c(IGMedia)] && [((IGMedia *)obj).explorePostInFeed isEqual:@YES] && [obj respondsToSelector:@selector(isClipsMedia)] && [(IGMedia *)obj isClipsMedia]) {
+                SPKLog(@"General", @"[Sparkle] Hiding suggested reel");
 
                 continue;
             }
@@ -121,7 +141,7 @@ static NSArray *removeItemsInList(NSArray *list, SPKFeedFilterSurface surface) {
 
             // Feed (carousel)
             if (isFeed) {
-                if ([obj isKindOfClass:%c(IGBloksFeedUnitModel)] || [obj isKindOfClass:objc_getClass("IGThreadsInFeedModels.IGThreadsInFeedModel")]) {
+                if ([obj isKindOfClass:SPKThreadsInFeedModelClass()]) {
                     SPKLog(@"General", @"[Sparkle] Hiding suggested threads posts (carousel)");
 
                     continue;
@@ -131,6 +151,17 @@ static NSArray *removeItemsInList(NSArray *list, SPKFeedFilterSurface surface) {
             // Reels
             if ([obj isKindOfClass:%c(IGSundialNetegoItem)]) {
                 SPKLog(@"General", @"[Sparkle] Hiding suggested threads posts (reels)");
+
+                continue;
+            }
+        }
+
+        // Remove Meta's promotions for its own products (Meta Verified offers,
+        // suggested Facebook pages). The server builds these from its own-product
+        // ads and lays them out in Bloks, so every unit of this class is one.
+        if (isFeed && [SPKUtils getBoolPref:@"feed_hide_meta_promotions"]) {
+            if ([obj isKindOfClass:%c(IGBloksFeedUnitModel)]) {
+                SPKLog(@"General", @"[Sparkle] Hiding Meta promotion");
 
                 continue;
             }
@@ -176,6 +207,15 @@ static NSArray *removeItemsInList(NSArray *list, SPKFeedFilterSurface surface) {
 %hook IGMainFeedListAdapterDataSource
 - (NSArray *)objectsForListAdapter:(id)arg1 {
     // Preserve native loading items even when the feed is initially empty or short.
+    return removeItemsInList(%orig, SPKFeedFilterSurfaceFeed);
+}
+%end
+
+// Demangled name: IGMainFeedSwiftHelpers.IGMainFeedListAdapterDataSource_swift (IG 445+).
+// Server-gated Swift twin of the main feed data source, paired with
+// IGMainFeedViewController_swift; accounts in that group never hit the class above.
+%hook _TtC22IGMainFeedSwiftHelpers37IGMainFeedListAdapterDataSource_swift
+- (NSArray *)objectsForListAdapter:(id)arg1 {
     return removeItemsInList(%orig, SPKFeedFilterSurfaceFeed);
 }
 %end
@@ -466,6 +506,7 @@ static BOOL SPKAnyFeedFilteringPrefEnabled(void) {
              @"general_hide_suggested_users_feed",
              @"general_hide_suggested_users_reels",
              @"feed_hide_suggested_threads",
+             @"feed_hide_meta_promotions",
              @"feed_hide_stories_tray",
              @"feed_hide_entire_feed",
              @"reels_prevent_doom_scroll"

@@ -9,17 +9,17 @@ marked **(restart)** and prompt for a relaunch when changed.
 
 ## Localization
 
-- **Language** *(restart)*: Use the Translate button in the top-right of Sparkle Settings to open the language sheet. Sparkle ships English, and with nothing else installed English is the selection. Installing a language pack adds it to the same list, with how much of it is translated, and brings back a System Default row that follows Instagram first, then the device language, then English.
+- **Language** *(restart)*: Use the Translate button in the top-right of Sparkle Settings to open the language sheet. Sparkle ships English, Japanese, and Polish, plus a System Default row that follows Instagram first, then the device language, then English. Installing a language pack adds it to the same list, with how much of it is translated.
 - The choice is device-wide, applies to every Instagram account after restart, and falls back to English when a language or individual string is unavailable.
 - Sparkle-owned dates use the selected language's ordering, punctuation, and month names while retaining the device's 12/24-hour clock preference across Action Button menus, Gallery, Downloads, media details, logs, and diagnostics.
 - Built-in collapsible Action Button section names follow the selected language. A section name explicitly customized by the user remains verbatim.
-- **Add a Language**: Opens the list of published language packs, each installed with one tap and checked against the hash the list publishes before anything is written. Rows already installed stay listed, reading as installed or offering an update when a newer build exists. That screen's more menu holds the other ways in: **Import from Files** for `.zip` archives (several at once), **Import from a Link** for a pasted `https` address, and, in its own group, **Export English Strings** for the zip a new translation starts from.
+- **Add a Language**: Opens the list of published language packs, each installed with one tap and checked against the hash the list publishes before anything is written. Rows already installed stay listed, reading as installed or offering an update when a newer build exists. That screen's more menu holds the other ways in: **Import from Files** for `.zip` archives (several at once) and **Import from a Link** for a pasted `https` address.
 - **Keep Languages Up to Date**: Refreshes the languages already installed when a new Sparkle release publishes newer packs, so the screens a release adds are translated instead of falling back to English. A pack is published as a release asset, so a release is the only thing that can change one: the check runs in the background after a Sparkle update rather than on a timer, which also keeps a pack and the build reading it in step. It only ever downloads languages already installed, and the row carries the date of the last successful check. A pack imported from a file is never replaced, and a failed check backs off for an hour rather than retrying on every launch.
 - **Check for Updates**: Runs that same check on demand, for the case the version trigger cannot see: a pack rebuilt and republished under a release you already have. It reports when everything is already current.
-- **Export English Strings**: Shares the English catalog as a `.zip`, the file a new translation starts from.
 - **Report a Translation Issue**: Opens the translation issue form, with the language prefilled when Sparkle is running in an imported one.
 - **Contribute a Translation**: Opens the translation guide, for correcting a language or starting a new one.
-- Translation quality: English is the only hand-written catalog and the only one Sparkle ships. The 24 community catalogs live in the repository as installable packs rather than in the app. They were machine translated and have not been reviewed by native speakers, so some strings read unnaturally or describe a setting inaccurately. A language ships with Sparkle once a native speaker has reviewed it.
+- **Export Strings**: The share button in the sheet's top bar. Shares a language's catalog as a `.zip`, picked from its menu. English is the file a new translation starts from; any shipped or installed language exports the file a correction to it starts from.
+- Translation quality: Sparkle ships English and the languages a native speaker has reviewed, currently Japanese and Polish. The 23 community catalogs live in the repository as installable packs rather than in the app. They were machine translated and most have not been reviewed by native speakers, so some strings read unnaturally or describe a setting inaccurately. A language ships with Sparkle once a native speaker has reviewed it. A pack installed from the list is removed on its own once its language ships, so it never hides the reviewed catalog.
 
 ---
 
@@ -37,6 +37,7 @@ marked **(restart)** and prompt for a relaunch when changed.
 - **Hide Create Group Button**: Hides the create group button on the Instagram send/share sheet.
 - **Confirm Create Group**: Confirmation alert before creating a group on Instagram send/share sheet.
 - **Confirm Send**: Confirmation alert before sending a post.
+- **Pin Recipients in Share Sheet**: Hold a person's photo or name in the share sheet to pin them to the top of the recipient list; hold again to unpin. Holding a group still opens Instagram's member preview, now with a **Pin to Top** / **Unpin** button under the members. Pinned recipients carry a small pin on their photo, hidden from screenshots and recordings when Hide UI on Capture is on, newest pin first. Pins are per account and only reorder recipients Instagram already lists in the sheet.
 
 ### Media Preview & Menu
 - **Show Media Info**: Overlays the author and post date (including time for live previews) over the expanded photo preview. Tap the media to hide it together with the controls. (Photos only — video previews are left untouched so the scrubber and controls stay clear.)
@@ -46,7 +47,7 @@ marked **(restart)** and prompt for a relaunch when changed.
 
 ### Recommendations
 - **Ads**: Per-surface ad hiding: Feed, Stories, Reels, Explore, plus Reels shopping CTA. Ad filtering preserves native feed loading indicators, including on short or initially empty lists.
-- **Meta AI**: Hide Meta AI in Direct, Explore & Search, Comments, Creation Tools, and global AI chrome. Hiding it in Explore & Search also restores the plain search glyph in the search bar (replacing the gen-AI search icon).
+- **Meta AI**: Hide Meta AI in Direct, Explore & Search, Comments, Creation Tools, and global AI chrome. Creation Tools also removes the Meta AI effects button from the story camera's tools menu and the Restyle button from the editor shown after a capture. Hiding it in Explore & Search also restores the plain search glyph in the search bar (replacing the gen-AI search icon).
 - **Suggested Users**: Hide suggested-user surfaces: Feed, Reels, Direct, Search, Profile, Activity, follow lists, and subscriptions.
 
 ### Comments
@@ -56,6 +57,7 @@ marked **(restart)** and prompt for a relaunch when changed.
 - **Confirm Comment Like**.
 - **Hide Comment Shopping**: Removes commerce carousels in comment threads.
 - **Hide Gifts Button**: Removes the Gifts shortcut from the comment composer and lets the input use the freed space.
+- **Hide Emoji Bar**: Removes the row of quick-reaction emojis above the comment composer.
 - **Upload Photos from Gallery**: Long-press the composer's photo button to attach an image from your Sparkle Gallery (a normal tap still opens Instagram's photo picker).
 - Comment options apply everywhere comments appear (feed, reels, etc.).
 
@@ -143,6 +145,7 @@ On systems without Liquid Glass, the tab bar section is replaced by a focused to
 - **Main Feed**: `For You` or `Following`. Following mode forces the chronological feed, keeps pagination and cold starts on that source, and removes the For You picker entry. **(restart)**
 - **Disable App Icon Gesture**: Stops the feed header logo long-press from opening Instagram's app icon picker (Sparkle has its own under Settings).
 - **Hide Stories Tray**, **Hide Entire Feed**, **Hide Suggested Posts**, **Hide Suggested Accounts**, **Hide Suggested Reels**, **Hide Suggested Threads**.
+- **Hide Meta Promotions**: Removes Meta's promotions for its own products from the feed, such as Meta Verified offers and suggested Facebook pages.
 - **Hide Repost Button**: Removes the repost button from posts. **(restart)**
 
 ### Metrics
@@ -168,7 +171,9 @@ On systems without Liquid Glass, the tab bar section is replaced by a focused to
 - **Stories Action Button**, **Default Tap Action**, **Configure Actions**: As with feed; placed above the bottom story bar.
 
 ### Seen Receipts
-- **Manually Mark Seen**: *Off* (default) keeps normal seen receipts. *On Tap* suppresses automatic seen receipts and adds an eye button that marks the current story seen. *Toggle* also suppresses them, but the eye button switches normal seen receipts on or off for every story: turning them on marks the story on screen and crosses out the eye, and they turn off again when you leave stories or restart Instagram. Users on the Excluded Users list keep normal seen receipts in both modes.
+- **Manually Mark Seen**: *Off* (default) keeps normal seen receipts. *On Tap* suppresses automatic seen receipts and adds an eye button that marks the current story seen, together with that person's earlier stories, so the owner sees you on every story up to there. *Toggle* also suppresses them, but the eye button switches normal seen receipts on or off for every story: turning them on marks the story on screen and crosses out the eye, and they turn off again when you leave stories or restart Instagram. Users on the Excluded Users list keep normal seen receipts in both modes.
+- **Keep Seen Locally**: watched stories turn grey and move to the end of the tray like normal, without sending a seen receipt. You can still mark them seen with the eye button. Disabled while Manually Mark Seen is Off.
+- **Seen Locally**: lists the people whose stories you've seen locally on the current account, with how many stories each. Swipe someone away, or use the trash button to clear everyone, so their stories appear unseen again. It stays available after Keep Seen Locally is switched off.
 - **Included / Excluded Users**: Two separate per-account lists, selected by Manually Mark Seen: when Off, the *Included Users* list (only those users get the eye button / require manual seen); in On Tap or Toggle, the *Excluded Users* list (those users keep normal automatic seen). Each list is independent and stored per account. Manageable from the eye button, long-press, or the list.
 - **Mark Seen on Like**, **Mark Seen on Reply**: disabled while Manually Mark Seen is Off.
 
@@ -216,17 +221,19 @@ On systems without Liquid Glass, the tab bar section is replaced by a focused to
 - **Tap Controls**: `Default`, `Pause/Play`, or `Mute/Unmute`.
 - **Playback Controls**: Long press a reel's more button for the same floating playback panel as Stories: speed from 0.5x to 2x, scrubbing, 5 second skips, and pause/play. While a reel plays at another speed, the speed is shown above the action button; tap it to reopen the panel. After pausing from the panel, tapping the reel resumes it. Video reels only.
 - **Keep Speed For**: `This Video`, `This Session` (until you leave Reels), or `Always`.
-- **Stop Looping Reels**: Reels stop on their last frame instead of looping, with Instagram's play button shown. Tap play, or scroll back to the reel, to watch it again from the start. The play button needs tap to pause; with tap set to mute the reel just stops. Other videos keep looping.
+- **Auto Scroll**: `Default`, `On`, or `Off`. Starts Instagram's reels auto scroll in that state every launch; the toggle in Reels still works for the rest of the session. **Disable Scrolling Reels** forces it off. `On` pauses **Stop Looping Reels**. Rows that are overridden are greyed out, and their saved values are kept. Only works on accounts where Instagram has rolled out auto scroll; Instagram decides this per account on its servers.
 - **Start Reels Muted**: Reels start without sound until you unmute them, in the Reels tab and in reels opened from Feed or elsewhere. **(restart)**
 - **Disable Reels Tab Refresh**: No refresh when re-tapping the Reels tab.
 
 ### Limits
 - **Disable Scrolling Reels**: Blocks scrolling to the next reel. **(restart)**
+- **Stop Looping Reels**: Reels stop on their last frame instead of looping, with Instagram's play button shown. Tap play, or scroll back to the reel, to watch it again from the start. The play button needs tap to pause; with tap set to mute the reel just stops. Other videos keep looping.
 - **Prevent Doom Scrolling** + **Doom Scrolling Limit**: Caps the number of reels that load in the main Reels feed (1–100). Profile reels are unaffected.
 
 ### Layout
 - **Hide Reels Header**, **Hide Repost Button** **(restart)**, **Hide Suggested Accounts**.
 - **Hide Viewer Comment Bar**: Removes the bottom "Add a comment..." field from the Reels viewer, reclaiming vertical space for captions on shorter displays. **(restart)**
+- **Hide Visual Search Button**: Removes the visual search (find similar products) button from the reels action column. Applies to reels as they load.
 - **Show Repost Date**: Tap the bubble showing who reposted a reel to see when they reposted it, on its own line under their name. Shows the time for today and the date for older reposts.
 
 ### Metrics
@@ -483,6 +490,7 @@ Every surface has the same **Filter Mode**: `All` saves everything except what y
 - **Copied Download Links**: Copy Download URL follows the same photo and video quality settings as a download, including the picker sheet (single item) and the Batch Quality sheet (bulk) when set to `Always Ask`. Video links only offer ready-to-play files, since a DASH stream alone is silent or needs a merge.
 - **Enhanced Media Resolution**: Requests higher-resolution media for downloads.
 - **Default Video Quality**: Save/share quality. `High` merges DASH video + audio; `Default` uses ready-to-play files; `Always Ask` prompts each time. **Requires FFmpegKit** for the merge/quality options.
+- **Ready-to-Play Fallback**: Instagram builds a ready-to-play file on request and sometimes can't (often on new reels), answering "busy" or a server error. Sparkle retries once, then downloads the closest-resolution DASH video and audio and merges them instead, in the same Downloads entry. Without FFmpegKit there is nothing to merge, so the download fails with a "try again" message.
 - **Encoding Settings**: How videos are re-encoded, which only happens when merging a DASH download and when trimming or cropping (requires FFmpegKit). Each group's info sheet gives a one-line rule per setting plus a short note on every option. With **Advanced Encoding** off, a single **Encoding Speed** picks libx264's effort while the file stays near Instagram's size. With it on:
   - **Video Codec**: **Software (libx264)** (default, best quality per MB, honors every option) or **Hardware (VideoToolbox)** (much faster, needs about twice the bitrate for the same quality; its automatic bitrate is doubled to match). The libx264-only rows (**Preset**, **H.264 Profile**, **H.264 Level**, **CRF**) hide while VideoToolbox is selected.
   - **CRF** (1 to 51) takes priority over **Video Bitrate**; an empty bitrate follows the source, kept between 2.5 and 50 Mbps.
@@ -538,20 +546,26 @@ can't be analyzed because a single scan would hit Instagram's rate limits.
 
 The Sparkle notification pill is configurable.
 
+### Style
+- **Style**: **Sparkle Pill** (default) or **Instagram**, which draws every Sparkle notification with Instagram's own toast view, the one it uses for confirmations like "Removed from Saved". The toast follows the app's light or dark appearance, uses Instagram's outline icons, shows download progress as a ring in place of the icon with a **Cancel** button and the progress line in fixed-width digits so the toast holds still while it counts, and appears everywhere the pill does, including over Settings, the Gallery and the full-screen preview. Position, duration, tap, and swipe to dismiss work as with the pill.
+- **Test Notification**: Cycles success / error / info previews in the chosen style.
+
 ### Appearance
-- **Glow**: Glow effect around notifications.
-- **Liquid Glass**: Renders the notification pill with iOS 26 Liquid Glass (adaptive text/icons). Requires iOS 26; falls back to the standard material on iOS 18 and lower.
-- **Download Progress**: Subtitle style for download-progress pills.
+Rows follow the chosen style.
+- **Glow** (Sparkle Pill): Soft glow around the pill in the result's color: green for success, red for errors, blue otherwise.
+- **Liquid Glass** (Sparkle Pill, iOS 26 and later only): Draws the pill with Liquid Glass instead of the standard blur.
+- **Tint by Result** (Instagram): Tints the toast in the result's color. Same setting as Glow.
+
+### Behavior
+- **Position**: Top or bottom. Notifications enter and leave on that edge.
 - **Duration**: Auto-dismiss delay (0.5–5.0s).
+- **Download Progress**: What the line under a running download shows: percent, size, both, or off.
 
-### Preview
-- **Test Notification**: Cycles success / error / info previews.
-
-### Per-feature toggles
-Every notification category has an independent **visibility** toggle and a
-matching **haptic** toggle (under Haptics), covering downloads, copies,
-story/message seen actions, gallery actions, settings export/import, cache
-clearing, and more.
+### Notify Me About / Haptics
+Every notification category has an independent **visibility** toggle (under
+Notify Me About) and a matching **haptic** toggle (under Haptics), covering
+downloads, copies, story/message seen actions, gallery actions, settings
+export/import, cache clearing, and more.
 
 ---
 

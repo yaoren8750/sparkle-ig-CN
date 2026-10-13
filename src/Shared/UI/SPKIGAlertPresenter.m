@@ -9,8 +9,8 @@
 static const void *kSPKIGAlertInputViewKey = &kSPKIGAlertInputViewKey;
 static const void *kSPKIGAlertInputFieldKey = &kSPKIGAlertInputFieldKey;
 static const void *kSPKIGAlertInputHasMessageKey = &kSPKIGAlertInputHasMessageKey;
-static const void *kSPKIGAlertNativeActionStyleKey = &kSPKIGAlertNativeActionStyleKey;
-static const void *kSPKIGAlertNativeActionStylesKey = &kSPKIGAlertNativeActionStylesKey;
+static const void *kSPKIGAlertKeyboardAvoiderKey = &kSPKIGAlertKeyboardAvoiderKey;
+static const CGFloat kSPKIGAlertKeyboardGap = 16.0;
 static const CGFloat kSPKIGAlertInputHeight = 44.0;
 static const CGFloat kSPKIGAlertInputVerticalPadding = 14.0;
 static const CGFloat kSPKIGAlertInputBottomPadding = 12.0;
@@ -19,6 +19,137 @@ static const CGFloat kSPKIGAlertInputHorizontalInset = 24.0;
 static CGSize (*sSPKIGAlertOriginalSizeThatFits)(id, SEL, CGSize);
 static void (*sSPKIGAlertOriginalLayoutSubviews)(id, SEL);
 static BOOL sSPKIGAlertHooksInstalled;
+
+// Instagram centers its dialog in the window and knows nothing about the field
+// Sparkle adds, so a tall dialog ends up with its buttons under the keyboard.
+// The dialog is hosted in a clipping card that the presentation re-frames on
+// every layout pass, so moving the dialog (or the card) by frame or transform is
+// either clipped or undone. Scrolling the full-screen backdrop the card sits
+// in moves the whole card and survives those passes.
+@interface SPKIGAlertKeyboardAvoider : NSObject
+@property (nonatomic, weak) UIView *alertView;
+@property (nonatomic, weak) UIView *card;
+@property (nonatomic, weak) UIView *shiftedContainer;
+@property (nonatomic, assign) CGRect keyboardScreenFrame;
+- (instancetype)initWithAlertView:(UIView *)alertView;
+- (void)applyAnimated:(BOOL)animated duration:(NSTimeInterval)duration options:(UIViewAnimationOptions)options;
+@end
+
+@implementation SPKIGAlertKeyboardAvoider
+
+- (instancetype)initWithAlertView:(UIView *)alertView {
+    if ((self = [super init])) {
+        _alertView = alertView;
+        _keyboardScreenFrame = CGRectNull;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardFrameChanged:) name:UIKeyboardWillChangeFrameNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    }
+    return self;
+}
+
+// Scrolls the backdrop so the card rises by `lift`. Anything else living in the
+// backdrop (the dimming layer) is pushed back down by the same amount, so only
+// the card appears to move and no undimmed strip opens up at the bottom.
+static void SPKIGAlertSetBackdropLift(UIView *container, UIView *card, CGFloat lift) {
+    CGRect bounds = container.bounds;
+    bounds.origin.y = lift;
+    container.bounds = bounds;
+    for (UIView *sibling in container.subviews) {
+        if (sibling != card)
+            sibling.transform = CGAffineTransformMakeTranslation(0.0, lift);
+    }
+}
+
+- (void)dealloc {
+    UIView *container = _shiftedContainer;
+    if (container && container.bounds.origin.y != 0.0)
+        SPKIGAlertSetBackdropLift(container, _card, 0.0);
+}
+
+- (void)keyboardFrameChanged:(NSNotification *)notification {
+    NSValue *frameValue = notification.userInfo[UIKeyboardFrameEndUserInfoKey];
+    self.keyboardScreenFrame = frameValue ? frameValue.CGRectValue : CGRectNull;
+    [self applyForNotification:notification];
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification {
+    self.keyboardScreenFrame = CGRectNull;
+    [self applyForNotification:notification];
+}
+
+- (void)applyForNotification:(NSNotification *)notification {
+    NSTimeInterval duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    UIViewAnimationOptions curve = (UIViewAnimationOptions)([notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue] << 16);
+    [self applyAnimated:duration > 0.0 duration:duration options:curve];
+
+    // The keyboard can be announced before the dialog is in a window.
+    __weak typeof(self) weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [weakSelf applyAnimated:YES duration:0.25 options:UIViewAnimationOptionCurveEaseOut];
+    });
+}
+
+// The card is the outermost ancestor that is still smaller than the window; the
+// view it sits in is the modal's full-screen backdrop. Found once per dialog.
+- (UIView *)cardForAlertView:(UIView *)alertView inWindow:(UIWindow *)window {
+    UIView *card = self.card;
+    if (card.window == window)
+        return card;
+    card = alertView;
+    for (UIView *view = alertView.superview; view && view != window; view = view.superview) {
+        if (CGRectGetHeight(view.bounds) >= CGRectGetHeight(window.bounds) - 1.0)
+            break;
+        card = view;
+    }
+    self.card = card;
+    return card;
+}
+
+- (void)applyAnimated:(BOOL)animated duration:(NSTimeInterval)duration options:(UIViewAnimationOptions)options {
+    UIView *alertView = self.alertView;
+    UIWindow *window = alertView.window;
+    if (!window)
+        return;
+
+    UIView *card = [self cardForAlertView:alertView inWindow:window];
+    UIView *container = card.superview;
+    // Scrolling the backdrop must never drag the app itself along, so it has to
+    // be a view of the modal, not the window or anything the root screen is in.
+    UIView *rootView = window.rootViewController.viewIfLoaded;
+    if (!container || container == window || (rootView && [rootView isDescendantOfView:container]))
+        return;
+
+    CGFloat applied = container.bounds.origin.y;
+    CGFloat lift = 0.0;
+    if (!CGRectIsNull(self.keyboardScreenFrame)) {
+        CGRect keyboard = [window convertRect:self.keyboardScreenFrame fromCoordinateSpace:window.screen.coordinateSpace];
+        // On-screen position includes the scroll already applied; add it back
+        // to get where the card rests, so repeated passes converge.
+        CGRect onScreen = [card convertRect:card.bounds toView:nil];
+        CGFloat restingBottom = CGRectGetMaxY(onScreen) + applied;
+        CGFloat restingTop = CGRectGetMinY(onScreen) + applied;
+        if (CGRectGetMinY(keyboard) < CGRectGetHeight(window.bounds)) {
+            lift = MAX(0.0, restingBottom + kSPKIGAlertKeyboardGap - CGRectGetMinY(keyboard));
+            // Never push the title off the top; a dialog taller than the space
+            // above the keyboard keeps its header visible.
+            lift = MIN(lift, MAX(0.0, restingTop - (window.safeAreaInsets.top + kSPKIGAlertKeyboardGap)));
+        }
+    }
+
+    if (fabs(applied - lift) < 0.5)
+        return;
+    self.shiftedContainer = container;
+    void (^move)(void) = ^{
+        SPKIGAlertSetBackdropLift(container, card, lift);
+    };
+    if (animated) {
+        [UIView animateWithDuration:duration delay:0.0 options:options | UIViewAnimationOptionBeginFromCurrentState animations:move completion:nil];
+    } else {
+        move();
+    }
+}
+
+@end
 
 @implementation SPKIGAlertAction
 
@@ -66,7 +197,47 @@ static UIAlertActionStyle SPKUIKitActionStyle(SPKIGAlertActionStyle style) {
     }
 }
 
-static long long SPKIGNativeAlertActionStyle(SPKIGAlertActionStyle style) {
+// IGCustomAlertAction styles as IGDSAlertDialogView reads them. Each one picks a
+// dialog typography, and any value outside this range aborts inside the dialog's
+// initializer, so never pass a raw Sparkle style through.
+//   0 primary (semibold, tinted)       1 secondary (regular, label color)
+//   2 secondary emphasized (tinted)    3 destructive (regular, red)
+//   4 destructive emphasized (semibold, red)
+static const long long kSPKIGNativeAlertStylePrimary = 0;
+static const long long kSPKIGNativeAlertStyleSecondary = 1;
+static const long long kSPKIGNativeAlertStyleDestructiveEmphasized = 4;
+
+// A dialog gets at most one emphasized button. A lone affirmative next to Cancel
+// is the tinted primary; with several ordinary choices (or a destructive one
+// already carrying the weight) none of them is singled out.
+static BOOL SPKIGActionsHaveSinglePrimary(NSArray<SPKIGAlertAction *> *actions) {
+    NSUInteger ordinary = 0;
+    for (SPKIGAlertAction *action in actions) {
+        if (action.style == SPKIGAlertActionStyleDestructive)
+            return NO;
+        if (action.style == SPKIGAlertActionStyleDefault)
+            ordinary++;
+    }
+    return ordinary == 1 && actions.count > 1;
+}
+
+static long long SPKIGNativeAlertActionStyle(SPKIGAlertActionStyle style, BOOL singlePrimary) {
+    switch (style) {
+    case SPKIGAlertActionStyleDestructive:
+        return kSPKIGNativeAlertStyleDestructiveEmphasized;
+    case SPKIGAlertActionStyleDefault:
+        return singlePrimary ? kSPKIGNativeAlertStylePrimary : kSPKIGNativeAlertStyleSecondary;
+    case SPKIGAlertActionStyleCancel:
+    default:
+        return kSPKIGNativeAlertStyleSecondary;
+    }
+}
+
+static long long SPKIGNativeActionSheetStyle(SPKIGAlertActionStyle style) {
+    // IGActionSheetControllerAction has its own enum (0 = default, 1 = destructive,
+    // 2 = cancel), unrelated to the dialog styles above and to Sparkle's raw enum.
+    // Passing the raw value swapped cancel/destructive, which placed Cancel red at
+    // the top and put the destructive action into the dismiss (cancel) slot.
     switch (style) {
     case SPKIGAlertActionStyleCancel:
         return 2;
@@ -78,29 +249,16 @@ static long long SPKIGNativeAlertActionStyle(SPKIGAlertActionStyle style) {
     }
 }
 
-static long long SPKIGNativeActionSheetStyle(SPKIGAlertActionStyle style) {
-    // IGActionSheetControllerAction uses IG's native action-style enum
-    // (0 = default, 1 = destructive, 2 = cancel) — the same mapping as alerts,
-    // NOT Sparkle's raw enum. Passing the raw value swapped cancel/destructive,
-    // which placed Cancel red at the top and put the destructive action into the
-    // dismiss (cancel) slot.
-    return SPKIGNativeAlertActionStyle(style);
-}
-
-static BOOL SPKIGActionsContainDestructiveAction(NSArray<SPKIGAlertAction *> *actions) {
+// Instagram stacks dialog buttons vertically with the dismissing action last, so
+// callers that list Cancel first (the side-by-side convention) are reordered.
+static NSArray<SPKIGAlertAction *> *SPKIGActionsInDialogOrder(NSArray<SPKIGAlertAction *> *actions) {
+    NSMutableArray<SPKIGAlertAction *> *ordered = [NSMutableArray arrayWithCapacity:actions.count];
+    NSMutableArray<SPKIGAlertAction *> *cancels = [NSMutableArray array];
     for (SPKIGAlertAction *action in actions) {
-        if (action.style == SPKIGAlertActionStyleDestructive) {
-            return YES;
-        }
+        [(action.style == SPKIGAlertActionStyleCancel ? cancels : ordered) addObject:action];
     }
-    return NO;
-}
-
-static long long SPKIGNativeAlertActionStyleForAction(SPKIGAlertAction *action, BOOL containsDestructiveAction) {
-    if (containsDestructiveAction && action.style == SPKIGAlertActionStyleCancel) {
-        return SPKIGNativeAlertActionStyle(SPKIGAlertActionStyleDefault);
-    }
-    return SPKIGNativeAlertActionStyle(action.style);
+    [ordered addObjectsFromArray:cancels];
+    return ordered;
 }
 
 static NSString *SPKIGDescriptionTextForInputAlert(NSString *message) {
@@ -227,6 +385,12 @@ static UIView *SPKIGCreateInputView(NSString *placeholder, NSString *initialText
     textField.borderStyle = UITextBorderStyleNone;
     textField.leftView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 12.0, 1.0)];
     textField.leftViewMode = UITextFieldViewModeAlways;
+
+    // IGFormField underlines itself with a divider layer tinted by focus state,
+    // which reads as a stray line across the bottom of the rounded field.
+    CALayer *bottomDivider = SPKIGGetIvarObject(textField, "_bottomDivider");
+    if ([bottomDivider isKindOfClass:[CALayer class]])
+        bottomDivider.hidden = YES;
 
     if (textFieldOut) {
         *textFieldOut = textField;
@@ -373,25 +537,6 @@ static void SPKIGShiftButtonRegionToStartAtY(UIView *root, UIView *coordinateVie
     }
 }
 
-static UIColor *SPKIGDangerActionColor(void) {
-    return [SPKUtils SPKColor_InstagramDestructive];
-}
-
-static NSNumber *SPKIGNativeStyleForButton(id alertView, UIView *button, NSUInteger index) {
-    NSMapTable *buttonToActionMap = SPKIGGetIvarObject(alertView, "_buttonToActionMap");
-    id nativeAction = nil;
-    if ([buttonToActionMap respondsToSelector:@selector(objectForKey:)]) {
-        nativeAction = [buttonToActionMap objectForKey:button];
-    }
-
-    NSNumber *mappedStyle = nativeAction ? objc_getAssociatedObject(nativeAction, kSPKIGAlertNativeActionStyleKey) : nil;
-    if (mappedStyle)
-        return mappedStyle;
-
-    NSArray<NSNumber *> *styles = objc_getAssociatedObject(alertView, kSPKIGAlertNativeActionStylesKey);
-    return index < styles.count ? styles[index] : nil;
-}
-
 static NSArray<UIView *> *SPKIGFindAlertButtons(id alertView) {
     if (!alertView)
         return @[];
@@ -446,24 +591,6 @@ static NSArray<UIView *> *SPKIGFindAlertButtons(id alertView) {
     return buttons.copy;
 }
 
-static void SPKIGStyleAlertButtons(id alertView) {
-    NSArray<UIView *> *buttons = SPKIGFindAlertButtons(alertView);
-    if (buttons.count == 0)
-        return;
-
-    UIColor *dangerColor = SPKIGDangerActionColor();
-    [buttons enumerateObjectsUsingBlock:^(UIView *button, NSUInteger index, __unused BOOL *stop) {
-        NSNumber *styleNumber = SPKIGNativeStyleForButton(alertView, button, index);
-        if (styleNumber.integerValue != SPKIGAlertActionStyleDestructive)
-            return;
-
-        button.tintColor = dangerColor;
-        if ([button respondsToSelector:@selector(setTitleColor:forState:)]) {
-            ((void (*)(id, SEL, id, UIControlState))objc_msgSend)(button, @selector(setTitleColor:forState:), dangerColor, UIControlStateNormal);
-        }
-    }];
-}
-
 static CGSize SPKIGAlertHookSizeThatFits(id self, SEL _cmd, CGSize size) {
     CGSize fittingSize = sSPKIGAlertOriginalSizeThatFits ? sSPKIGAlertOriginalSizeThatFits(self, _cmd, size) : CGSizeZero;
     UIView *inputView = objc_getAssociatedObject(self, kSPKIGAlertInputViewKey);
@@ -482,8 +609,6 @@ static void SPKIGAlertHookLayoutSubviews(id self, SEL _cmd) {
     }
 
     UIView *alertView = (UIView *)self;
-    SPKIGStyleAlertButtons(self);
-
     UIView *inputView = objc_getAssociatedObject(self, kSPKIGAlertInputViewKey);
     if (!inputView)
         return;
@@ -587,11 +712,10 @@ static void SPKIGAlertHookLayoutSubviews(id self, SEL _cmd) {
             CGFloat desiredHeight = maxButtonBottom;
             CGFloat currentHeight = CGRectGetHeight(alertView.frame);
             if (currentHeight > desiredHeight + 1.0) {
-                CGRect frame = alertView.frame;
                 CGFloat shrink = currentHeight - desiredHeight;
-                frame.size.height = desiredHeight;
-                frame.origin.y += shrink / 2.0;
-                alertView.frame = frame;
+                CGRect bounds = alertView.bounds;
+                bounds.size.height = desiredHeight;
+                alertView.bounds = bounds;
 
                 // Also resize the immediate container if it wraps the alert tightly.
                 UIView *wrapper = alertView.superview;
@@ -604,6 +728,9 @@ static void SPKIGAlertHookLayoutSubviews(id self, SEL _cmd) {
             }
         }
     }
+
+    SPKIGAlertKeyboardAvoider *avoider = objc_getAssociatedObject(self, kSPKIGAlertKeyboardAvoiderKey);
+    [avoider applyAnimated:NO duration:0.0 options:0];
 }
 
 static void SPKIGSwizzleInstanceMethod(Class cls, SEL origSel, IMP newImp, IMP *outOrigImp) {
@@ -655,14 +782,13 @@ static void SPKIGInstallAlertHooksIfNeeded(Class alertClass) {
 
     SPKIGInstallAlertHooksIfNeeded(alertClass);
 
-    BOOL containsDestructiveAction = SPKIGActionsContainDestructiveAction(actions);
+    BOOL singlePrimary = SPKIGActionsHaveSinglePrimary(actions);
     NSMutableArray *nativeActions = [NSMutableArray arrayWithCapacity:actions.count];
-    NSMutableArray<NSNumber *> *nativeActionStyles = [NSMutableArray arrayWithCapacity:actions.count];
-    for (SPKIGAlertAction *action in actions) {
+    for (SPKIGAlertAction *action in SPKIGActionsInDialogOrder(actions)) {
         id nativeAction = ((id (*)(id, SEL, id, long long, id))objc_msgSend)(actionClass,
                                                                              actionSelector,
                                                                              action.title,
-                                                                             SPKIGNativeAlertActionStyleForAction(action, containsDestructiveAction),
+                                                                             SPKIGNativeAlertActionStyle(action.style, singlePrimary),
                                                                              ^{
                                                                                  SPKIGCallActionHandler(action);
                                                                              });
@@ -670,9 +796,7 @@ static void SPKIGInstallAlertHooksIfNeeded(Class alertClass) {
             SPKIGPresentUIKitAlert(presenter, title, message, actions, UIAlertControllerStyleAlert);
             return NO;
         }
-        objc_setAssociatedObject(nativeAction, kSPKIGAlertNativeActionStyleKey, @(action.style), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         [nativeActions addObject:nativeAction];
-        [nativeActionStyles addObject:@(action.style)];
     }
 
     id style = styleClass ? [[styleClass alloc] init] : nil;
@@ -682,13 +806,12 @@ static void SPKIGInstallAlertHooksIfNeeded(Class alertClass) {
                                                                          title,
                                                                          message,
                                                                          nativeActions,
-                                                                         actions.count <= 2);
+                                                                         NO);
     if (![alertView respondsToSelector:@selector(show)]) {
         SPKIGPresentUIKitAlert(presenter, title, message, actions, UIAlertControllerStyleAlert);
         return NO;
     }
 
-    objc_setAssociatedObject(alertView, kSPKIGAlertNativeActionStylesKey, nativeActionStyles, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     ((void (*)(id, SEL))objc_msgSend)(alertView, @selector(show));
     return YES;
 }
@@ -797,7 +920,7 @@ static void SPKIGInstallAlertHooksIfNeeded(Class alertClass) {
     id cancelAction = ((id (*)(id, SEL, id, long long, id))objc_msgSend)(actionClass,
                                                                          actionSelector,
                                                                          cancelTitle,
-                                                                         SPKIGNativeAlertActionStyle(SPKIGAlertActionStyleCancel),
+                                                                         SPKIGNativeAlertActionStyle(SPKIGAlertActionStyleCancel, NO),
                                                                          ^{
                                                                              if (cancelBlock)
                                                                                  cancelBlock();
@@ -805,7 +928,7 @@ static void SPKIGInstallAlertHooksIfNeeded(Class alertClass) {
     id confirmAction = ((id (*)(id, SEL, id, long long, id))objc_msgSend)(actionClass,
                                                                           actionSelector,
                                                                           confirmTitle,
-                                                                          SPKIGNativeAlertActionStyle(confirmStyle),
+                                                                          SPKIGNativeAlertActionStyle(confirmStyle, YES),
                                                                           ^{
                                                                               if (confirmBlock)
                                                                                   confirmBlock(textField.text);
@@ -814,8 +937,6 @@ static void SPKIGInstallAlertHooksIfNeeded(Class alertClass) {
         SPKIGPresentUIKitTextInputAlert(presenter, title, message, placeholder, initialText, autocapitalized, confirmTitle, cancelTitle, confirmStyle, confirmBlock, cancelBlock);
         return NO;
     }
-    objc_setAssociatedObject(cancelAction, kSPKIGAlertNativeActionStyleKey, @(SPKIGAlertActionStyleCancel), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    objc_setAssociatedObject(confirmAction, kSPKIGAlertNativeActionStyleKey, @(confirmStyle), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
     id style = styleClass ? [[styleClass alloc] init] : nil;
     NSString *descriptionText = SPKIGDescriptionTextForInputAlert(message);
@@ -824,8 +945,8 @@ static void SPKIGInstallAlertHooksIfNeeded(Class alertClass) {
                                                                          style,
                                                                          title,
                                                                          descriptionText,
-                                                                         @[ cancelAction, confirmAction ],
-                                                                         YES);
+                                                                         @[ confirmAction, cancelAction ],
+                                                                         NO);
     if (![alertView respondsToSelector:@selector(show)]) {
         SPKIGPresentUIKitTextInputAlert(presenter, title, message, placeholder, initialText, autocapitalized, confirmTitle, cancelTitle, confirmStyle, confirmBlock, cancelBlock);
         return NO;
@@ -834,7 +955,7 @@ static void SPKIGInstallAlertHooksIfNeeded(Class alertClass) {
     objc_setAssociatedObject(alertView, kSPKIGAlertInputViewKey, inputView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     objc_setAssociatedObject(alertView, kSPKIGAlertInputFieldKey, textField, OBJC_ASSOCIATION_ASSIGN);
     objc_setAssociatedObject(alertView, kSPKIGAlertInputHasMessageKey, @(message.length > 0), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    objc_setAssociatedObject(alertView, kSPKIGAlertNativeActionStylesKey, @[ @(SPKIGAlertActionStyleCancel), @(confirmStyle) ], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(alertView, kSPKIGAlertKeyboardAvoiderKey, [[SPKIGAlertKeyboardAvoider alloc] initWithAlertView:alertView], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     ((void (*)(id, SEL))objc_msgSend)(alertView, @selector(show));
     dispatch_async(dispatch_get_main_queue(), ^{
         [textField becomeFirstResponder];

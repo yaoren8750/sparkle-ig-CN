@@ -19,6 +19,13 @@
 - (id)identifier;
 @end
 
+// Sparkle renders this view itself, in its own notification window, for the
+// Instagram notification style. The model is filled through KVC (see
+// SPKNotificationPillView): 410 has no factory for the case it uses.
+@interface IGActionableConfirmationToastView : UIView
+- (void)configureWithViewModel:(id)model;
+@end
+
 @interface IGActionableConfirmationToastPresenter : NSObject
 - (void)_showAlertWithViewModel:(id)model presentationContext:(id)context isAnimated:(_Bool)animated animationDuration:(double)duration presentationPriority:(long long)priority origin:(unsigned long long)origin toastType:(unsigned long long)type tapActionBlock:(id)tap tapToastBlock:(id)tapToast presentedHandler:(id)presented dismissedHandler:(id)dismissed;
 - (void)hideAlert;
@@ -479,6 +486,8 @@
 // its own, so anything else is presented as nothing at all.
 @interface IGAppCoordinator : NSObject
 - (void)userNotificationCenter:(id)center willPresentNotification:(id)notification withCompletionHandler:(id)handler;
+- (BOOL)application:(id)application openURL:(NSURL *)url options:(id)options;
+- (void)scene:(id)scene willConnectToSession:(id)session options:(id)options window:(id)window;
 @end
 
 // Holds the live typing state for every thread. The dictionary is replaced
@@ -534,6 +543,11 @@
 @property (retain, nonatomic) id viewModel;
 - (CGSize)sizeThatFits:(CGSize)size;
 - (void)prepareForAnimationToExpansionPercentage:(double)percentage;
+@end
+
+@interface IGCommentComposerView : UIView
+@property (weak, nonatomic) id delegate;
+@property (retain, nonatomic) UIView *emojiBar;
 @end
 
 // Runtime-resolved Swift class used by expanded post and Reels caption sheets.
@@ -637,6 +651,20 @@
 - (IGQuickSnapPresentationManager *)quickSnapPresentationManager;
 @end
 
+// Swift class (IGSundialAutoScroll module) behind the reels auto scroll toggle.
+// 410 exposes a writable isEnabled; newer builds make it a computed getter and
+// route the user's choice through setUserEnabled:. respondsToSelector: first.
+@interface _TtC19IGSundialAutoScroll19IGSundialAutoScroll : NSObject
+@property (nonatomic, readonly) BOOL isEnabled;
+- (void)setIsEnabled:(BOOL)enabled;
+- (void)setUserEnabled:(BOOL)enabled;
+@end
+
+// Category on IGUserSession in IG; lazily creates the session's auto scroll controller.
+@interface IGUserSession (SPKSundialAutoScroll)
+- (_TtC19IGSundialAutoScroll19IGSundialAutoScroll *)autoScrollController;
+@end
+
 // Aggregate unread counts behind the app's badges. The two Direct fields are the
 // only ones Sparkle touches.
 @interface IGBadgeData : NSObject
@@ -654,8 +682,20 @@
 @end
 
 @interface IGDirectShareRecipient : NSObject
+@property (copy, nonatomic) NSString *threadID;
+@property (readonly, nonatomic) NSArray *users;
 - (NSString *)threadName;
 - (BOOL)isBroadcastChannel;
+- (BOOL)isGroupThread;
+@end
+
+// The share sheet's recipient grid, and its own IGListAdapter data source.
+@interface IGDirectRecipientListViewController : UIViewController
+@property (readonly, nonatomic) UICollectionView *collectionView;
+@property (readonly, nonatomic) id listAdapter;
+- (id)objectsForListAdapter:(id)adapter;
+- (void)v3RecipientDidLongPress:(id)viewModel;
+- (void)recipientSectionController:(id)controller didLongPressViewModel:(id)viewModel;
 @end
 
 @interface IGDirectRecipientCellViewModel : NSObject
@@ -966,6 +1006,25 @@
 // form "highlightRewind:<id>".
 @interface IGStoryViewerViewModel : NSObject
 @property (nonatomic, readonly, copy) NSString *reelPK;
+@end
+
+// The session's story seen state (`-[IGUserSession storySeenStateStore]`). Every
+// story ring reads it. Same API on 410 and current versions; the pog and media
+// stores are reached through the `_pogSeenStateStore` / `_mediaSeenStateStore` ivars.
+@interface IGStoryPogSeenStateStore : NSObject
+- (id)latestSeenMediaDateForReelPK:(id)reelPK;
+- (void)setLatestSeenMediaDate:(id)date forReelPK:(id)reelPK;
+- (void)setLatestSeenMediaDateForceUpdate:(id)date forReelPK:(id)reelPK;
+- (void)archive;
+@end
+
+@interface IGStoryMediaSeenStateStore : NSObject
+- (void)setSeenMediaId:(id)mediaId forReelPK:(id)reelPK;
+@end
+
+@interface IGStorySeenStateStore : NSObject
+- (void)addSeenDateForStoryItem:(id)item reelPK:(id)reelPK;
+- (void)removeSeenMediaIds:(id)mediaIds forReelPk:(id)reelPK;
 @end
 
 // Backing store for the reel list the story viewer pages through. The view
@@ -1300,4 +1359,11 @@ typedef struct {
 
 @interface IGBrowserNavigationController : UINavigationController
 @property (readonly, nonatomic) IGBrowserSession *browserSession;
+@end
+
+// The vertical tools column in the story camera. Each tool is a view conforming
+// to IGCameraToolsMenuTool, which exposes a stable string identifier.
+@interface IGCameraToolsMenu : UIView
+- (id)initWithTools:(id)tools store:(id)store;
+- (id)initWithTools:(id)tools userSession:(id)session;
 @end

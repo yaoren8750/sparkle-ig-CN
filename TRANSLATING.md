@@ -48,7 +48,7 @@ Any translation, finished or not, can be installed as a language pack:
 
 A zip is the only accepted shape, and that is an iOS constraint rather than a preference: the file picker will navigate into a `.lproj` folder but never let you select it, and a file picked on its own is copied out of its folder before the app sees it, so a bare `Localizable.strings` arrives with nothing to say what language it is. The archive keeps the folder name, and the folder name is the language.
 
-An imported pack overrides a shipped catalog of the same language, so this also works for previewing corrections to a language that already ships. Re-import to update it; swipe a language left to remove its pack. The **Export English Strings** row in the same section shares a zip of exactly that shape, holding `en.lproj`. It is what a new translation starts from and the easiest way to get the strings onto a phone or over to someone else.
+An imported pack overrides a shipped catalog of the same language, so this also works for previewing corrections to a language that already ships. Re-import to update it; swipe a language left to remove its pack. The share button at the top of the language sheet (**Export Strings**) shares a zip of exactly that shape for the language you pick. English (`en.lproj`) is what a new translation starts from, and it is the easiest way to get the strings onto a phone or over to someone else. Any other language listed, shipped or installed, exports the catalog Sparkle is currently using for it, which is the file to start from when correcting a language that already ships.
 
 ## Rules
 

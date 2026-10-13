@@ -18,7 +18,7 @@
 ///////////////////////////////////////////////////////////
 
 // * Tweak version *
-NSString *SPKVersionString = @"v1.4.0";
+NSString *SPKVersionString = @"v1.5.1";
 
 // Variables that work across features
 __weak id SPKPendingDirectVisualMessageToMarkSeen = nil;
@@ -317,6 +317,17 @@ static const void *kSPKFlexThreeFingerGestureKey = &kSPKFlexThreeFingerGestureKe
 %end
 
 %hook IGStoryViewerViewController
+- (void)screenshotObserverDidSeeScreenshotTaken:(id)arg1 {
+    VOID_HANDLESCREENSHOT(%orig);
+}
+- (void)screenshotObserverDidSeeActiveScreenCapture:(id)arg1 event:(NSInteger)arg2 {
+    VOID_HANDLESCREENSHOT(%orig);
+}
+%end
+
+// IG 451 moved the story viewer's screenshot callbacks off the view controller
+// into this handler. Demangled name: IGStoryViewerScreenshotHandler.IGStoryViewerScreenshotHandler
+%hook _TtC30IGStoryViewerScreenshotHandler30IGStoryViewerScreenshotHandler
 - (void)screenshotObserverDidSeeScreenshotTaken:(id)arg1 {
     VOID_HANDLESCREENSHOT(%orig);
 }
